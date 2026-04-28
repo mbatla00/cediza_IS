@@ -1,3 +1,53 @@
+# 🗄️ GUÍA PARA DAOs (Data Access Objects)
+
+## ¿Qué es esta carpeta?
+Aquí va **TODA la interacción con MySQL**. Cada clase DAO maneja las operaciones
+CRUD de una tabla. Implementamos el **patrón Singleton** para la conexión.
+
+## Responsable: Sofía
+
+---
+
+## 🎯 PRIMER ARCHIVO A CREAR: database.py
+
+```python
+"""Conexión a MySQL con patrón Singleton"""
+import mysql.connector
+from mysql.connector import Error
+from app.config import Config
+
+class Database:
+    _instance = None
+    _connection = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def get_connection(self):
+        if self._connection is None or not self._connection.is_connected():
+            try:
+                self._connection = mysql.connector.connect(
+                    host=Config.MYSQL_HOST,
+                    user=Config.MYSQL_USER,
+                    password=Config.MYSQL_PASSWORD,
+                    database=Config.MYSQL_DB,
+                    pool_name="cediza_pool",
+                    pool_size=5
+                )
+                print("✅ Conexión a MySQL establecida")
+            except Error as e:
+                print(f"❌ Error de conexión: {e}")
+                return None
+        return self._connection
+    
+    def close(self):
+        if self._connection and self._connection.is_connected():
+            self._connection.close()
+            print("🔌 Conexión cerrada")
+```
+
 ## 📝 PLANTILLA PARA CADA DAO
 
 ```python
