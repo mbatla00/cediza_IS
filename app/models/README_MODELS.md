@@ -88,6 +88,7 @@ class Usuario:
 
 ## 🔗 RELACIONES ENTRE CLASES (según el Diagrama de Dominio)
 
+```text
 Usuario (base)
 ├── Paciente (hereda de Usuario)
 │   ├── ContactoEmergencia (N contactos por paciente)
@@ -97,6 +98,7 @@ Usuario (base)
 └── Trabajador (hereda de Usuario)
     ├── NotaLibre (1 trabajador escribe N notas)
     └── EvaluacionProfesional (1 trabajador hace N evaluaciones)
+```
 
 ## ⚠️ IMPORTANTE
 
