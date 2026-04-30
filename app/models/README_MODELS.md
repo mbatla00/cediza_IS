@@ -4,6 +4,7 @@
 Aquí van las clases que representan las **tablas de la base de datos**.
 Son clases simples: solo atributos, getters, setters y método `to_dict()`.
 
+## Responsable: Sofía
 ---
 
 ## 📝 PLANTILLA PARA CADA MODELO
