@@ -162,10 +162,10 @@ git push
 
 ---
 
-## 📂 ESTRUCTURA
+## 📂 ESTRUCTURA (orientativo)
 
 ```text id="p7qk3m"
-CEDIZA/
+cediza_IS/
 ├── run.py
 ├── requirements.txt
 ├── .env.example
