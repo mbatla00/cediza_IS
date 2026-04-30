@@ -15,9 +15,9 @@ Aplicación web para la gestión integral de un centro de día: pacientes, traba
 
 ---
 
-## 🔐 AUTENTICACIÓN Y PERMISOS (MUY IMPORTANTE)
+## 🔐 AUTENTICACIÓN Y PERMISOS 
 
-Responsabilidad **100% María**
+Responsabilidad: María
 
 Incluye:
 - login / logout
@@ -65,8 +65,8 @@ El frontend es **compartido pero estructurado**, para evitar caos visual.
 | Persona | Responsabilidad frontend |
 |----------|------------------------|
 | María | `base.html`, `login.html`, `style.css`, diseño general |
-| Mario | `templates/paciente/*.html` |
-| Alejandro | `templates/admin/*.html`, `templates/trabajador/*.html` |
+| Alejandro | `templates/paciente/*.html` |
+| Mario | `templates/admin/*.html`, `templates/trabajador/*.html` |
 | Sofía | Sin frontend (backend puro) |
 
 ---
@@ -86,39 +86,26 @@ El frontend es **compartido pero estructurado**, para evitar caos visual.
 
 ### 1. Clonar el repositorio
 ```bash
-git clone [https://github.com/TU-USUARIO/CEDIZA.git](https://github.com/TU-USUARIO/CEDIZA.git)
-cd CEDIZA
+git clone https://github.com/mbatla00/cediza_IS.git
 ```
 
-### 2. Crear entorno virtual
-```bash
-python -m venv venv
-venv\Scripts\activate       # Windows
-source venv/bin/activate    # Mac/Linux
-```
-
-### 3. Instalar dependencias
+### 2. Instalar dependencias
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Instalar dependencias
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Variables de entorno
+### 3. Variables de entorno
 ```bash
 cp .env.example .env
 ```
 
-### 5. Base de datos
+### 4. Base de datos
 ```bash
 mysql -u root -p db_cediza < sql/schema.sql
 mysql -u root -p db_cediza < sql/inserts_test.sql
 ```
 
-### 6. Ejecutar proyecto
+### 5. Ejecutar proyecto (todavía no funcional)
 ```bash
 python run.py
 ```
@@ -158,11 +145,9 @@ git push
 
 ❌ No trabajar directamente en `main`  
 ❌ No hacer merge sin Pull Request  
-❌ No aprobar tus propios PR  
 
 ✅ Usar siempre Pull Requests  
-✅ Revisiones obligatorias por otro compañero  
-✅ Pull desde `main` cada día  
+✅ Revisiones obligatorias por otro compañero   
 ✅ Commits claros y descriptivos  
 
 ---
