@@ -2,7 +2,7 @@
 
 ## Esquema de CEDIZA
 
-La base de datos tiene **9 tablas** interrelacionadas.
+La base de datos tiene **11 tablas** interrelacionadas.
 
 ---
 
@@ -10,30 +10,34 @@ La base de datos tiene **9 tablas** interrelacionadas.
 
 ```bash
 # Terminal MySQL
-mysql -u root -p < sql/schema.sql
-mysql -u root -p < sql/inserts_test.sql
+mysql -u root -p < sql/init.sql
 ```
+
+## ERR diagram 
+
+El diagrama relacional de la base de datos guardado como **ERR_diagram.png**
 
 ## 📊 TABLAS
 
 | Tabla | Descripción |
 |-------|-------------|
-| Usuario | Datos comunes de todos los usuarios (base) |
-| Paciente | Extiende Usuario + datos médicos |
-| Trabajador | Extiende Usuario + especialidad |
-| ContactoEmergencia | Contactos asociados a un paciente |
-| PreguntaDiaria | Preguntas predefinidas del cuestionario |
-| Respuesta | Respuestas de pacientes a preguntas |
-| NotaLibre | Anotaciones libres de trabajadores |
-| EvaluacionProfesional | Evaluaciones con puntuaciones 1-5 |
-| InformeGenerado | Metadatos de informes PDF |
+| Usuarios | Datos comunes de todos los usuarios (base) |
+| Pacientes | Extiende Usuarios |
+| Pacientes privados | Extiende Pacientes |
+| Pacientes publicos | Extiende Pacientes |
+| Trabajadores | Extiende Usuarios |
+| Auxiliares | Extiende Trabajadores |
+| coordinadores | Extiende Trabajadores |
+| Especialistas | Extiende Trabajadores |
+| Familiares | Contactos asociados a un paciente |
+| comentarios | Anotaciones libres de los trabajadores a los pacientes |
+| Sesiones | sesion entre un especialista y un paciente |
+
 
 ## 🔑 RELACIONES CLAVE
 
-- Paciente 1:N ContactoEmergencia
-- Paciente 1:N Respuesta
-- Paciente 1:N NotaLibre
-- Paciente 1:N EvaluacionProfesional
-- PreguntaDiaria 1:N Respuesta
-- Trabajador 1:N NotaLibre
-- Trabajador 1:N EvaluacionProfesional
+- Paciente 1:N Familiares
+- Paciente 1:N comentarios
+- Trabajador 1:N comentarios
+- Sesion 1:N pacientes
+- Sesion 1:N especialistas
