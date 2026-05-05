@@ -1,0 +1,50 @@
+<!-- Hereda de base.html y rellena los bloques -->
+{% extends "base.html" %}
+
+<!-- Título de la pestaña del navegador -->
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-lg-4">
+
+        <!-- Tarjeta de login -->
+        <div class="card shadow-lg rounded-4">
+            <div class="card-header bg-primary text-white text-center rounded-top-4 py-4">
+                <h2 class="mb-0">🏥 CEDIZA</h2>
+                <small>Centro de Día Zamora</small>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Formulario de inicio de sesión -->
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">📧 Email</label>
+                        <input type="email" name="email" class="form-control form-control-lg"
+                               placeholder="tu@email.com" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">🔒 Contraseña</label>
+                        <input type="password" name="password" class="form-control form-control-lg"
+                               placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        Iniciar Sesión
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+                <!-- Credenciales de prueba visibles en desarrollo -->
+                <div class="small text-muted">
+                    <p class="mb-1 fw-bold">🔑 Credenciales de prueba:</p>
+                    <p class="mb-0">👑 Admin: admin@cediza.com / admin123</p>
+                    <p class="mb-0">👩‍⚕️ Trabajador: trabajador@cediza.com / trab123</p>
+                    <p class="mb-0">👴 Paciente: paciente@cediza.com / paci123</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
