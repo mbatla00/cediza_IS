@@ -1,136 +1,168 @@
 # 🗄️ GUÍA PARA DAOs (Data Access Objects)
 
 ## ¿Qué es esta carpeta?
-Aquí va **TODA la interacción con MySQL**. Cada clase DAO maneja las operaciones
-CRUD de una tabla. Implementamos el **patrón Singleton** para la conexión.
+Aquí va **toda la interacción con la base de datos**. Cada clase DAO gestiona
+las operaciones CRUD de una tabla. La conexión se gestiona con el **patrón Singleton**
+para que solo exista una conexión activa en toda la app.
 
 ## Responsable: Sofía
 
 ---
 
-## 🎯 PRIMER ARCHIVO A CREAR: database.py
+## ⚠️ PENDIENTE DE MIGRACIÓN A JDBC
 
-```python
-"""Conexión a MySQL con patrón Singleton"""
-import mysql.connector
-from mysql.connector import Error
-from app.config import Config
+Actualmente la conexión usa `mysql.connector` (Python). En el futuro se migrará
+a **JDBC** (Java Database Connectivity). Cuando se haga la migración:
 
-class Database:
-    _instance = None
-    _connection = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-    
-    def get_connection(self):
-        if self._connection is None or not self._connection.is_connected():
-            try:
-                self._connection = mysql.connector.connect(
-                    host=Config.MYSQL_HOST,
-                    user=Config.MYSQL_USER,
-                    password=Config.MYSQL_PASSWORD,
-                    database=Config.MYSQL_DB,
-                    pool_name="cediza_pool",
-                    pool_size=5
-                )
-                print("✅ Conexión a MySQL establecida")
-            except Error as e:
-                print(f"❌ Error de conexión: {e}")
-                return None
-        return self._connection
-    
-    def close(self):
-        if self._connection and self._connection.is_connected():
-            self._connection.close()
-            print("🔌 Conexión cerrada")
+- `database.py` es el único archivo que cambia — el resto de DAOs no se tocan
+- Habrá que reemplazar `mysql.connector.connect(...)` por la configuración JDBC correspondiente
+- Los métodos de los DAOs seguirán funcionando igual siempre que la nueva conexión
+  devuelva cursores con `dictionary=True`
+
+> Hasta entonces, asegúrate de tener instalado `mysql-connector-python` en el entorno.
+
+---
+
+## 🗂️ ARCHIVOS Y CLASES
+
+```
+dao/
+├── database.py       → Database (Singleton — CREAR PRIMERO)
+├── usuario_dao.py    → UsuarioDAO
+├── paciente_dao.py   → PacienteDAO, PacPubDAO, PacPriDAO
+├── trabajador_dao.py → TrabajadorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO
+└── otros_dao.py      → FamiliarDAO, ComentarioDAO, SesionDAO
 ```
 
-## 📝 PLANTILLA PARA CADA DAO
+---
+
+## 📋 FUNCIONES DE CADA DAO
+
+### UsuarioDAO
+| Método | Descripción |
+|---|---|
+| `get_by_nombreUsuario(nombreUsuario)` | Login — devuelve el objeto del subtipo correcto via factoría |
+| `get_by_dni(dni)` | Búsqueda por DNI |
+| `create(usuario)` | Inserta en `Usuarios` — llamar siempre ANTES del DAO específico |
+| `update(usuario)` | Actualiza Nombre, DNI y contraseña |
+| `delete(nombreUsuario)` | Elimina el usuario |
+
+### PacienteDAO / PacPubDAO / PacPriDAO
+| Método | Descripción |
+|---|---|
+| `PacienteDAO.get_all()` | Lista todos los pacientes |
+| `PacienteDAO.get_by_nombreUsuario(u)` | Busca un paciente |
+| `PacienteDAO.create(paciente)` | Inserta en `Pacientes` |
+| `PacienteDAO.delete(nombreUsuario)` | Elimina de `Pacientes` |
+| `PacPubDAO.get_by_nombreUsuario(u)` | Busca un paciente público |
+| `PacPubDAO.create(pac_pub)` | Inserta en `Pac_pub` |
+| `PacPubDAO.update_dias(u, dias)` | Actualiza días ingresado (facturación) |
+| `PacPriDAO.get_by_nombreUsuario(u)` | Busca un paciente privado |
+| `PacPriDAO.create(pac_pri)` | Inserta en `Pac_pri` |
+| `PacPriDAO.update(pac_pri)` | Actualiza IVA, cuenta y horas |
+
+### TrabajadorDAO / AuxiliarDAO / CoordinadorDAO / EspecialistaDAO
+| Método | Descripción |
+|---|---|
+| `TrabajadorDAO.get_all()` | Lista todos los trabajadores |
+| `TrabajadorDAO.get_by_nombreUsuario(u)` | Busca un trabajador |
+| `TrabajadorDAO.create(trabajador)` | Inserta en `Trabajadores` |
+| `TrabajadorDAO.delete(nombreUsuario)` | Elimina de `Trabajadores` |
+| `AuxiliarDAO.get_all()` | Lista todos los auxiliares |
+| `AuxiliarDAO.get_by_nombreUsuario(u)` | Busca un auxiliar |
+| `AuxiliarDAO.create(auxiliar)` | Inserta en `Auxiliares` |
+| `AuxiliarDAO.update_horario(u, horario)` | Actualiza el horario |
+| `CoordinadorDAO.get_by_nombreUsuario(u)` | Busca un coordinador |
+| `CoordinadorDAO.create(coordinador)` | Inserta en `coordinadores` |
+| `CoordinadorDAO.update_infoInteres(u, info)` | Actualiza infoInteres |
+| `EspecialistaDAO.get_all()` | Lista todos los especialistas |
+| `EspecialistaDAO.get_by_nombreUsuario(u)` | Busca un especialista |
+| `EspecialistaDAO.create(especialista)` | Inserta en `Especialistas` |
+| `EspecialistaDAO.update(especialista)` | Actualiza especialidad y horario |
+
+### FamiliarDAO / ComentarioDAO / SesionDAO
+| Método | Descripción |
+|---|---|
+| `FamiliarDAO.get_by_paciente(u)` | Lista los familiares de un paciente |
+| `FamiliarDAO.create(familiar)` | Inserta un familiar |
+| `FamiliarDAO.delete(nombre, paciente)` | Elimina un familiar |
+| `ComentarioDAO.get_by_paciente(u)` | Lista comentarios de un paciente (más reciente primero) |
+| `ComentarioDAO.get_by_trabajador(u)` | Lista comentarios escritos por un trabajador |
+| `ComentarioDAO.create(comentario)` | Inserta un comentario |
+| `ComentarioDAO.delete(auxiliar, paciente, dia)` | Elimina un comentario por clave compuesta |
+| `SesionDAO.get_by_id(id)` | Busca una sesión por ID |
+| `SesionDAO.get_by_paciente(u)` | Lista sesiones de un paciente (ordenadas por fecha) |
+| `SesionDAO.get_by_especialista(u)` | Lista sesiones de un especialista (ordenadas por fecha) |
+| `SesionDAO.create(sesion)` | Inserta una sesión y devuelve el `idSesion` generado |
+| `SesionDAO.update(sesion)` | Actualiza una sesión existente |
+| `SesionDAO.delete(idSesion)` | Elimina una sesión |
+
+---
+
+## 💡 EJEMPLO DE USO
 
 ```python
-# Ejemplo: usuario_dao.py
-from app.dao.database import Database
-from app.models.usuario import Usuario
-from mysql.connector import Error
+# --- Login ---
+from app.dao.usuario_dao import UsuarioDAO
 
-class UsuarioDAO:
-    
-    @staticmethod
-    def get_by_email(email):
-        """Busca un usuario por su email (usado en login)"""
-        db = Database()
-        conn = db.get_connection()
-        
-        if conn is None:
-            return None
-        
-        cursor = conn.cursor(dictionary=True)
-        try:
-            cursor.execute("SELECT * FROM Usuario WHERE email = %s", (email,))
-            row = cursor.fetchone()
-            if row:
-                return Usuario(**row)
-            return None
-        except Error as e:
-            print(f"Error en get_by_email: {e}")
-            return None
-        finally:
-            cursor.close()
-    
-    @staticmethod
-    def create(usuario):
-        """Inserta un nuevo usuario"""
-        db = Database()
-        conn = db.get_connection()
-        
-        cursor = conn.cursor()
-        try:
-            sql = """INSERT INTO Usuario (nombre, email, password, rol)
-                     VALUES (%s, %s, %s, %s)"""
-            cursor.execute(sql, (usuario.nombre, usuario.email, 
-                                usuario.password, usuario.rol))
-            conn.commit()
-            return cursor.lastrowid
-        except Error as e:
-            print(f"Error al crear usuario: {e}")
-            conn.rollback()
-            return None
-        finally:
-            cursor.close()
-    
-    @staticmethod
-    def update(usuario):
-        """Actualiza los datos de un usuario"""
-        # Implementar UPDATE
-        pass
-    
-    @staticmethod
-    def delete(id_usuario):
-        """Marca un usuario como inactivo (borrado lógico)"""
-        # Implementar DELETE lógico (activo = 0)
-        pass
+usuario = UsuarioDAO.get_by_nombreUsuario('GarciaLopezMaria')
+if usuario and usuario.contraseña == password_introducida:
+    print(f"Bienvenido {usuario.nombre}")   # objeto ya del subtipo correcto
+
+
+# --- Crear un paciente público (insert en cascada) ---
+# Importante: siempre en este orden → Usuarios → Pacientes → Pac_pub
+from app.dao.usuario_dao import UsuarioDAO
+from app.dao.paciente_dao import PacienteDAO, PacPubDAO
+from app.factories.usuario_factory import UsuarioFactory
+
+datos = {
+    'Rol': 'paciente',
+    'Tipo': 'publico',
+    'Nombre': 'Maria Garcia Lopez',
+    'DNI': '12345678A',
+    'contraseña': '1234',
+    'Dias_ingresado': 10
+}
+
+pac = UsuarioFactory.crear(datos)   # genera nombreUsuario automáticamente si no viene
+
+UsuarioDAO.create(pac)              # 1. inserta en Usuarios
+PacienteDAO.create(pac)             # 2. inserta en Pacientes
+PacPubDAO.create(pac)               # 3. inserta en Pac_pub
+
+
+# --- Obtener comentarios de un paciente ---
+from app.dao.otros_dao import ComentarioDAO
+
+comentarios = ComentarioDAO.get_by_paciente('GarciaLopezMaria')
+for c in comentarios:
+    print(c.dia, c.nota)
+
+
+# --- Crear una sesión terapéutica ---
+from app.dao.otros_dao import SesionDAO
+from app.models.otros import Sesion
+
+sesion = Sesion(
+    Paciente='GarciaLopezMaria',
+    Especialista='RodriguezPedro',
+    comentarios='Primera sesión de evaluación',
+    Fecha='2024-03-15'          # acepta string 'YYYY-MM-DD' o un objeto date
+)
+
+id_nueva = SesionDAO.create(sesion)
+print(f"Sesión creada con id: {id_nueva}")
 ```
 
-## ✅ CHECKLIST DE DAOs A CREAR
+---
 
-- **database.py** - Clase Database con patrón Singleton (OBLIGATORIO PRIMERO)
-- **usuario_dao.py** - CRUD de usuarios + get_by_email para login
-- **paciente_dao.py** - CRUD de pacientes + búsqueda por DNI
-- **trabajador_dao.py** - CRUD de trabajadores
-- **contacto_emergencia_dao.py** - CRUD de contactos de emergencia
-- **nota_dao.py** - Guardar y recuperar notas libres
-- **evaluacion_dao.py** - Guardar y recuperar evaluaciones rápidas
-- **respuesta_dao.py** - Guardar respuestas de cuestionarios
-- **pregunta_dao.py** - Obtener preguntas diarias
+## 🛡️ REGLAS DE ORO
 
-## 🛡️ REGLAS DE ORO PARA DAOs
-
-- **NUNCA** concatenar strings en SQL (riesgo de SQL Injection)
-- **SIEMPRE** usar parámetros: `cursor.execute(sql, (valor1, valor2))`
-- **SIEMPRE** cerrar el cursor en `finally`
-- **NUNCA** cerrar la conexión (la gestiona el Singleton)
-- Usar `conn.rollback()` si hay error en INSERT/UPDATE/DELETE
-
+- **NUNCA** concatenes strings en SQL — usa siempre parámetros: `cursor.execute(sql, (val1, val2))`
+- **SIEMPRE** cierra el cursor en `finally`
+- **NUNCA** cierres la conexión — la gestiona el Singleton
+- Usa `conn.rollback()` si hay error en INSERT / UPDATE / DELETE
+- Los inserts de pacientes y trabajadores son **siempre en cascada** — el orden importa:
+  `Usuarios` → `Pacientes/Trabajadores` → tabla específica
+- Esa cascada la gestiona el **controlador**, no el DAO

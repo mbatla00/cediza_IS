@@ -25,10 +25,23 @@ class Comentario:
     def dia(self):
         return self._dia
     
+    
+    from datetime import date, datetime
+
     @dia.setter
     def dia(self, value):
-        self._dia = value
-    
+        if value is None:
+            self._dia = None
+        elif isinstance(value, date):
+            self._dia = value
+        elif isinstance(value, str):
+            try:
+                self._dia = datetime.strptime(value, "%Y-%m-%d").date()
+            except ValueError:
+                raise ValueError("El formato de fecha debe ser 'YYYY-MM-DD'")
+        else:
+            raise TypeError(f"Tipo no válido para dia: {type(value)}")
+
     @property
     def nota(self):
         return self._nota

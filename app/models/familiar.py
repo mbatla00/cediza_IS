@@ -1,5 +1,5 @@
 class Familiar:
-    def __init__(self, Nombre=None, Paciente=None, Relacion=None, Telefono=None):
+    def __init__(self, Nombre=None, Paciente=None, Relacion='hij@', Telefono=None):
         self._nombre = Nombre
         self._paciente = Paciente      #FK -> Pacientes.nombreUsuario
         self._relacion = Relacion
@@ -35,6 +35,8 @@ class Familiar:
     
     @telefono.setter
     def telefono(self, value):
+        if value is not None and (not str(value).isdigit() or len(str(value)) != 9):
+            raise ValueError("El teléfono debe tener exactamente 9 dígitos")
         self._telefono = value
 
     def to_dict(self):

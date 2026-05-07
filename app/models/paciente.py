@@ -1,7 +1,7 @@
 from app.models.usuario import Usuario
 
 class Paciente(Usuario):
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, Tipo=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña='paciente', Tipo=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,

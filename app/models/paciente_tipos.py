@@ -11,7 +11,7 @@ class PacPub(Paciente):
             contraseña=contraseña,
             Tipo='publico'
         )
-        self._dias_ingresado = Dias_ingresado
+        self._dias_ingresado = Dias_ingresado #Dias ingresado en hostital (para facturación)
     
     @property
     def dias_ingresado(self):
@@ -27,12 +27,12 @@ class PacPub(Paciente):
         return d
     
     def __repr__(self):
-        return f"<PacPub nombreUsuario={self.nombreUsuario} dias={self.dias_ingresado}>"
+        return f"<PacientePublico nombreUsuario={self.nombreUsuario} dias={self.dias_ingresado}>"
 
 class PacPri(Paciente):
     #Paciente privado con datos de facturación
     
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, IVA=None, cuenta=None, horas=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, IVA=4, cuenta=None, horas=8):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
@@ -78,5 +78,4 @@ class PacPri(Paciente):
         return d
     
     def __repr__(self):
-        return f"<PacPri nombreUsuario={self.nombreUsuario}>"
-        
+        return f"<PacientePrivado nombreUsuario={self.nombreUsuario}>"

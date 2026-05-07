@@ -43,9 +43,21 @@ class Sesion:
     def fecha(self):
         return self._fecha
 
+    from datetime import date, datetime
+
     @fecha.setter
     def fecha(self, value):
-        self._fecha = value
+        if value is None:
+            self._fecha = None
+        elif isinstance(value, date):
+            self._fecha = value
+        elif isinstance(value, str):
+            try:
+                self._fecha = datetime.strptime(value, "%Y-%m-%d").date()
+            except ValueError:
+                raise ValueError("El formato de fecha debe ser 'YYYY-MM-DD'")
+        else:
+            raise TypeError(f"Tipo no válido para fecha: {type(value)}")
     
     def to_dict(self):
         return {
