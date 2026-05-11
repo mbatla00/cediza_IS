@@ -2,107 +2,89 @@
 
 ## ¿Qué es esta carpeta?
 Aquí van las clases que representan las **tablas de la base de datos**.
-Son clases simples: solo atributos, getters, setters y método `to_dict()`.
+Son clases simples: solo atributos, getters, setters y `to_dict()`.
+**No incluyen ninguna lógica de base de datos** — eso va en `dao/`.
 
 ## Responsable: Sofía
+
 ---
 
-## 📝 PLANTILLA PARA CADA MODELO
+## 🗂️ ARCHIVOS Y CLASES
+
+```
+models/
+├── usuario.py          → Usuario (clase base)
+├── paciente.py         → Paciente (hereda de Usuario)
+├── paciente_tipos.py   → PacientePublico, PacientePrivado (heredan de Paciente)
+├── trabajador.py       → Trabajador (hereda de Usuario)
+├── trabajador_tipos.py → Auxiliar, Coordinador, Especialista (heredan de Trabajador)
+└── familiar.py         → Atributo multivalorado de paciente 
+└──comentario.py        → Tiene auxiliar(FK), paciente(FK), dia y nota(mensaje)   
+└──sesion.py            → Tiene especialista(FK), paciente(FK), fecha y nota(mensaje)
+```
+
+## 🔗 JERARQUÍA DE HERENCIA
+
+```
+Usuario
+├── Paciente
+│   ├── PacientePublico   (Dias_ingresado en hospital — para facturación)
+│   └── PacientePrivado   (IVA, cuenta, horas)
+└── Trabajador
+    ├── Auxiliar          (Horario)
+    ├── Coordinador       (infoInteres)
+    └── Especialista      (Especialidad, Horario)
+```
+
+**Nunca instancies `Usuario`, `Paciente` o `Trabajador` directamente.**
+Usa siempre la factoría (`factories/usuario_factory.py`) para crear objetos,
+o el subtipo concreto si sabes exactamente lo que estás creando.
+
+---
+
+## 📝 REGLAS DE ORO
+
+- **Todos los atributos son privados** (con `_`) y se accede a ellos mediante `@property`
+- **`to_dict()`** es obligatorio en cada clase — convierte el objeto a diccionario para enviarlo a las vistas
+- **Nada de SQL aquí** — si necesitas ir a la BD, estás en el sitio equivocado
+- Los setters de `fecha`/`dia` aceptan tanto `str` `'YYYY-MM-DD'` como objeto `date` — internamente siempre guardan un `date`
+- El setter de `telefono` en `Familiar` solo acepta exactamente 9 dígitos
+
+---
+
+## 💡 EJEMPLO DE USO
 
 ```python
-# Ejemplo: usuario.py
+# Crear un objeto directamente (si ya sabes el tipo)
+from app.models.paciente_tipos import PacientePublico
 
-class Usuario:
-    def __init__(self, id=None, nombre=None, email=None, password=None, rol=None, 
-                 fecha_registro=None, activo=True):
-        self._id = id
-        self._nombre = nombre
-        self._email = email
-        self._password = password
-        self._rol = rol          # 'admin', 'trabajador', 'paciente'
-        self._fecha_registro = fecha_registro
-        self._activo = activo
-    
-    # Getters
-    @property
-    def id(self):
-        return self._id
-    
-    @property
-    def nombre(self):
-        return self._nombre
-    
-    @property
-    def email(self):
-        return self._email
-    
-    @property
-    def password(self):
-        return self._password
-    
-    @property
-    def rol(self):
-        return self._rol
-    
-    # Setters
-    @id.setter
-    def id(self, value):
-        self._id = value
-    
-    @nombre.setter
-    def nombre(self, value):
-        self._nombre = value
-    
-    @email.setter
-    def email(self, value):
-        self._email = value
-    
-    @password.setter
-    def password(self, value):
-        self._password = value
-    
-    @rol.setter
-    def rol(self, value):
-        self._rol = value
-    
-    def to_dict(self):
-        """Convierte el objeto a diccionario (útil para JSON)"""
-        return {
-            'id': self.id,
-            'nombre': self.nombre,
-            'email': self.email,
-            'rol': self.rol
-        }
+pac = PacientePublico(
+    nombreUsuario='GarciaLopezMaria',
+    Nombre='Maria Garcia Lopez',
+    DNI='12345678A',
+    contraseña='1234',
+    Dias_ingresado=12
+)
+
+print(pac.nombre)       # 'Maria Garcia Lopez'
+print(pac.tipo)         # 'publico'
+print(pac.to_dict())    # {'nombreUsuario': ..., 'nombre': ..., 'tipo': 'publico', ...}
+
+# Modificar un atributo
+pac.dias_ingresado = 15
+
+# Lo más habitual: crear desde un dict (datos de un formulario o de la BD)
+# Para eso usa la factoría → ver factories/README.md
 ```
 
-## CHECKLIST DE ARCHIVOS A CREAR
-
-- **usuario.py** - Clase Usuario (base para todos los roles)
-- **paciente.py** - Hereda de Usuario + DNI, fecha_nacimiento, diagnostico, foto
-- **trabajador.py** - Hereda de Usuario + especialidad
-- **contacto_emergencia.py** - Contactos de emergencia asociados a un paciente
-- **nota.py** - Notas libres escritas por trabajadores
-- **evaluacion.py** - Evaluaciones rápidas con puntuaciones (1-5)
-- **respuesta.py** - Respuestas de pacientes a cuestionarios diarios
-- **pregunta_diaria.py** - Preguntas predefinidas del cuestionario
-- **informe.py** - Metadatos de informes PDF generados
-
-## 🔗 RELACIONES ENTRE CLASES (según el Diagrama de Dominio)
-
-```text
-Usuario (base)
-├── Paciente (hereda de Usuario)
-│   ├── ContactoEmergencia (N contactos por paciente)
-│   ├── NotaLibre (N notas por paciente)
-│   ├── EvaluacionProfesional (N evaluaciones por paciente)
-│   └── Respuesta (N respuestas por paciente)
-└── Trabajador (hereda de Usuario)
-    ├── NotaLibre (1 trabajador escribe N notas)
-    └── EvaluacionProfesional (1 trabajador hace N evaluaciones)
-```
+---
 
 ## ⚠️ IMPORTANTE
 
-- **NO incluyáis lógica de base de datos aquí** (eso va en `dao/`)
-- **Todos los atributos deben ser privados** (con `_`) y usar `@property`
-- **El método `to_dict()` es obligatorio** para enviar datos a las vistas
+- `PacientePublico` y `PacientePrivado` son los nombres completos — en la BD las tablas
+  se llaman `Pac_pub` y `Pac_pri` pero en el código usamos nombres legibles
+- `dias_ingresado` en `PacientePublico` representa los días del mes que el paciente
+  ha estado ingresado en un **hospital externo**, dato necesario para la facturación
+- El campo `Auxiliar` en `Comentario` es una FK a `Trabajadores` — aunque el nombre
+  diga "Auxiliar", cualquier tipo de trabajador puede escribir comentarios
+- Si no se inserta nombreUsuario al crear un `Usuario` se le pondrá por defecto 'ApellidoNombre'. OJO‼️si hay dos nombreUsuario iguales el controlador debera añadir un nº al crear al nuevo usuario
