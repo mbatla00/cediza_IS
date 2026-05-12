@@ -1,17 +1,23 @@
 from mysql.connector import Error
 from app.dao.database import Database
 from app.factories.usuario_factory import UsuarioFactory
+import unicodedata
+import re
+
 
 class UsuarioDAO:
 
+    # -------------------------------------------------------------
+    # Buscar por nombre de usuario (PK)
+    # -------------------------------------------------------------
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        #devuelve un objeto Usuario o None
+        """Devuelve un objeto Usuario o None"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
-        
+
         cursor = conn.cursor(dictionary=True)
         try:
             cursor.execute(
@@ -26,19 +32,47 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    # -------------------------------------------------------------
+    # Buscar por email
+    # -------------------------------------------------------------
     @staticmethod
-    def get_by_dni(dni):
-        #Busca un usuario por DNI
+    def get_by_email(email):
+        """Busca un usuario por email. Devuelve Usuario o None"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
-        
+
+        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor.execute(
+                "SELECT * FROM Usuarios WHERE email = %s",
+                (email,)
+            )
+            row = cursor.fetchone()
+            return UsuarioFactory.crear(row) if row else None
+        except Error as e:
+            print(f"Error en get_by_email: {e}")
+            return None
+        finally:
+            cursor.close()
+
+    # -------------------------------------------------------------
+    # Buscar por DNI
+    # -------------------------------------------------------------
+    @staticmethod
+    def get_by_dni(dni):
+        """Busca un usuario por DNI. Devuelve Usuario o None"""
+        db = Database()
+        conn = db.get_connection()
+        if conn is None:
+            return None
+
         cursor = conn.cursor(dictionary=True)
         try:
             cursor.execute(
                 "SELECT * FROM Usuarios WHERE DNI = %s",
-                (dni, )
+                (dni,)
             )
             row = cursor.fetchone()
             return UsuarioFactory.crear(row) if row else None
@@ -48,19 +82,64 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    # -------------------------------------------------------------
+    # Validar DNI español
+    # -------------------------------------------------------------
+    @staticmethod
+    def validar_dni(dni):
+        """
+        Valida formato y letra de un DNI español.
+        Devuelve True si es válido, False si no.
+        """
+        if not re.match(r'^\d{8}[A-Za-z]$', dni):
+            return False
+
+        letras = "TRWAGMYFPDXBNJZSQVHLCKE"
+        numero = int(dni[:-1])
+        letra = dni[-1].upper()
+        return letras[numero % 23] == letra
+
+    # -------------------------------------------------------------
+    # Generar nombre de usuario sin acentos ni espacios
+    # -------------------------------------------------------------
+    @staticmethod
+    def generar_nombre_usuario(nombre, apellido1, apellido2=""):
+        """
+        Genera nombreUsuario = nombre + apellido1 [+ apellido2].
+        Sin acentos, sin espacios, en minúsculas.
+        Si ya existe, añade número al final.
+        """
+        base = f"{nombre}{apellido1}{apellido2}".lower()
+        base = unicodedata.normalize('NFKD', base).encode('ASCII', 'ignore').decode('ASCII')
+        base = ''.join(c for c in base if c.isalnum())
+
+        nombre_final = base
+        contador = 1
+        while UsuarioDAO.get_by_nombreUsuario(nombre_final) is not None:
+            nombre_final = f"{base}{contador}"
+            contador += 1
+
+        return nombre_final
+
+    # -------------------------------------------------------------
+    # Crear usuario
+    # -------------------------------------------------------------
+    @staticmethod
     def create(usuario):
-        #Inserta un nuevo usuario, devuelve True si tuvo éxito
+        """Inserta un nuevo usuario. Devuelve True si éxito, False si fallo"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return False
+
         cursor = conn.cursor()
         try:
-            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, DNI, Rol, contraseña)
-                VALUES (%s, %s, %s, %s, %s)"""
+            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, DNI, Rol, contraseña)
+                     VALUES (%s, %s, %s, %s, %s, %s)"""
             cursor.execute(sql, (
                 usuario.nombreUsuario,
                 usuario.nombre,
+                usuario.email,
                 usuario.dni,
                 usuario.rol,
                 usuario.contraseña
@@ -74,21 +153,25 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    # -------------------------------------------------------------
+    # Actualizar usuario
+    # -------------------------------------------------------------
     @staticmethod
     def update(usuario):
-        #actualiza nombre, DNI y contraseña de un usuario
+        """Actualiza nombre, email, DNI y contraseña"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return False
-        
+
         cursor = conn.cursor()
         try:
             sql = """UPDATE Usuarios
-                SET Nombre = %s, DNI = %s, contraseña = %s 
-                WHERE nombreUsuario = %s"""
+                     SET Nombre = %s, email = %s, DNI = %s, contraseña = %s
+                     WHERE nombreUsuario = %s"""
             cursor.execute(sql, (
                 usuario.nombre,
+                usuario.email,
                 usuario.dni,
                 usuario.contraseña,
                 usuario.nombreUsuario
@@ -102,16 +185,21 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    # -------------------------------------------------------------
+    # Eliminar usuario (borrado lógico)
+    # -------------------------------------------------------------
+    @staticmethod
     def delete(nombreUsuario):
-        #Elimina un usuario por su nombre de usuario
+        """Marca un usuario como inactivo"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return False
+
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Usuario WHERE nombreUsuario = %s",
+                "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = %s",
                 (nombreUsuario,)
             )
             conn.commit()
@@ -122,4 +210,3 @@ class UsuarioDAO:
             return False
         finally:
             cursor.close()
-        

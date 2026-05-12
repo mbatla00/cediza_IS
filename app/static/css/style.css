@@ -1,0 +1,37 @@
+/*
+Estilos globales de CEDIZA.
+María es la única que modifica este archivo.
+Los demás usan las clases de Bootstrap + este estilo base.
+*/
+
+/* Fuente general */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Tarjetas con sombra suave y efecto hover */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Botones: tamaño mínimo para facilitar el toque en tablets (estándar Apple 44x44px) */
+.btn, .nav-link {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Animación de los mensajes flash */
+.alert {
+    border-radius: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
