@@ -18,10 +18,11 @@
             <div class="card-body p-4">
                 <!-- Formulario de inicio de sesión -->
                 <form method="POST">
+                    <!-- CAMPO USUARIO (antes era email) -->
                     <div class="mb-3">
-                        <label class="form-label fw-bold">📧 Email</label>
-                        <input type="email" name="email" class="form-control form-control-lg"
-                               placeholder="tu@email.com" required autofocus>
+                        <label class="form-label fw-bold">👤 Usuario</label>
+                        <input type="text" name="usuario" class="form-control form-control-lg"
+                               placeholder="Nombre de usuario" required autofocus>
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold">🔒 Contraseña</label>
@@ -37,10 +38,9 @@
 
                 <!-- Credenciales de prueba visibles en desarrollo -->
                 <div class="small text-muted">
-                    <p class="mb-1 fw-bold">🔑 Credenciales de prueba:</p>
-                    <p class="mb-0">👑 Admin: admin@cediza.com / admin123</p>
-                    <p class="mb-0">👩‍⚕️ Trabajador: trabajador@cediza.com / trab123</p>
-                    <p class="mb-0">👴 Paciente: paciente@cediza.com / paci123</p>
+                    <p class="mb-0">👑 Admin: admin / admin123</p>
+                    <p class="mb-0">👩‍⚕️ Trabajador: trabajador / trab123</p>
+                    <p class="mb-0">👴 Paciente: paciente / paci123</p>
                 </div>
             </div>
         </div>

@@ -46,7 +46,7 @@ def login_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'usuario_id' not in session:
+        if 'usuario' not in session:
             flash('Debes iniciar sesión para acceder', 'warning')
             return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
@@ -80,7 +80,7 @@ def role_required(*roles_permitidos):
 @auth_bp.route('/')
 def index():
     """Redirige según si hay sesión activa o no"""
-    if 'usuario_id' in session:
+    if 'usuario' in session:
         return redirect(url_for('auth.dashboard_redirect'))
     return redirect(url_for('auth.login'))
 
@@ -92,42 +92,41 @@ def login():
     GET: muestra el formulario de login.
     POST: valida credenciales y crea la sesión.
 
-    CREDENCIALES TEMPORALES (hasta que Sofía implemente UsuarioDAO):
-    - admin@cediza.com / admin123 → Administrador
-    - trabajador@cediza.com / trab123 → Trabajador
-    - paciente@cediza.com / paci123 → Paciente
+    CREDENCIALES TEMPORALES (hasta que la BD esté lista):
+    - admin / admin123 → Administrador
+    - trabajador / trab123 → Trabajador
+    - paciente / paci123 → Paciente
     """
     if request.method == 'POST':
-        email = request.form.get('email')
+        usuario_input = request.form.get('usuario')
         password = request.form.get('password')
 
-        # Diccionario temporal de usuarios (se sustituirá por consulta a BD)
+        # Diccionario temporal (se sustituirá por consulta a BD)
         usuarios_prueba = {
-            'admin@cediza.com': {
-                'id': 1, 'nombre': 'Administrador', 'rol': 'admin', 'password': 'admin123'
+            'admin': {
+                'nombre': 'Administrador', 'rol': 'admin', 'password': 'admin123'
             },
-            'trabajador@cediza.com': {
-                'id': 2, 'nombre': 'Ana García', 'rol': 'trabajador', 'password': 'trab123'
+            'trabajador': {
+                'nombre': 'Ana García', 'rol': 'trabajador', 'password': 'trab123'
             },
-            'paciente@cediza.com': {
-                'id': 3, 'nombre': 'Juan Pérez', 'rol': 'paciente', 'password': 'paci123'
+            'paciente': {
+                'nombre': 'Juan Pérez', 'rol': 'paciente', 'password': 'paci123'
             },
         }
 
         # Validar credenciales
-        if email in usuarios_prueba and usuarios_prueba[email]['password'] == password:
-            user = usuarios_prueba[email]
-            # Guardar datos del usuario en la sesión
-            session['usuario_id'] = user['id']
+        if usuario_input in usuarios_prueba and usuarios_prueba[usuario_input]['password'] == password:
+            user = usuarios_prueba[usuario_input]
             session['usuario_nombre'] = user['nombre']
+            session['usuario'] = usuario_input
             session['rol'] = user['rol']
             flash(f'¡Bienvenido/a {user["nombre"]}!', 'success')
             return redirect(url_for('auth.dashboard_redirect'))
 
         # Credenciales incorrectas
-        flash('Email o contraseña incorrectos', 'danger')
+        flash('Usuario o contraseña incorrectos', 'danger')
 
-    # GET: mostrar formulario
+    # GET: mostrar formulario de login
     return render_template('login.html')
 
 
