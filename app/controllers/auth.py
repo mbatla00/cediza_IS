@@ -3,7 +3,7 @@ Controlador de autenticación y seguridad.
 
 Este archivo contiene:
 - Login y logout de usuarios
-- Credenciales de prueba (temporales hasta que la BD esté lista)
+- Conexión a base de datos real mediante UsuarioDAO
 - Decoradores de seguridad: @login_required y @role_required
 - Redirección al dashboard según el rol del usuario
 - Patrón Factory: DashboardFactory decide qué vista mostrar según el rol
@@ -12,6 +12,7 @@ Es la columna vertebral de la seguridad del proyecto.
 """
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from functools import wraps
+from app.dao.usuario_dao import UsuarioDAO
 
 # Blueprint que agrupa todas las rutas de autenticación
 auth_bp = Blueprint('auth', __name__)
@@ -90,37 +91,20 @@ def login():
     """
     Pantalla de inicio de sesión.
     GET: muestra el formulario de login.
-    POST: valida credenciales y crea la sesión.
-
-    CREDENCIALES TEMPORALES (hasta que la BD esté lista):
-    - admin / admin123 → Administrador
-    - trabajador / trab123 → Trabajador
-    - paciente / paci123 → Paciente
+    POST: valida credenciales contra la base de datos real.
     """
     if request.method == 'POST':
         usuario_input = request.form.get('usuario')
         password = request.form.get('password')
 
-        # Diccionario temporal (se sustituirá por consulta a BD)
-        usuarios_prueba = {
-            'admin': {
-                'nombre': 'Administrador', 'rol': 'admin', 'password': 'admin123'
-            },
-            'trabajador': {
-                'nombre': 'Ana García', 'rol': 'trabajador', 'password': 'trab123'
-            },
-            'paciente': {
-                'nombre': 'Juan Pérez', 'rol': 'paciente', 'password': 'paci123'
-            },
-        }
+        # Buscar en la base de datos real
+        usuario = UsuarioDAO.get_by_nombreUsuario(usuario_input)
 
-        # Validar credenciales
-        if usuario_input in usuarios_prueba and usuarios_prueba[usuario_input]['password'] == password:
-            user = usuarios_prueba[usuario_input]
-            session['usuario_nombre'] = user['nombre']
+        if usuario and usuario.contraseña == password:
+            session['usuario_nombre'] = usuario.nombre
             session['usuario'] = usuario_input
-            session['rol'] = user['rol']
-            flash(f'¡Bienvenido/a {user["nombre"]}!', 'success')
+            session['rol'] = usuario.rol
+            flash(f'¡Bienvenido/a {usuario.nombre}!', 'success')
             return redirect(url_for('auth.dashboard_redirect'))
 
         # Credenciales incorrectas

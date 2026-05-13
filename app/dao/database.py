@@ -1,20 +1,19 @@
 #-------------------------------------------
 # conexión a MySQL con patron Singleton
 #-------------------------------------------
-#                   OJO: hay que usas JayDeBe pero primero se prueba si funciona esto
 
 import mysql.connector
 from mysql.connector import Error
-from app.config import Config #Falta!!!!
+from app.config import Config
 
 class Database:
-    _instane = None
+    _instance = None
     _connection = None
 
     def __new__(cls):
-        if cls._instane is None:
-            cls._instane = super().__new__(cls)
-        return cls._instane
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def get_connection(self):
         if self._connection is None or not self._connection.is_connected():
@@ -29,7 +28,7 @@ class Database:
                 )
                 print("✅ conexion a MySQL establecida")
             except Error as e:
-                print("❌ Error de conexión: {e}")
+                print(f"❌ Error de conexión: {e}")
                 return None
         return self._connection
 

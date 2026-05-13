@@ -21,9 +21,11 @@ DROP TABLE IF EXISTS `cediza`.`Usuarios` ;
 CREATE TABLE IF NOT EXISTS `cediza`.`Usuarios` (
   `nombreUsuario` VARCHAR(50) NOT NULL,
   `Nombre` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NULL,
   `DNI` VARCHAR(9) NULL,
   `Rol` VARCHAR(45) NULL,
-  `contraseña` VARCHAR(45) NULL DEFAULT 'paciente',
+  `password` VARCHAR(45) NULL DEFAULT 'paciente',
+  `activo` BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (`nombreUsuario`),
   UNIQUE INDEX `DNI_UNIQUE` (`DNI` ASC))
 ENGINE = InnoDB;

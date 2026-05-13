@@ -1,5 +1,6 @@
 from app.models.paciente_tipos import PacPub, PacPri
 from app.models.trabajador_tipos import Auxiliar, Coordinador, Especialista
+from app.models.admin import Admin
 
 #===========================
 #Subfactoria de Pacientes
@@ -13,7 +14,7 @@ class PacienteFactory:
         """
         Parámetros esperados en 'datos':
             - Tipo: 'publico' | 'privado'
-            -nombreUsuario, Nombre, DNI, contraseña
+            -nombreUsuario, Nombre, DNI, password
             -(PacPub) Dias_ingresado
             -(PacPri) IVA, cuenta, horas
         """
@@ -27,7 +28,7 @@ class PacienteFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('contraseña'),
+                contraseña=datos.get('password'),
                 Dias_ingresado=datos.get('Dias_ingresado')
             )
         elif tipo == 'privado':
@@ -35,7 +36,7 @@ class PacienteFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('contraseña'),
+                contraseña=datos.get('password'),
                 IVA=datos.get('IVA'),
                 cuenta=datos.get('cuenta'),
                 horas=datos.get('horas')
@@ -56,7 +57,7 @@ class TrabajadorFactory:
         """
         Parámetros esperados en 'datos':
             -Tipo: auxiliar | coordinador | especialista
-            -nombreUsuario, Nombre, DNI, contraseña
+            -nombreUsuario, Nombre, DNI, password
             -(Auxiliar) Horario
             -(coordinador) infoInteres
             -(Especialista) Especialidad, Horario
@@ -71,7 +72,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('contraseña'),
+                contraseña=datos.get('password'),
                 Horario=datos.get('Horario')
             )
         elif tipo == 'coordinador':
@@ -79,7 +80,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('contraseña'),
+                contraseña=datos.get('password'),
                 infoInteres=datos.get('infoInteres')
             )
         elif tipo == 'especialista':
@@ -87,7 +88,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('contraseña'),
+                contraseña=datos.get('password'),
                 Especialidad=datos.get('Especialidad'),
                 Horario=datos.get('Horario')
             )
@@ -112,21 +113,28 @@ class UsuarioFactory:
         else:
             raise ValueError("El nombre debe ser 'Nombre (2º nombre) Apellido1 Apellido2")
         
-        return f"{apellido1}{nombre}"
+        return f"{nombre}{apellido1}".lower()
 
 
     @staticmethod
     def crear(datos:dict):
         """
         parametros esperados en 'datos':
-            -Rol: paciente | trabajador
+            -Rol: paciente | trabajador | admin
             -... (el resto segun el subtipo)
         """
         rol = datos.get('Rol', '').lower()
 
         if rol == 'paciente':
             return PacienteFactory.crear(datos)
-        elif rol=='trabajador':
+        elif rol == 'trabajador':
             return TrabajadorFactory.crear(datos)
+        elif rol == 'admin':
+            return Admin(
+                nombreUsuario=datos.get('nombreUsuario'),
+                Nombre=datos.get('Nombre'),
+                DNI=datos.get('DNI'),
+                contraseña=datos.get('password')
+            )
         else:
-            raise ValueError(f"Rol desconocido: {rol}. Valores validos: paciente, trabajador")
+            raise ValueError(f"Rol desconocido: {rol}. Valores validos: paciente, trabajador, admin")
