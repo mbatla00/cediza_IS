@@ -41,6 +41,11 @@ def dashboard():
 
 ## 📋 RUTAS PENDIENTES DE IMPLEMENTAR
 
+### Auth (auth.py) - ✅ IMPLEMENTADO
+- `/login` - Inicio de sesión contra BD real mediante `UsuarioDAO`
+- `/logout` - Cierre de sesión
+- `/dashboard` - Redirección según rol (Factory: admin, trabajador, paciente)
+
 ### Admin (admin.py)
 - `/admin/dashboard` - Panel principal
 - `/admin/pacientes/nuevo` - CU-01: Dar de alta paciente (GET y POST)
@@ -60,3 +65,14 @@ def dashboard():
 - `/paciente/cuestionario` - CU-07: Mostrar preguntas diarias
 - `/paciente/responder` - CU-08: Guardar respuestas
 - `/paciente/perfil` - CU-02: Ver perfil propio (limitado)
+
+---
+
+## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
+
+- El login ya no usa credenciales fake. Conecta con la BD real mediante `UsuarioDAO.get_by_nombreUsuario`.
+- El rol `admin` está completamente soportado y redirige a `admin/dashboard.html`.
+- Las credenciales de prueba actuales son:
+  - `admin` / `admin123`
+  - `anagarcia` / `trab123` (trabajador - auxiliar)
+  - `mariagarcia` / `1234` (paciente público)
