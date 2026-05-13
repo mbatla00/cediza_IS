@@ -6,18 +6,20 @@ class UsuarioDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        #devuelve un objeto Usuario o None
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
-        
+
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute(
-                "SELECT * FROM Usuarios WHERE nombreUsuario = %s",
-                (nombreUsuario,)
-            )
+            cursor.execute("""
+                SELECT u.*, p.Tipo
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+            WHERE u.nombreUsuario = %s
+            """, (nombreUsuario,))
             row = cursor.fetchone()
             return UsuarioFactory.crear(row) if row else None
         except Error as e:
@@ -48,6 +50,7 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    @staticmethod
     def create(usuario):
         #Inserta un nuevo usuario, devuelve True si tuvo éxito
         db = Database()
@@ -102,6 +105,7 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
+    @staticmethod
     def delete(nombreUsuario):
         #Elimina un usuario por su nombre de usuario
         db = Database()
@@ -111,7 +115,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Usuario WHERE nombreUsuario = %s",
+                "DELETE FROM Usuarios WHERE nombreUsuario = %s",
                 (nombreUsuario,)
             )
             conn.commit()

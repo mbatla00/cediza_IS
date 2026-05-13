@@ -17,7 +17,7 @@ class Database:
         return cls._instane
 
     def get_connection(self):
-        if self._connection in None or not self._connection.is_connected():
+        if self._connection is None or not self._connection.is_connected():
             try:
                 self._connection = mysql.connector.connect(
                     host=Config.MYSQL_HOST,

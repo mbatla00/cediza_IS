@@ -1,6 +1,8 @@
 from mysql.connector import Error
 from app.dao.database import Database
-from app.models.otros import Familiar, Comentario, Sesion
+from app.models.familiar import Familiar
+from app.models.comentarios import Comentario
+from app.models.sesion import Sesion
  
  
 class FamiliarDAO:
