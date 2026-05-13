@@ -20,11 +20,20 @@ class UsuarioDAO:
 
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute(
-                "SELECT * FROM Usuarios WHERE nombreUsuario = %s",
-                (nombreUsuario,)
-            )
+            cursor.execute("""
+                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+                WHERE u.nombreUsuario = %s
+            """, (nombreUsuario,))
             row = cursor.fetchone()
+            if row:
+                # Unificar el campo Tipo
+                if row.get('TipoPaciente'):
+                    row['Tipo'] = row['TipoPaciente']
+                elif row.get('TipoTrabajador'):
+                    row['Tipo'] = row['TipoTrabajador']
             return UsuarioFactory.crear(row) if row else None
         except Error as e:
             print(f"Error en get_by_nombreUsuario: {e}")
@@ -134,12 +143,13 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, DNI, Rol, contraseña)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            email = getattr(usuario, 'email', None)
+            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, DNI, Rol, password)
+            VALUES (%s, %s, %s, %s, %s, %s)"""
             cursor.execute(sql, (
                 usuario.nombreUsuario,
                 usuario.nombre,
-                usuario.email,
+                email,
                 usuario.dni,
                 usuario.rol,
                 usuario.contraseña
@@ -167,8 +177,8 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             sql = """UPDATE Usuarios
-                     SET Nombre = %s, email = %s, DNI = %s, contraseña = %s
-                     WHERE nombreUsuario = %s"""
+            SET Nombre = %s, email = %s, DNI = %s, password = %s
+            WHERE nombreUsuario = %s"""
             cursor.execute(sql, (
                 usuario.nombre,
                 usuario.email,
