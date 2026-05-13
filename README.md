@@ -87,6 +87,7 @@ El frontend es **compartido pero estructurado**, para evitar caos visual.
 ### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/mbatla00/cediza_IS.git
+cd cediza_IS
 ```
 
 ### 2. Instalar dependencias
@@ -99,10 +100,10 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### 4. Base de datos
+### 4. Base de datos (cuando Sofía lo tenga listo)
 ```bash
-mysql -u root -p db_cediza < sql/schema.sql
-mysql -u root -p db_cediza < sql/inserts_test.sql
+mysql -u root -p cediza_db < sql/schema.sql
+mysql -u root -p cediza_db < sql/inserts_test.sql
 ```
 
 ### 5. Ejecutar proyecto (todavía no funcional)
@@ -110,13 +111,22 @@ mysql -u root -p db_cediza < sql/inserts_test.sql
 python run.py
 ```
 
+---
+
 ## 🌿 FLUJO DE TRABAJO CON GIT
 
-### Crear rama
+### Las ramas YA están creadas en GitHub:
+- `feature/arquitectura-seguridad` → María
+- `feature/base-datos` → Sofía
+- `feature/paciente` → Alejandro
+- `feature/trabajador-admin` → Mario
+
+### Empezar a trabajar (cada uno en su rama)
 ```bash
 git checkout main
 git pull origin main
-git checkout -b feature/vuestra-parte
+git checkout feature/vuestra-rama      # ← Ya existe, solo cambiarse
+git pull origin feature/vuestra-rama   # ← Traer lo último de esa rama
 ```
 
 ### Trabajo diario
@@ -128,11 +138,11 @@ git push
 
 ### Pull Request (OBLIGATORIO)
 ```bash
-# 1. Subir rama
+# 1. Subir cambios
 git push
 
-# 2. Crear PR en GitHub
-# base: main ← compare: feature/...
+# 2. Ir a GitHub → Pull Requests → New Pull Request
+#    base: main ← compare: feature/vuestra-rama
 
 # 3. Asignar revisor (OTRO compañero)
 
@@ -152,10 +162,10 @@ git push
 
 ---
 
-## 📂 ESTRUCTURA
+## 📂 ESTRUCTURA (orientativo)
 
 ```text id="p7qk3m"
-CEDIZA/
+cediza_IS/
 ├── run.py
 ├── requirements.txt
 ├── .env.example
