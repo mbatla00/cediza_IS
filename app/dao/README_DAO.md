@@ -34,6 +34,7 @@ dao/
 └── otros_dao.py      → FamiliarDAO, ComentarioDAO, SesionDAO
 ```
 
+
 ---
 
 ## 📋 FUNCIONES DE CADA DAO
@@ -41,11 +42,14 @@ dao/
 ### UsuarioDAO
 | Método | Descripción |
 |---|---|
-| `get_by_nombreUsuario(nombreUsuario)` | Login — devuelve el objeto del subtipo correcto via factoría |
+| `get_by_nombreUsuario(nombreUsuario)` | Login — devuelve el objeto del subtipo correcto via factoría (con doble LEFT JOIN a Pacientes y Trabajadores) |
+| `get_by_email(email)` | Búsqueda por email |
 | `get_by_dni(dni)` | Búsqueda por DNI |
-| `create(usuario)` | Inserta en `Usuarios` — llamar siempre ANTES del DAO específico |
-| `update(usuario)` | Actualiza Nombre, DNI y contraseña |
-| `delete(nombreUsuario)` | Elimina el usuario |
+| `validar_dni(dni)` | Valida formato y letra de un DNI español |
+| `generar_nombre_usuario(nombre, apellido1, apellido2)` | Genera nombreUsuario sin acentos, sin espacios, en minúsculas. Si ya existe, añade sufijo numérico |
+| `create(usuario)` | Inserta en `Usuarios`. El campo email es opcional (usa `getattr`) |
+| `update(usuario)` | Actualiza Nombre, email, DNI y password |
+| `delete(nombreUsuario)` | Borrado lógico: marca `activo = 0` |
 
 ### PacienteDAO / PacPubDAO / PacPriDAO
 | Método | Descripción |
@@ -105,13 +109,12 @@ dao/
 # --- Login ---
 from app.dao.usuario_dao import UsuarioDAO
 
-usuario = UsuarioDAO.get_by_nombreUsuario('GarciaLopezMaria')
+usuario = UsuarioDAO.get_by_nombreUsuario('mariagarcia')
 if usuario and usuario.contraseña == password_introducida:
     print(f"Bienvenido {usuario.nombre}")   # objeto ya del subtipo correcto
 
 
 # --- Crear un paciente público (insert en cascada) ---
-# Importante: siempre en este orden → Usuarios → Pacientes → Pac_pub
 from app.dao.usuario_dao import UsuarioDAO
 from app.dao.paciente_dao import PacienteDAO, PacPubDAO
 from app.factories.usuario_factory import UsuarioFactory
@@ -121,40 +124,37 @@ datos = {
     'Tipo': 'publico',
     'Nombre': 'Maria Garcia Lopez',
     'DNI': '12345678A',
-    'contraseña': '1234',
+    'password': '1234',
     'Dias_ingresado': 10
 }
 
-pac = UsuarioFactory.crear(datos)   # genera nombreUsuario automáticamente si no viene
+pac = UsuarioFactory.crear(datos)
 
 UsuarioDAO.create(pac)              # 1. inserta en Usuarios
 PacienteDAO.create(pac)             # 2. inserta en Pacientes
 PacPubDAO.create(pac)               # 3. inserta en Pac_pub
 
 
-# --- Obtener comentarios de un paciente ---
-from app.dao.otros_dao import ComentarioDAO
+# --- Crear un trabajador (insert en cascada) ---
+from app.dao.usuario_dao import UsuarioDAO
+from app.dao.trabajador_dao import TrabajadorDAO, AuxiliarDAO
+from app.factories.usuario_factory import UsuarioFactory
 
-comentarios = ComentarioDAO.get_by_paciente('GarciaLopezMaria')
-for c in comentarios:
-    print(c.dia, c.nota)
+datos = {
+    'Rol': 'trabajador',
+    'Tipo': 'auxiliar',
+    'Nombre': 'Ana Garcia Lopez',
+    'DNI': '87654321X',
+    'password': 'trab123',
+    'Horario': 'Mañana'
+}
 
+trab = UsuarioFactory.crear(datos)
 
-# --- Crear una sesión terapéutica ---
-from app.dao.otros_dao import SesionDAO
-from app.models.otros import Sesion
-
-sesion = Sesion(
-    Paciente='GarciaLopezMaria',
-    Especialista='RodriguezPedro',
-    comentarios='Primera sesión de evaluación',
-    Fecha='2024-03-15'          # acepta string 'YYYY-MM-DD' o un objeto date
-)
-
-id_nueva = SesionDAO.create(sesion)
-print(f"Sesión creada con id: {id_nueva}")
+UsuarioDAO.create(trab)             # 1. inserta en Usuarios
+TrabajadorDAO.create(trab)          # 2. inserta en Trabajadores
+AuxiliarDAO.create(trab)            # 3. inserta en Auxiliares
 ```
-
 ---
 
 ## 🛡️ REGLAS DE ORO
@@ -164,5 +164,15 @@ print(f"Sesión creada con id: {id_nueva}")
 - **NUNCA** cierres la conexión — la gestiona el Singleton
 - Usa `conn.rollback()` si hay error en INSERT / UPDATE / DELETE
 - Los inserts de pacientes y trabajadores son **siempre en cascada** — el orden importa:
-  `Usuarios` → `Pacientes/Trabajadores` → tabla específica
+  `Usuarios` → `Pacientes`/`Trabajadores` → tabla específica
 - Esa cascada la gestiona el **controlador**, no el DAO
+
+---
+
+## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
+
+- `get_by_nombreUsuario` ahora hace doble LEFT JOIN con `Pacientes` y `Trabajadores` para obtener el `Tipo` y construir el objeto del subtipo correcto.
+- `create` usa `getattr(usuario, 'email', None)` para que el campo email sea opcional.
+- `delete` usa borrado lógico (`activo = 0`) en lugar de borrado físico.
+- `update` ahora actualiza también el campo `email`.
+- El campo `contraseña` en BD se renombró a `password` para evitar problemas de codificación.

@@ -24,7 +24,8 @@ factories/
 ```
 UsuarioFactory          ← entrada principal, lee el campo 'Rol'
 ├── PacienteFactory     ← lee el campo 'Tipo' → PacientePublico | PacientePrivado
-└── TrabajadorFactory   ← lee el campo 'Tipo' → Auxiliar | Coordinador | Especialista
+├── TrabajadorFactory   ← lee el campo 'Tipo' → Auxiliar | Coordinador | Especialista
+└── Admin               ← rol 'admin', se crea directamente sin subfactoría
 ```
 
 Normalmente solo usarás `UsuarioFactory.crear(datos)` — las subfactorías
@@ -35,20 +36,20 @@ las llama ella internamente.
 ## 🔑 GENERACIÓN AUTOMÁTICA DE NOMBRE DE USUARIO
 
 Si el dict de datos **no incluye** `nombreUsuario`, la factoría lo genera
-automáticamente a partir del campo `Nombre` con el formato `Apellido1Nombre1`:
+automáticamente a partir del campo `Nombre` con el formato `NombreApellido1` en minúsculas:
 
 | Nombre completo | nombreUsuario generado |
 |---|---|
-| `'Maria Garcia Lopez'` | `'GarciaMaria'` |
-| `'Maria Carmen Garcia Lopez'` | `'GarciaMaría'` |
+| `'Maria Garcia Lopez'` | `'mariagarcia'` |
+| `'Maria Carmen Garcia Lopez'` | `'mariagarcia1'` |
 
 El formato asume:
-- **3 partes** → `'Nombre Apellido1 Apellido2'`
-- **4 partes** → `'Nombre1 Nombre2 Apellido1 Apellido2'`
+- **3 partes** → `'Nombre Apellido1 Apellido2'` → usa `Nombre + Apellido1`
+- **4 partes** → `'Nombre1 Nombre2 Apellido1 Apellido2'` → usa `Nombre1 + Apellido1`
 
-> ⚠️ Pueden generarse `nombreUsuario` duplicados. El controlador debe
-> comprobar si ya existe en BD antes de insertar y añadir un sufijo numérico
-> si colisiona (`'GarciaMaria2'`, `'GarciaMaria3'`...).
+> ⚠️ Si el `nombreUsuario` ya existe en BD, el método `generar_nombre_usuario` 
+> en `UsuarioDAO` añade automáticamente un sufijo numérico
+> (`'mariagarcia1'`, `'mariagarcia2'`...) hasta encontrar uno libre.
 
 ---
 
@@ -111,15 +112,27 @@ trabajador = TrabajadorFactory.crear({
 ## ⚠️ ERRORES COMUNES
 
 ```python
-# ❌ Rol desconocido
-UsuarioFactory.crear({'Rol': 'admin', ...})
-# ValueError: Rol desconocido: 'admin'. Valores válidos: 'paciente', 'trabajador'
-
-# ❌ Tipo desconocido
+# ❌ Tipo de paciente desconocido
 PacienteFactory.crear({'Tipo': 'vip', ...})
 # ValueError: Tipo de paciente desconocido: 'vip'. Valores válidos: 'publico', 'privado'
+
+# ❌ Tipo de trabajador desconocido
+TrabajadorFactory.crear({'Tipo': 'becario', ...})
+# ValueError: Tipo de trabajador desconocido: 'becario'. Valores válidos: 'auxiliar', 'coordinador', 'especialista'
 
 # ❌ Nombre con formato incorrecto (no genera nombreUsuario)
 UsuarioFactory._generar_nombreUsuario('Maria')
 # ValueError: El nombre debe tener al menos nombre y un apellido
+
+# ✅ Admin sí es un rol válido
+UsuarioFactory.crear({'Rol': 'admin', 'nombreUsuario': 'admin', 'Nombre': 'Administrador', 'DNI': '12345678Z', 'password': 'admin123'})
+# Devuelve un objeto Admin
 ```
+
+## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
+
+- **Añadido rol `admin`**: se crea directamente como objeto `Admin` sin pasar por subfactoría.
+- **Formato de `nombreUsuario`**: ahora es `NombreApellido1` en minúsculas (ej: `mariagarcia`), no `Apellido1Nombre1`.
+- **Todas las factorías usan `password`** en lugar de `contraseña` para coincidir con la BD.
+- **`PacienteFactory` y `TrabajadorFactory`** obtienen `password` del dict de datos que viene de la BD.
+- **El método `generar_nombre_usuario`** en `UsuarioDAO` ya evita duplicados añadiendo sufijo numérico.
