@@ -1,6 +1,52 @@
+{# Usamos 'extends' para traer la arquitectura base del proyecto (menús, CSS global, etc.) #}
 {% extends "base.html" %}
-{% block title %}Panel Paciente{% endblock %}
+
+{% block title %}Mi Panel - CEDIZA{% endblock %}
+
 {% block content %}
-<h1>Panel de Paciente</h1>
-<p>Dashboard en construcción, lo completa quien le toque</p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            {# Mostramos el nombre dinámicamente desde la sesión generada en el login #}
+            <h1>¡Hola, {{ session.usuario_nombre }}!</h1>
+            <p class="lead text-muted">¿Qué te gustaría hacer hoy?</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-primary h-100">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title text-primary mb-3">Ejercicio Diario</h3>
+                    <p class="card-text fs-5 mb-4">Ayúdanos a saber cómo te encuentras hoy contestando unas breves preguntas.</p>
+                    {# Botón gigante btn-lg según requisitos de accesibilidad #}
+                    <a href="{{ url_for('paciente.cuestionario') }}" class="btn btn-primary btn-lg w-100 py-3">
+                        Comenzar Cuestionario
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <h3 class="card-title mb-3">Mis Datos</h3>
+                    <p class="card-text fs-5 mb-4">Consulta tu información personal y contactos de emergencia.</p>
+                    <a href="{{ url_for('paciente.perfil') }}" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                        Ver Mi Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# NOTA TÉCNICA: Espacio reservado para mostrar resultados recientes en futuras iteraciones #}
+    <div class="row mt-2">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <small><strong>Próximamente:</strong> Aquí se mostrará un resumen de las últimas respuestas registradas.</small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
