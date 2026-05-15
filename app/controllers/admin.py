@@ -47,8 +47,6 @@ def nuevo_paciente():
                 flash('Error al crear la cuenta de usuario base.', 'danger')
                 return redirect(url_for('admin.nuevo_paciente'))
             
-            # Guardamos el usuario (Necesario antes que el paciente)
-            UsuarioDAO.create(nuevo_usuario)
 
             # B. TABLAS PACIENTES Y TIPO (Las tablas hijas)
             if tipo == 'publico':
