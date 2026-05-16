@@ -1,10 +1,11 @@
 class Usuario:
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, contraseña=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, password=None, email=None):
         self._nombreUsuario = nombreUsuario
         self._nombre = Nombre
         self._dni = DNI
         self._rol = Rol 
-        self._contraseña = contraseña
+        self._password = password
+        self._email = email 
 
     
     @property
@@ -40,19 +41,28 @@ class Usuario:
         self._rol = value
 
     @property
-    def contraseña(self):
-        return self._contraseña
+    def password(self):
+        return self._password
     
-    @contraseña.setter
-    def contraseña(self, value):
-        self._contraseña = value
+    @password.setter
+    def password(self, value):
+        self._password = value
+
+    @property
+    def email(self): 
+        return self._email
+    
+    @email.setter
+    def email(self, value): 
+        self._email = value
 
     def to_dict(self):
         return {
             'nombreUsuario': self.nombreUsuario,
             'nombre': self.nombre,
             'dni': self.dni,
-            'rol': self.rol
+            'rol': self.rol,
+            'email': self.email
         }
     
     def __repr__(self):

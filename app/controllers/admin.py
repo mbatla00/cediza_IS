@@ -1,0 +1,101 @@
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from app.controllers.auth import login_required, role_required
+from app.dao.paciente_dao import PacienteDAO, PacPubDAO, PacPriDAO
+from app.models.paciente_tipos import PacPub, PacPri
+from app.dao.usuario_dao import UsuarioDAO 
+from app.models.usuario import Usuario
+
+# DEFINIMOS EL BLUEPRINT UNA SOLA VEZ
+admin_bp = Blueprint('admin', __name__)
+
+# --- CU-00: PANEL PRINCIPAL ---
+@admin_bp.route('/admin/dashboard')
+@login_required
+@role_required('admin')
+def dashboard():
+    """Muestra el panel principal con acceso a todas las funciones de gestión."""
+    return render_template('admin/dashboard.html')
+
+# --- CU-01: ALTA DE PACIENTE ---
+@admin_bp.route('/admin/pacientes/nuevo', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def nuevo_paciente():
+    if request.method == 'POST':
+        nombre_completo = request.form.get('nombre_completo')
+        dni = request.form.get('dni')
+        email = request.form.get('email')
+        tipo = request.form.get('tipo')
+        cuenta = request.form.get('cuenta')
+        nombre_usuario_manual = request.form.get('nombre_usuario_manual') # <--- CAPTURAMOS EL NUEVO CAMPO
+
+        # LÓGICA DE DECISIÓN DEL NOMBRE DE USUARIO
+        if nombre_usuario_manual and nombre_usuario_manual.strip():
+            # Si el administrador escribió algo, usamos eso (limpiando espacios y a minúsculas)
+            nombre_usuario = nombre_usuario_manual.strip().replace(' ', '').lower()[:50]
+        else:
+            # Si lo dejó vacío, se genera automáticamente como antes
+            nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
+
+        try:
+            # CONTROL DE DUPLICADOS: Validamos si ya existe ese nombreUsuario en el sistema
+            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
+                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado. Elige otro.', 'warning')
+                return redirect(url_for('admin.nuevo_paciente'))
+
+            # A. CREAR EL USUARIO PADRE
+            nuevo_usuario = Usuario(
+                nombreUsuario=nombre_usuario, 
+                Nombre=nombre_completo,
+                DNI=dni,
+                Rol='paciente',
+                password=dni, 
+                email=email
+            )
+            
+            if not UsuarioDAO.create(nuevo_usuario):
+                flash('Error al crear la cuenta de usuario base.', 'danger')
+                return redirect(url_for('admin.nuevo_paciente'))
+
+            # B. TABLAS PACIENTES Y TIPO DETALLADO
+            if tipo == 'publico':
+                nuevo_p = PacPub(
+                    nombreUsuario=nombre_usuario, 
+                    Nombre=nombre_completo, 
+                    DNI=dni,
+                    password=dni,
+                    Dias_ingresado=0,
+                    email=email
+                )
+                exito = PacienteDAO.create(nuevo_p) and PacPubDAO.create(nuevo_p)
+            else:
+                if not cuenta:
+                    flash('Error: Los pacientes privados necesitan una cuenta bancaria.', 'warning')
+                    return redirect(url_for('admin.nuevo_paciente'))
+                
+                nuevo_p = PacPri(
+                    nombreUsuario=nombre_usuario, 
+                    Nombre=nombre_completo, 
+                    DNI=dni,
+                    password=dni,
+                    cuenta=cuenta,
+                    email=email
+                )
+                exito = PacienteDAO.create(nuevo_p) and PacPriDAO.create(nuevo_p)
+
+            if exito:
+                flash(f'Éxito: Paciente {nombre_completo} ({nombre_usuario}) registrado correctamente.', 'success')
+                return redirect(url_for('admin.dashboard'))
+            else:
+                flash('Error al guardar datos específicos del paciente.', 'danger')
+        
+        except Exception as e:
+            flash(f'Error crítico de Base de Datos: {str(e)}', 'danger')
+
+    return render_template('admin/paciente_form.html')
+# --- CU-04: LISTADO DE USUARIOS ---
+@admin_bp.route('/admin/usuarios')
+@login_required
+@role_required('admin')
+def listar_usuarios():
+    return render_template('admin/usuarios_lista.html')

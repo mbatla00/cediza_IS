@@ -28,7 +28,7 @@ class PacienteFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password'),
+                password=datos.get('password'),
                 Dias_ingresado=datos.get('Dias_ingresado')
             )
         elif tipo == 'privado':
@@ -36,7 +36,7 @@ class PacienteFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password'),
+                password=datos.get('password'),
                 IVA=datos.get('IVA'),
                 cuenta=datos.get('cuenta'),
                 horas=datos.get('horas')
@@ -72,7 +72,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password'),
+                password=datos.get('password'),
                 Horario=datos.get('Horario')
             )
         elif tipo == 'coordinador':
@@ -80,7 +80,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password'),
+                password=datos.get('password'),
                 infoInteres=datos.get('infoInteres')
             )
         elif tipo == 'especialista':
@@ -88,7 +88,7 @@ class TrabajadorFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password'),
+                password=datos.get('password'),
                 Especialidad=datos.get('Especialidad'),
                 Horario=datos.get('Horario')
             )
@@ -134,7 +134,7 @@ class UsuarioFactory:
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                contraseña=datos.get('password')
+                password=datos.get('password')
             )
         else:
             raise ValueError(f"Rol desconocido: {rol}. Valores validos: paciente, trabajador, admin")

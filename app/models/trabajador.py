@@ -1,13 +1,13 @@
 from app.models.usuario import Usuario
 
 class Trabajador(Usuario):
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, Tipo=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Tipo=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             Rol='trabajador',
-            contraseña=contraseña
+            password=password
         )
         self._tipo = Tipo # 'auxiliar' | 'coordinador' | 'especialista'
     

@@ -25,6 +25,10 @@ def create_app():
     from app.controllers.auth import auth_bp
     app.register_blueprint(auth_bp)
 
+
+    from app.controllers.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
     # Los demás blueprints se registrarán cuando sus controladores existan
     # Esto evita errores si alguien no ha creado aún su parte
 
