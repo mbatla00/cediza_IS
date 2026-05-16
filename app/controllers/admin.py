@@ -22,41 +22,50 @@ def dashboard():
 @role_required('admin')
 def nuevo_paciente():
     if request.method == 'POST':
-        # 1. Recogemos solo lo que pide la BD
         nombre_completo = request.form.get('nombre_completo')
         dni = request.form.get('dni')
         email = request.form.get('email')
         tipo = request.form.get('tipo')
         cuenta = request.form.get('cuenta')
-        
-        # 2. Generamos el nombreUsuario quitando espacios y en minúsculas (ej: "juanperezgomez")
-        nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
+        nombre_usuario_manual = request.form.get('nombre_usuario_manual') # <--- CAPTURAMOS EL NUEVO CAMPO
+
+        # LÓGICA DE DECISIÓN DEL NOMBRE DE USUARIO
+        if nombre_usuario_manual and nombre_usuario_manual.strip():
+            # Si el administrador escribió algo, usamos eso (limpiando espacios y a minúsculas)
+            nombre_usuario = nombre_usuario_manual.strip().replace(' ', '').lower()[:50]
+        else:
+            # Si lo dejó vacío, se genera automáticamente como antes
+            nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
 
         try:
+            # CONTROL DE DUPLICADOS: Validamos si ya existe ese nombreUsuario en el sistema
+            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
+                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado. Elige otro.', 'warning')
+                return redirect(url_for('admin.nuevo_paciente'))
+
             # A. CREAR EL USUARIO PADRE
             nuevo_usuario = Usuario(
                 nombreUsuario=nombre_usuario, 
-                Nombre=nombre_completo, # Usamos Nombre con mayúscula para que coincida con el init
+                Nombre=nombre_completo,
                 DNI=dni,
                 Rol='paciente',
-                contraseña=dni, 
+                password=dni, 
                 email=email
             )
-
+            
             if not UsuarioDAO.create(nuevo_usuario):
                 flash('Error al crear la cuenta de usuario base.', 'danger')
                 return redirect(url_for('admin.nuevo_paciente'))
-            
 
-            # B. TABLAS PACIENTES Y TIPO (Las tablas hijas)
+            # B. TABLAS PACIENTES Y TIPO DETALLADO
             if tipo == 'publico':
-                # Quitamos 'Tipo=tipo' porque el modelo PacPub ya lo pone solo como 'publico'
                 nuevo_p = PacPub(
                     nombreUsuario=nombre_usuario, 
                     Nombre=nombre_completo, 
                     DNI=dni,
-                    contraseña=dni,
-                    Dias_ingresado=0
+                    password=dni,
+                    Dias_ingresado=0,
+                    email=email
                 )
                 exito = PacienteDAO.create(nuevo_p) and PacPubDAO.create(nuevo_p)
             else:
@@ -64,18 +73,18 @@ def nuevo_paciente():
                     flash('Error: Los pacientes privados necesitan una cuenta bancaria.', 'warning')
                     return redirect(url_for('admin.nuevo_paciente'))
                 
-                # Quitamos 'Tipo=tipo' porque el modelo PacPri ya lo pone solo como 'privado'
                 nuevo_p = PacPri(
                     nombreUsuario=nombre_usuario, 
                     Nombre=nombre_completo, 
                     DNI=dni,
-                    contraseña=dni,
-                    cuenta=cuenta
+                    password=dni,
+                    cuenta=cuenta,
+                    email=email
                 )
                 exito = PacienteDAO.create(nuevo_p) and PacPriDAO.create(nuevo_p)
 
             if exito:
-                flash(f'Éxito: Paciente {nombre_completo} registrado correctamente.', 'success')
+                flash(f'Éxito: Paciente {nombre_completo} ({nombre_usuario}) registrado correctamente.', 'success')
                 return redirect(url_for('admin.dashboard'))
             else:
                 flash('Error al guardar datos específicos del paciente.', 'danger')

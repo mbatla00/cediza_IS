@@ -1,13 +1,13 @@
 from app.models.usuario import Usuario
 
 class Paciente(Usuario):
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña='paciente', Tipo=None, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password='paciente', Tipo=None, email=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             Rol='paciente',
-            contraseña=contraseña,
+            password=password,
             email=email
         )
         self._tipo = Tipo #'publico' | 'privado'

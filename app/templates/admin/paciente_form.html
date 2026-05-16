@@ -13,9 +13,14 @@
                 <form method="POST" action="{{ url_for('admin.nuevo_paciente') }}">
                     
                     <div class="row g-3 mb-3">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">Nombre Completo *</label>
                             <input type="text" class="form-control" name="nombre_completo" required placeholder="Ej: Juan Pérez Gómez">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre de Usuario (Opcional)</label>
+                            <input type="text" class="form-control" name="nombre_usuario_manual" placeholder="Ej: jperez99">
+                            <div class="form-text">Si se deja vacío, se generará automáticamente con el nombre.</div>
                         </div>
                     </div>
 

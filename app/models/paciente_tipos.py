@@ -3,12 +3,12 @@ from app.models.paciente import Paciente
 class PacPub(Paciente):
     #paciente publico, con dias ingresado 
     
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, Dias_ingresado=None, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Dias_ingresado=None, email=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
-            contraseña=contraseña,
+            password=password,
             Tipo='publico',
             email=email
         )
@@ -33,12 +33,12 @@ class PacPub(Paciente):
 class PacPri(Paciente):
     #Paciente privado con datos de facturación
     
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, IVA=4, cuenta=None, horas=8, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, IVA=4, cuenta=None, horas=8, email=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
-            contraseña=contraseña,
+            password=password,
             Tipo='privado',
             email=email
         )

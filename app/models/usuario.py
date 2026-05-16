@@ -1,10 +1,10 @@
 class Usuario:
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, contraseña=None, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, password=None, email=None):
         self._nombreUsuario = nombreUsuario
         self._nombre = Nombre
         self._dni = DNI
         self._rol = Rol 
-        self._contraseña = contraseña
+        self._password = password
         self._email = email 
 
     
@@ -41,12 +41,12 @@ class Usuario:
         self._rol = value
 
     @property
-    def contraseña(self):
-        return self._contraseña
+    def password(self):
+        return self._password
     
-    @contraseña.setter
-    def contraseña(self, value):
-        self._contraseña = value
+    @password.setter
+    def password(self, value):
+        self._password = value
 
     @property
     def email(self): 
