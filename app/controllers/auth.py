@@ -100,7 +100,7 @@ def login():
         # Buscar en la base de datos real
         usuario = UsuarioDAO.get_by_nombreUsuario(usuario_input)
 
-        if usuario and usuario.contraseña == password:
+        if usuario and usuario.password == password:
             session['usuario_nombre'] = usuario.nombre
             session['usuario'] = usuario_input
             session['rol'] = usuario.rol

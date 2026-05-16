@@ -152,7 +152,7 @@ class UsuarioDAO:
                 email,
                 usuario.dni,
                 usuario.rol,
-                usuario.contraseña
+                usuario.password
             ))
             conn.commit()
             return True
@@ -183,7 +183,7 @@ class UsuarioDAO:
                 usuario.nombre,
                 usuario.email,
                 usuario.dni,
-                usuario.contraseña,
+                usuario.password,
                 usuario.nombreUsuario
             ))
             conn.commit()

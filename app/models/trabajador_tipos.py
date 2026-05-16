@@ -3,12 +3,12 @@ from app.models.trabajador import Trabajador
 class Auxiliar(Trabajador):
     #Auxiliar: tiene horario asignado
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, Horario=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Horario=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
-            contraseña=contraseña,
+            password=password,
             Tipo='auxiliar'
         )
         self._horario = Horario
@@ -32,12 +32,12 @@ class Auxiliar(Trabajador):
 class Coordinador(Trabajador):
     #coordinador: tiene info de interes
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, infoInteres=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, infoInteres=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
-            contraseña=contraseña,
+            password=password,
             Tipo='coordinador'
         ) 
         self._infoInteres = infoInteres
@@ -60,12 +60,12 @@ class Coordinador(Trabajador):
 
 class Especialista(Trabajador):
     #Especialista: tiene una especialidad y horario
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, contraseña=None, Especialidad=None, Horario=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Especialidad=None, Horario=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
-            contraseña=contraseña,
+            password=password,
             Tipo='especialista'
         )
         self._especialidad = Especialidad
