@@ -6,3 +6,4 @@ from app.models.trabajador_tipos import Auxiliar, Coordinador, Especialista
 from app.models.familiar import Familiar
 from app.models.comentarios import Comentario
 from app.models.sesion import Sesion
+from app.models.cuestionario import Cuestionario, Pregunta, Respuesta
