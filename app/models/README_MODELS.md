@@ -18,9 +18,10 @@ models/
 ├── paciente_tipos.py   → PacientePublico, PacientePrivado (heredan de Paciente)
 ├── trabajador.py       → Trabajador (hereda de Usuario)
 ├── trabajador_tipos.py → Auxiliar, Coordinador, Especialista (heredan de Trabajador)
-└── familiar.py         → Atributo multivalorado de paciente 
-└──comentario.py        → Tiene auxiliar(FK), paciente(FK), dia y nota(mensaje)   
-└──sesion.py            → Tiene especialista(FK), paciente(FK), fecha y nota(mensaje)
+├── familiar.py         → Atributo multivalorado de paciente
+├── comentario.py       → Tiene auxiliar(FK), paciente(FK), dia y nota(mensaje)
+├── sesion.py           → Tiene especialista(FK), paciente(FK), fecha y comentarios
+└── cuestionario.py     → Cuestionario, Pregunta, Respuesta
 ```
 
 ## 🔗 JERARQUÍA DE HERENCIA
@@ -47,7 +48,7 @@ o el subtipo concreto si sabes exactamente lo que estás creando.
 - **Todos los atributos son privados** (con `_`) y se accede a ellos mediante `@property`
 - **`to_dict()`** es obligatorio en cada clase — convierte el objeto a diccionario para enviarlo a las vistas
 - **Nada de SQL aquí** — si necesitas ir a la BD, estás en el sitio equivocado
-- Los setters de `fecha`/`dia` aceptan tanto `str` `'YYYY-MM-DD'` como objeto `date` — internamente siempre guardan un `date`
+- Los setters de `fecha`/`dia`/`fechaHora` aceptan tanto `str` como objeto `date`/`datetime` — internamente siempre guardan el tipo correcto
 - El setter de `telefono` en `Familiar` solo acepta exactamente 9 dígitos
 
 ---
@@ -62,7 +63,7 @@ pac = PacientePublico(
     nombreUsuario='GarciaLopezMaria',
     Nombre='Maria Garcia Lopez',
     DNI='12345678A',
-    contraseña='1234',
+    password='1234',
     Dias_ingresado=12
 )
 
@@ -87,4 +88,6 @@ pac.dias_ingresado = 15
   ha estado ingresado en un **hospital externo**, dato necesario para la facturación
 - El campo `Auxiliar` en `Comentario` es una FK a `Trabajadores` — aunque el nombre
   diga "Auxiliar", cualquier tipo de trabajador puede escribir comentarios
-- Si no se inserta nombreUsuario al crear un `Usuario` se le pondrá por defecto 'ApellidoNombre'. OJO‼️si hay dos nombreUsuario iguales el controlador debera añadir un nº al crear al nuevo usuario
+- Si no se inserta `nombreUsuario` al crear un `Usuario` se generará automáticamente
+  como `'Apellido1Nombre1'`. ⚠️ Si ya existe ese nombreUsuario, el controlador deberá
+  añadir un sufijo numérico (`'GarciaMaria2'`, `'GarciaMaria3'`...)
