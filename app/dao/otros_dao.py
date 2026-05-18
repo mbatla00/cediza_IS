@@ -18,10 +18,11 @@ class FamiliarDAO:
  
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute(
-                "SELECT * FROM Familiares WHERE Paciente = %s",
-                (nombreUsuario_paciente,)
-            )
+            sql = """SELECT Nombre, Paciente, Relación AS Relacion, Telefono 
+                     FROM Familiares 
+                     WHERE Paciente = %s"""
+                     
+            cursor.execute(sql, (nombreUsuario_paciente,))  #cambiar si se quita la tilde en el database!!
             return [Familiar(**row) for row in cursor.fetchall()]
         except Error as e:
             print(f"Error en FamiliarDAO.get_by_paciente: {e}")
@@ -38,7 +39,7 @@ class FamiliarDAO:
  
         cursor = conn.cursor()
         try:
-            sql = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
+            sql = """INSERT INTO Familiares (Nombre, Paciente, Relación, Telefono)
                      VALUES (%s, %s, %s, %s)"""
             cursor.execute(sql, (
                 familiar.nombre,

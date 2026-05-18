@@ -9,18 +9,51 @@ class PacienteDAO:
  
     @staticmethod
     def get_all():
-        #Devuelve todos los pacientes.
         db = Database()
         conn = db.get_connection()
         if conn is None:
+            print("❌ DEBUG: ¡La conexión a la Base de Datos es NULL/None!")
             return []
- 
+
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute("SELECT * FROM Pacientes")
-            return [Paciente(**row) for row in cursor.fetchall()]
-        except Error as e:
-            print(f"Error en PacienteDAO.get_all: {e}")
+            # Hacemos un JOIN para asegurarnos de traer los datos comunes de 'Usuarios' 
+            # y el 'Tipo' que está en la tabla 'Pacientes'.
+            # (Ajusta los nombres de las tablas/columnas si en tu BD se llaman distinto)
+            query = """
+                SELECT u.nombreUsuario, u.Nombre, u.DNI, u.email, p.Tipo 
+                FROM Usuarios u
+                INNER JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+            """
+            cursor.execute(query)
+            filas = cursor.fetchall()
+            
+            print(f"🔍 DEBUG FILAS REALES DE BD: {filas}") # Esto te dirá exactamente qué devuelve MySQL
+            
+            lista_pacientes = []
+            for row in filas:
+                # Buscamos las claves tanto en mayúscula como en minúscula por seguridad
+                nombre_usuario = row.get('nombreUsuario') or row.get('nombreusuario')
+                nombre = row.get('Nombre') or row.get('nombre')
+                dni = row.get('DNI') or row.get('dni')
+                email = row.get('email') or row.get('Email')
+                tipo = row.get('Tipo') or row.get('tipo')
+                
+                # Creamos el objeto Paciente de forma manual y segura
+                p = Paciente(
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre,
+                    DNI=dni,
+                    email=email,
+                    Tipo=tipo
+                )
+                lista_pacientes.append(p)
+                
+            print(f"📦 DEBUG OBJETOS CREADOS: {lista_pacientes}")
+            return lista_pacientes
+            
+        except Exception as e:
+            print(f"❌ Error en PacienteDAO.get_all: {e}")
             return []
         finally:
             cursor.close()
