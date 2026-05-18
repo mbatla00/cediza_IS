@@ -73,28 +73,35 @@
                         </div>
                     </div>
 
-                    {# SECCIÓN: CAMBIAR CONTRASEÑA #}
+                    {# SECCIÓN: CONTACTOS DE EMERGENCIA #}
                     <h5 class="text-secondary border-bottom pb-2 mb-3">
-                        <i class="bi bi-shield-lock"></i> Cambiar Contraseña
+                        <i class="bi bi-telephone-fill"></i> Contactos de Emergencia
                     </h5>
-                    <p class="text-muted small mb-3">Rellena estos campos solo si quieres cambiar tu contraseña. Si no, déjalos vacíos.</p>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Contraseña Actual</label>
-                            <input type="password" class="form-control" name="password_actual"
-                                placeholder="••••••••">
+                    {% if familiares %}
+                        <div class="row g-3 mb-4">
+                            {% for familiar in familiares %}
+                            <div class="col-md-6">
+                                <div class="card border shadow-sm">
+                                    <div class="card-body py-3">
+                                        <p class="mb-1 fw-bold">
+                                            <i class="bi bi-person"></i> {{ familiar.nombre }}
+                                        </p>
+                                        <p class="mb-1 text-muted small">
+                                            <i class="bi bi-people"></i> {{ familiar.relacion }}
+                                        </p>
+                                        <p class="mb-0 text-muted small">
+                                            <i class="bi bi-telephone"></i> {{ familiar.telefono or 'Sin teléfono' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Nueva Contraseña</label>
-                            <input type="password" class="form-control" name="password_nueva"
-                                placeholder="••••••••">
+                    {% else %}
+                        <div class="alert alert-light border mb-4">
+                            <i class="bi bi-info-circle"></i> No hay contactos de emergencia registrados.
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Repetir Nueva Contraseña</label>
-                            <input type="password" class="form-control" name="password_repetir"
-                                placeholder="••••••••">
-                        </div>
-                    </div>
+                    {% endif %}
 
                     {# BOTONES #}
                     <div class="d-flex justify-content-between border-top pt-3">

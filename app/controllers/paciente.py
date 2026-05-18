@@ -2,6 +2,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app.controllers.auth import login_required, role_required
 from app.dao.usuario_dao import UsuarioDAO
 from app.dao.paciente_dao import PacienteDAO
+from app.dao.otros_dao import FamiliarDAO
+from app.dao.cuestionario_dao import CuestionarioDAO, PreguntaDAO, RespuestaDAO
+from app.models.cuestionario import Respuesta
+from datetime import datetime
 
 paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
 
@@ -19,7 +23,21 @@ def dashboard():
 @login_required
 @role_required('paciente')
 def cuestionario():
-    return render_template('paciente/cuestionario.html')
+    # Cargamos el cuestionario diario (el primero de tipo 'diario')
+    cuestionarios = CuestionarioDAO.get_all()
+    cuestionario_diario = next(
+        (c for c in cuestionarios if c.tipo == 'diario'), None
+    )
+
+    if not cuestionario_diario:
+        flash('No hay cuestionario disponible para hoy.', 'info')
+        return redirect(url_for('paciente.dashboard'))
+
+    preguntas = PreguntaDAO.get_by_cuestionario(cuestionario_diario.idCuestionario)
+
+    return render_template('paciente/cuestionario.html',
+                           cuestionario=cuestionario_diario,
+                           preguntas=preguntas)
 
 
 # --- CU-08: GUARDAR RESPUESTAS DEL CUESTIONARIO ---
@@ -27,10 +45,35 @@ def cuestionario():
 @login_required
 @role_required('paciente')
 def responder():
-    # TODO: cuando Sofía cree los DAOs de cuestionarios,
-    # aquí se recogerán los datos del formulario
-    # y se insertarán en BD usando RespuestaDAO.create(...)
-    flash('¡Cuestionario guardado con éxito!', 'success')
+    username = session.get('usuario')
+    ahora = datetime.now()
+
+    # Recogemos todas las respuestas del formulario
+    # Cada campo se llama 'respuesta_<idPregunta>'
+    errores = False
+    for key, valor in request.form.items():
+        if key.startswith('respuesta_'):
+            id_pregunta = int(key.replace('respuesta_', ''))
+            contenido = valor.strip()
+
+            if not contenido:
+                continue
+
+            nueva_respuesta = Respuesta(
+                idPregunta=id_pregunta,
+                idPaciente=username,
+                fechaHora=ahora,
+                contenido=contenido
+            )
+
+            if not RespuestaDAO.create(nueva_respuesta):
+                errores = True
+
+    if errores:
+        flash('Hubo un error al guardar algunas respuestas. Inténtalo de nuevo.', 'danger')
+    else:
+        flash('¡Cuestionario enviado con éxito! Gracias.', 'success')
+
     return redirect(url_for('paciente.dashboard'))
 
 
@@ -43,30 +86,13 @@ def perfil():
 
     if request.method == 'POST':
         nuevo_email = request.form.get('email', '').strip()
-        password_actual = request.form.get('password_actual', '').strip()
-        password_nueva = request.form.get('password_nueva', '').strip()
-        password_repetir = request.form.get('password_repetir', '').strip()
 
         usuario_db = UsuarioDAO.get_by_nombreUsuario(username)
         if not usuario_db:
             flash('Error: usuario no encontrado.', 'danger')
             return redirect(url_for('paciente.perfil'))
 
-        # Actualizar email
         usuario_db.email = nuevo_email if nuevo_email else None
-
-        # Cambio de contraseña (solo si se ha rellenado algún campo)
-        if password_actual or password_nueva or password_repetir:
-            if usuario_db.password != password_actual:
-                flash('La contraseña actual no es correcta.', 'danger')
-                return redirect(url_for('paciente.perfil'))
-            if password_nueva != password_repetir:
-                flash('Las contraseñas nuevas no coinciden.', 'danger')
-                return redirect(url_for('paciente.perfil'))
-            if not password_nueva:
-                flash('La nueva contraseña no puede estar vacía.', 'danger')
-                return redirect(url_for('paciente.perfil'))
-            usuario_db.password = password_nueva
 
         if UsuarioDAO.update(usuario_db):
             flash('Cambios guardados correctamente.', 'success')
@@ -78,5 +104,9 @@ def perfil():
     # GET: cargar datos desde BD
     usuario_db = UsuarioDAO.get_by_nombreUsuario(username)
     paciente_db = PacienteDAO.get_by_nombreUsuario(username)
+    familiares = FamiliarDAO.get_by_paciente(username)
 
-    return render_template('paciente/perfil.html', usuario=usuario_db, paciente=paciente_db)
+    return render_template('paciente/perfil.html',
+                           usuario=usuario_db,
+                           paciente=paciente_db,
+                           familiares=familiares)
