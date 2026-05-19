@@ -21,7 +21,9 @@ models/
 ├── familiar.py         → Atributo multivalorado de paciente
 ├── comentario.py       → Tiene auxiliar(FK), paciente(FK), dia y nota(mensaje)
 ├── sesion.py           → Tiene especialista(FK), paciente(FK), fecha y comentarios
-└── cuestionario.py     → Cuestionario, Pregunta, Respuesta
+├── cuestionario.py     → Cuestionario, Pregunta, Respuesta
+└── eval_inf_fac.py     → EvaluacionProfesional, Informe, Factura
+└──admin.py             → Admin
 ```
 
 ## 🔗 JERARQUÍA DE HERENCIA
@@ -31,10 +33,11 @@ Usuario
 ├── Paciente
 │   ├── PacientePublico   (Dias_ingresado en hospital — para facturación)
 │   └── PacientePrivado   (IVA, cuenta, horas)
-└── Trabajador
-    ├── Auxiliar          (Horario)
-    ├── Coordinador       (infoInteres)
-    └── Especialista      (Especialidad, Horario)
+├── Trabajador
+│   ├── Auxiliar          (Horario)
+│   ├── Coordinador       (infoInteres)
+│   └── Especialista      (Especialidad, Horario)
+└── Administrador         (gestiona facturas)
 ```
 
 **Nunca instancies `Usuario`, `Paciente` o `Trabajador` directamente.**
@@ -50,6 +53,7 @@ o el subtipo concreto si sabes exactamente lo que estás creando.
 - **Nada de SQL aquí** — si necesitas ir a la BD, estás en el sitio equivocado
 - Los setters de `fecha`/`dia`/`fechaHora` aceptan tanto `str` como objeto `date`/`datetime` — internamente siempre guardan el tipo correcto
 - El setter de `telefono` en `Familiar` solo acepta exactamente 9 dígitos
+- `foto` en `Paciente` es un `VARCHAR` con la ruta a la imagen, no la imagen en binario
 
 ---
 
@@ -60,14 +64,16 @@ o el subtipo concreto si sabes exactamente lo que estás creando.
 from app.models.paciente_tipos import PacientePublico
 
 pac = PacientePublico(
-    nombreUsuario='GarciaLopezMaria',
+    nombreUsuario='mariagarcia',
     Nombre='Maria Garcia Lopez',
     DNI='12345678A',
     password='1234',
-    Dias_ingresado=12
+    Dias_ingresado=12,
+    fechaNacimiento='1990-05-20',
+    diagnostico='Hipertensión'
 )
 
-print(pac.nombre)       # 'Maria Garcia Lopez'
+print(pac.nombre)       # 'Maria'
 print(pac.tipo)         # 'publico'
 print(pac.to_dict())    # {'nombreUsuario': ..., 'nombre': ..., 'tipo': 'publico', ...}
 
@@ -89,5 +95,14 @@ pac.dias_ingresado = 15
 - El campo `Auxiliar` en `Comentario` es una FK a `Trabajadores` — aunque el nombre
   diga "Auxiliar", cualquier tipo de trabajador puede escribir comentarios
 - Si no se inserta `nombreUsuario` al crear un `Usuario` se generará automáticamente
-  como `'Apellido1Nombre1'`. ⚠️ Si ya existe ese nombreUsuario, el controlador deberá
-  añadir un sufijo numérico (`'GarciaMaria2'`, `'GarciaMaria3'`...)
+  como `'NombreApellido1'` en minúsculas. ⚠️ Si ya existe ese nombreUsuario, el controlador deberá
+  añadir un sufijo numérico (`'mariagarcia1'`, `'mariagarcia2'`...)
+- `Administrador` hereda de `Usuario` y gestiona las facturas de los pacientes
+- `EvaluacionProfesional` e `Informe` los crea cualquier trabajador, no solo especialistas
+
+## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
+
+- `Usuario` ahora tiene  `email`, `activo` y usa `password` en vez de `contraseña`
+- `Paciente` ahora tiene `fechaNacimiento`, `foto` y `diagnostico` 
+- Añadido `Administrador` (hereda de `Usuario`)
+- Añadidos `EvaluacionProfesional`, `Informe` y `Factura` en `eval_inf_fac.py`
