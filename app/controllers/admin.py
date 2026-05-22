@@ -25,39 +25,43 @@ def nuevo_paciente():
         nombre_completo = request.form.get('nombre_completo')
         dni = request.form.get('dni')
         email = request.form.get('email')
+        fecha_nacimiento_input = request.form.get('fecha_nacimiento') # <--- CAPTURAMOS EL NUEVO CAMPO
         tipo = request.form.get('tipo')
         cuenta = request.form.get('cuenta')
-        nombre_usuario_manual = request.form.get('nombre_usuario_manual') # <--- CAPTURAMOS EL NUEVO CAMPO
+        nombre_usuario_manual = request.form.get('nombre_usuario_manual')
+
+        # Controlamos si la fecha viene vacía del HTML para transformarla en NULL seguro
+        fecha_nacimiento = fecha_nacimiento_input if fecha_nacimiento_input and fecha_nacimiento_input.strip() else None
 
         # LÓGICA DE DECISIÓN DEL NOMBRE DE USUARIO
         if nombre_usuario_manual and nombre_usuario_manual.strip():
-            # Si el administrador escribió algo, usamos eso (limpiando espacios y a minúsculas)
             nombre_usuario = nombre_usuario_manual.strip().replace(' ', '').lower()[:50]
         else:
-            # Si lo dejó vacío, se genera automáticamente como antes
             nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
 
         try:
-            # CONTROL DE DUPLICADOS: Validamos si ya existe ese nombreUsuario en el sistema
+            # CONTROL DE DUPLICADOS
             if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
                 flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado. Elige otro.', 'warning')
                 return redirect(url_for('admin.nuevo_paciente'))
 
-            # A. CREAR EL USUARIO PADRE
+            # A. CREAR EL USUARIO PADRE (Añadimos fechaNacimiento)
             nuevo_usuario = Usuario(
                 nombreUsuario=nombre_usuario, 
                 Nombre=nombre_completo,
                 DNI=dni,
                 Rol='paciente',
                 password=dni, 
-                email=email
+                email=email,
+                fechaNacimiento=fecha_nacimiento # <--- SE LO PASAMOS AL MODELO
             )
             
             if not UsuarioDAO.create(nuevo_usuario):
                 flash('Error al crear la cuenta de usuario base.', 'danger')
                 return redirect(url_for('admin.nuevo_paciente'))
 
-            # B. TABLAS PACIENTES Y TIPO DETALLADO
+            # B. TABLAS PACIENTES Y TIPO DETALLADO 
+            # (Nota: Las tablas específicas no guardan la fecha, solo la tabla padre 'Usuarios')
             if tipo == 'publico':
                 nuevo_p = PacPub(
                     nombreUsuario=nombre_usuario, 

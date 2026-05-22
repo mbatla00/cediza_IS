@@ -1,11 +1,12 @@
 class Usuario:
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, password=None, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, password=None, email=None, fechaNacimiento=None):
         self._nombreUsuario = nombreUsuario
         self._nombre = Nombre
         self._dni = DNI
         self._rol = Rol 
         self._password = password
         self._email = email 
+        self.fechaNacimiento = fechaNacimiento
 
     
     @property

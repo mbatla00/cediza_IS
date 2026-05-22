@@ -144,12 +144,13 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             email = getattr(usuario, 'email', None)
-            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, DNI, Rol, password)
-            VALUES (%s, %s, %s, %s, %s, %s)"""
+            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
             cursor.execute(sql, (
                 usuario.nombreUsuario,
                 usuario.nombre,
                 email,
+                usuario.fechaNacimiento,
                 usuario.dni,
                 usuario.rol,
                 usuario.password
