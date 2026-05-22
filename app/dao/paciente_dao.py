@@ -12,7 +12,6 @@ class PacienteDAO:
         db = Database()
         conn = db.get_connection()
         if conn is None:
-            print("❌ DEBUG: ¡La conexión a la Base de Datos es NULL/None!")
             return []
 
         cursor = conn.cursor(dictionary=True)
@@ -27,8 +26,7 @@ class PacienteDAO:
             """
             cursor.execute(query)
             filas = cursor.fetchall()
-            
-            print(f"🔍 DEBUG FILAS REALES DE BD: {filas}") # Esto te dirá exactamente qué devuelve MySQL
+             # Esto te dirá exactamente qué devuelve MySQL
             
             lista_pacientes = []
             for row in filas:
@@ -49,11 +47,9 @@ class PacienteDAO:
                 )
                 lista_pacientes.append(p)
                 
-            print(f"📦 DEBUG OBJETOS CREADOS: {lista_pacientes}")
             return lista_pacientes
             
         except Exception as e:
-            print(f"❌ Error en PacienteDAO.get_all: {e}")
             return []
         finally:
             cursor.close()
