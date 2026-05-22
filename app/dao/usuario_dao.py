@@ -221,3 +221,53 @@ class UsuarioDAO:
             return False
         finally:
             cursor.close()
+
+    # -------------------------------------------------------------
+    # Obtener todos los usuarios del sistema (Saneado contra NULLs)
+    # -------------------------------------------------------------
+    @staticmethod
+    def get_all():
+        """Devuelve una lista de todos los objetos Usuario válidos en el sistema."""
+        db = Database()
+        conn = db.get_connection()
+        if conn is None:
+            return []
+
+        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor.execute("""
+                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+            """)
+            rows = cursor.fetchall()
+            
+            usuarios = []
+            for row in rows:
+                # 1. Protegemos el Rol: si es None, se convierte en '' antes del .lower()
+                rol = (row.get('Rol') or '').lower()
+                
+                # 2. Protegemos el Tipo: nos aseguramos de que jamás se envíe un None a la Factory
+                if rol == 'paciente':
+                    row['Tipo'] = row.get('TipoPaciente') or ''
+                elif rol == 'trabajador':
+                    row['Tipo'] = row.get('TipoTrabajador') or ''
+                else:
+                    row['Tipo'] = ''
+
+                try:
+                    # 3. Cambiamos a 'Exception' para capturar tanto ValueError como AttributeError
+                    usuario_objeto = UsuarioFactory.crear(row)
+                    usuarios.append(usuario_objeto)
+                except Exception as e:
+                    # Si la Factory falla por cualquier otra columna NULL, lo reportamos y continuamos
+                    print(f"Alerta: Saltando usuario corrupto '{row.get('nombreUsuario')}'. Motivo: {e}")
+                    continue
+                
+            return usuarios
+        except Error as e:
+            print(f"Error crítico en database al listar usuarios: {e}")
+            return []
+        finally:
+            cursor.close()

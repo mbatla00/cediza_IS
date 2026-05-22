@@ -97,9 +97,66 @@ def nuevo_paciente():
             flash(f'Error crítico de Base de Datos: {str(e)}', 'danger')
 
     return render_template('admin/paciente_form.html')
-# --- CU-04: LISTADO DE USUARIOS ---
+
+# --- CU-04: LISTADO DE USUARIOS (GESTIÓN DE BAJAS) ---
 @admin_bp.route('/admin/usuarios')
 @login_required
 @role_required('admin')
 def listar_usuarios():
-    return render_template('admin/usuarios_lista.html')
+    """Muestra la lista de todos los usuarios para poder gestionarlos."""
+    try:
+        # 1. Llamamos a tu nuevo método del DAO para traer los 5 usuarios de la BD
+        usuarios_bd = UsuarioDAO.get_all()
+    except Exception as e:
+        print(f"Error al buscar usuarios: {e}")
+        usuarios_bd = []
+        flash('Error al cargar la lista de usuarios.', 'danger')
+        
+
+    return render_template('admin/usuarios_lista.html', usuarios=usuarios_bd)
+
+
+# --- CU-05: GESTIÓN DE BAJAS (PACIENTES Y TRABAJADORES) ---
+@admin_bp.route('/admin/usuarios/gestion-bajas')
+@login_required
+@role_required('admin')
+def gestion_bajas():
+    """Muestra la lista de todos los usuarios usando el DAO original."""
+    usuarios_bd = UsuarioDAO.get_all()
+    return render_template('admin/usuarios_lista.html', usuarios=usuarios_bd)
+
+
+@admin_bp.route('/admin/usuarios/cambiar-estado/<nombre_usuario>', methods=['POST'])
+@login_required
+@role_required('admin')
+def cambiar_estado_usuario(nombre_usuario):
+    """Procesa el cambio de estado usando los métodos del DAO."""
+    estado_actual = request.form.get('estado_actual') == '1' # En MySQL BOOLEAN es 1 o 0
+    
+    if estado_actual:
+        # SI ESTÁ ACTIVO -> Usamos tu método delete() existente para pasarlo a 0
+        exito = UsuarioDAO.delete(nombre_usuario)
+        accion = "dado de BAJA"
+    else:
+        # SI ESTÁ INACTIVO -> Lo reactivamos con un query rápido pasándolo a 1
+        db = Database()
+        conn = db.get_connection()
+        exito = False
+        if conn:
+            cursor = conn.cursor()
+            try:
+                cursor.execute("UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = %s", (nombre_usuario,))
+                conn.commit()
+                exito = True
+            except Exception as e:
+                print(f"Error al reactivar: {e}")
+            finally:
+                cursor.close()
+        accion = "REACTIVADO"
+    
+    if exito:
+        flash(f'El usuario {nombre_usuario} ha sido {accion} correctamente.', 'success')
+    else:
+        flash(f'Error al procesar la solicitud del usuario {nombre_usuario}.', 'danger')
+        
+    return redirect(url_for('admin.gestion_bajas'))
