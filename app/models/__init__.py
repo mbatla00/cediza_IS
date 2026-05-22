@@ -7,3 +7,4 @@ from app.models.familiar import Familiar
 from app.models.comentarios import Comentario
 from app.models.sesion import Sesion
 from app.models.cuestionario import Cuestionario, Pregunta, Respuesta
+from app.models.eval_inf_fac import EvaluacionProfesional, Informe, Factura

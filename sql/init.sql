@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Usuarios` (
   `nombreUsuario` VARCHAR(50) NOT NULL,
   `Nombre` VARCHAR(100) NOT NULL,
   `email` VARCHAR(100) NULL,
+  `fechaNacimiento` DATE NULL,
   `DNI` VARCHAR(9) NULL,
   `Rol` VARCHAR(45) NULL,
   `password` VARCHAR(45) NULL DEFAULT 'paciente',
@@ -30,6 +31,21 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Usuarios` (
   UNIQUE INDEX `DNI_UNIQUE` (`DNI` ASC))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `cediza`.`Administrador`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`Administrador`;
+ 
+CREATE TABLE IF NOT EXISTS `cediza`.`Administrador` (
+  `nombreUsuario` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`nombreUsuario`),
+  CONSTRAINT `fk_administrador_usuarios`
+    FOREIGN KEY (`nombreUsuario`)
+    REFERENCES `cediza`.`Usuarios` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+ 
 
 -- -----------------------------------------------------
 -- Table `cediza`.`Trabajadores`
@@ -108,6 +124,8 @@ DROP TABLE IF EXISTS `cediza`.`Pacientes` ;
 CREATE TABLE IF NOT EXISTS `cediza`.`Pacientes` (
   `nombreUsuario` VARCHAR(50) NOT NULL,
   `Tipo` VARCHAR(45) NULL,
+  `foto` VARCHAR(200) NULL,
+  `diagnostico` VARCHAR(200) NULL,
   PRIMARY KEY (`nombreUsuario`),
   CONSTRAINT `fk_pacientes_usuarios`
     FOREIGN KEY (`nombreUsuario`)
@@ -137,6 +155,23 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `cediza`.`Pac_pub`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`Pac_pub` ;
+
+CREATE TABLE IF NOT EXISTS `cediza`.`Pac_pub` (
+  `nombreUsuario` VARCHAR(50) NOT NULL,
+  `Dias_ingresado` SMALLINT(31) NULL DEFAULT 0,
+  PRIMARY KEY (`nombreUsuario`),
+  CONSTRAINT `fk_pac_pub_pacientes`
+    FOREIGN KEY (`nombreUsuario`)
+    REFERENCES `cediza`.`Pacientes` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `cediza`.`Familiares`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `cediza`.`Familiares` ;
@@ -144,7 +179,7 @@ DROP TABLE IF EXISTS `cediza`.`Familiares` ;
 CREATE TABLE IF NOT EXISTS `cediza`.`Familiares` (
   `Nombre` VARCHAR(100) NOT NULL,
   `Paciente` VARCHAR(50) NOT NULL,
-  `Relación` VARCHAR(45) NOT NULL DEFAULT 'Hij@',
+  `Relacion` VARCHAR(45) NOT NULL DEFAULT 'Hij@',
   `Telefono` INT(9) NULL,
   PRIMARY KEY (`Nombre`, `Paciente`),
   INDEX `paciente_idx` (`Paciente` ASC),
@@ -209,20 +244,90 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `cediza`.`Pac_pub`
+-- Table `cediza`.`EvaluacionProfesional`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `cediza`.`Pac_pub` ;
-
-CREATE TABLE IF NOT EXISTS `cediza`.`Pac_pub` (
-  `nombreUsuario` VARCHAR(50) NOT NULL,
-  `Dias_ingresado` SMALLINT(31) NULL DEFAULT 0,
-  PRIMARY KEY (`nombreUsuario`),
-  CONSTRAINT `fk_pac_pub_pacientes`
-    FOREIGN KEY (`nombreUsuario`)
+DROP TABLE IF EXISTS `cediza`.`EvaluacionProfesional`;
+ 
+CREATE TABLE IF NOT EXISTS `cediza`.`EvaluacionProfesional` (
+  `idEvaluacion` INT NOT NULL AUTO_INCREMENT,
+  `Paciente` VARCHAR(50) NOT NULL,
+  `Trabajador` VARCHAR(50) NOT NULL,
+  `fecha` DATE NOT NULL,
+  `movilidad` VARCHAR(45) NULL,
+  `estadoEmocional` VARCHAR(45) NULL,
+  `apetito` VARCHAR(45) NULL,
+  `observaciones` VARCHAR(200) NULL,
+  PRIMARY KEY (`idEvaluacion`),
+  INDEX `paciente_idx` (`Paciente` ASC),
+  INDEX `trabajador_idx` (`Trabajador` ASC),
+  CONSTRAINT `fk_evaluacion_pacientes`
+    FOREIGN KEY (`Paciente`)
     REFERENCES `cediza`.`Pacientes` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_evaluacion_trabajadores`
+    FOREIGN KEY (`Trabajador`)
+    REFERENCES `cediza`.`Trabajadores` (`nombreUsuario`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `cediza`.`Informe`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`Informe`;
+ 
+CREATE TABLE IF NOT EXISTS `cediza`.`Informe` (
+  `referencia` VARCHAR(50) NOT NULL,
+  `Paciente` VARCHAR(50) NOT NULL,
+  `Trabajador` VARCHAR(50) NOT NULL,
+  `fechaGeneracion` DATE NOT NULL,
+  `periodoInicio` DATE NOT NULL,
+  `periodoFin` DATE NOT NULL,
+  PRIMARY KEY (`referencia`),
+  INDEX `paciente_idx` (`Paciente` ASC),
+  INDEX `trabajador_idx` (`Trabajador` ASC),
+  CONSTRAINT `fk_informe_pacientes`
+    FOREIGN KEY (`Paciente`)
+    REFERENCES `cediza`.`Pacientes` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_informe_trabajadores`
+    FOREIGN KEY (`Trabajador`)
+    REFERENCES `cediza`.`Trabajadores` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `cediza`.`Factura`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`Factura`;
+ 
+CREATE TABLE IF NOT EXISTS `cediza`.`Factura` (
+  `codigoFactura` VARCHAR(50) NOT NULL,
+  `Paciente` VARCHAR(50) NOT NULL,
+  `Administrador` VARCHAR(50) NOT NULL,
+  `fechaEmision` DATE NOT NULL,
+  `importeTotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `estadoPago` VARCHAR(45) NOT NULL DEFAULT 'pendiente',
+  PRIMARY KEY (`codigoFactura`),
+  INDEX `paciente_idx` (`Paciente` ASC),
+  INDEX `administrador_idx` (`Administrador` ASC),
+  CONSTRAINT `fk_factura_pacientes`
+    FOREIGN KEY (`Paciente`)
+    REFERENCES `cediza`.`Pacientes` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_factura_administrador`
+    FOREIGN KEY (`Administrador`)
+    REFERENCES `cediza`.`Administrador` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
 
 -- -----------------------------------------------------
 -- Table `cediza`.`Cuestionarios`
