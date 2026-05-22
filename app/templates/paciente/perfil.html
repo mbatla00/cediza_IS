@@ -40,16 +40,22 @@
                         <i class="bi bi-person"></i> Datos Personales
                     </h5>
                     <div class="row g-3 mb-4">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-bold">Nombre Completo</label>
                             <input type="text" class="form-control bg-light"
                                 value="{{ usuario.nombre }}"
                                 readonly>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-bold">DNI</label>
                             <input type="text" class="form-control bg-light"
                                 value="{{ usuario.dni }}"
+                                readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                            <input type="text" class="form-control bg-light"
+                                value="{{ paciente.fechaNacimiento.strftime('%d/%m/%Y') if paciente and paciente.fechaNacimiento else 'No registrada' }}"
                                 readonly>
                         </div>
                     </div>

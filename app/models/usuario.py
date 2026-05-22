@@ -8,7 +8,7 @@ class Usuario:
         self._password = password
         self._email = email
         self._fechaNacimiento = fechaNacimiento
-        sefl._activo = activo 
+        self._activo = activo 
 
     
     @property
@@ -72,7 +72,7 @@ class Usuario:
         return self._activo
     
     @activo.setter
-    def activo (sef, value):
+    def activo (self, value):
         self._activo = value
 
     def to_dict(self):

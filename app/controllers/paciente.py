@@ -5,7 +5,7 @@ from app.dao.paciente_dao import PacienteDAO
 from app.dao.otros_dao import FamiliarDAO
 from app.dao.cuestionario_dao import CuestionarioDAO, PreguntaDAO, RespuestaDAO
 from app.models.cuestionario import Respuesta
-from datetime import datetime
+from datetime import datetime, date
 
 paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
 
@@ -15,7 +15,17 @@ paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
 @login_required
 @role_required('paciente')
 def dashboard():
-    return render_template('paciente/dashboard.html')
+    username = session.get('usuario')
+
+    # Comprobamos si el paciente ya respondió el cuestionario hoy
+    respuestas_hoy = RespuestaDAO.get_by_paciente(username)
+    ya_respondio_hoy = any(
+        r.fechaHora and r.fechaHora.date() == date.today()
+        for r in respuestas_hoy
+    )
+
+    return render_template('paciente/dashboard.html',
+                           ya_respondio_hoy=ya_respondio_hoy)
 
 
 # --- CU-07: MOSTRAR CUESTIONARIO DIARIO ---
@@ -23,7 +33,19 @@ def dashboard():
 @login_required
 @role_required('paciente')
 def cuestionario():
-    # Cargamos el cuestionario diario (el primero de tipo 'diario')
+    username = session.get('usuario')
+
+    # Bloquear si ya respondió hoy
+    respuestas_hoy = RespuestaDAO.get_by_paciente(username)
+    ya_respondio_hoy = any(
+        r.fechaHora and r.fechaHora.date() == date.today()
+        for r in respuestas_hoy
+    )
+    if ya_respondio_hoy:
+        flash('Ya has completado el cuestionario de hoy. ¡Hasta mañana!', 'info')
+        return redirect(url_for('paciente.dashboard'))
+
+    # Cargamos el cuestionario diario
     cuestionarios = CuestionarioDAO.get_all()
     cuestionario_diario = next(
         (c for c in cuestionarios if c.tipo == 'diario'), None
@@ -34,6 +56,10 @@ def cuestionario():
         return redirect(url_for('paciente.dashboard'))
 
     preguntas = PreguntaDAO.get_by_cuestionario(cuestionario_diario.idCuestionario)
+
+    if not preguntas:
+        flash('El cuestionario no tiene preguntas configuradas.', 'warning')
+        return redirect(url_for('paciente.dashboard'))
 
     return render_template('paciente/cuestionario.html',
                            cuestionario=cuestionario_diario,
@@ -48,14 +74,15 @@ def responder():
     username = session.get('usuario')
     ahora = datetime.now()
 
-    # Recogemos todas las respuestas del formulario
-    # Cada campo se llama 'respuesta_<idPregunta>'
     errores = False
     for key, valor in request.form.items():
         if key.startswith('respuesta_'):
-            id_pregunta = int(key.replace('respuesta_', ''))
-            contenido = valor.strip()
+            try:
+                id_pregunta = int(key.replace('respuesta_', ''))
+            except ValueError:
+                continue
 
+            contenido = valor.strip()
             if not contenido:
                 continue
 

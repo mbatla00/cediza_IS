@@ -130,6 +130,11 @@ class UsuarioFactory:
         elif rol == 'trabajador':
             return TrabajadorFactory.crear(datos)
         elif rol == 'admin':
-            return Admin(**datos)
+            return Admin(
+                nombreUsuario=datos.get('nombreUsuario'),
+                Nombre=datos.get('Nombre'),
+                DNI=datos.get('DNI'),
+                password=datos.get('password')
+            )
         else:
             raise ValueError(f"Rol desconocido: {rol}. Valores validos: paciente, trabajador, admin")
