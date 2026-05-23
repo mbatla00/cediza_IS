@@ -2,7 +2,7 @@ from app.models.usuario import Usuario
 
 class Paciente(Usuario):
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password='paciente',
-    Tipo=None, email=None, fechaNacimiento=None, activo=None, foto=None, diagnostico=None):
+    Tipo=None, email=None, fechaNacimiento=None, activo=None, diagnostico=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
@@ -14,7 +14,6 @@ class Paciente(Usuario):
             activo=activo
         )
         self._tipo = Tipo #'publico' | 'privado'
-        self._foto = foto
         self._diagnostico = diagnostico
     
     @property
@@ -24,14 +23,6 @@ class Paciente(Usuario):
     @tipo.setter
     def tipo(self, value):
         self._tipo = value
-    
-    @property
-    def foto(self):
-        return self._foto
-    
-    @foto.setter
-    def foto(self, value):
-        self._foto = value
     
     @property
     def diagnostico(self):
@@ -44,7 +35,6 @@ class Paciente(Usuario):
     def to_dict(self):
         d = super().to_dict()
         d['tipo'] = self.tipo
-        d['foto']=self.foto
         d['diagnostico']=self.diagnostico
         return d
     

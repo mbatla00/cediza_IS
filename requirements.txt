@@ -1,4 +1,29 @@
+# DEPENDENCIAS DE PYTHON (INSTALAR CON pip install -r requirements.txt)
+# ================================================================
+# 🔥 IMPORTANTE: Proyecto MIGRADO A JDBC - YA NO usa mysql-connector-python
+# ================================================================
+
+# Framework web
 Flask==2.3.3
-mysql-connector-python==8.1.0
+
+# JDBC para conexión con base de datos (REEMPLAZA a mysql-connector-python)
+JayDeBeApi==1.2.0
+JPype1==1.5.0
+
+# Utilidades
 python-dotenv==1.0.0
 Werkzeug==2.3.7
+
+# ================================================================
+# CONFIGURACIÓN ESPECIAL PARA JDBC:
+# ================================================================
+# 1. Java es OBLIGATORIO (JRE o JDK 8+)
+# 2. Driver JDBC de MySQL: mysql-connector-java.jar (incluido en el proyecto)
+# 
+# En Windows con conda, instalar Java:
+#   conda install conda-forge::openjdk
+#
+# En Linux/Mac:
+#   sudo apt install default-jre   (Ubuntu/Debian)
+#   brew install openjdk           (Mac)
+# ================================================================

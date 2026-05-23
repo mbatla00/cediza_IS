@@ -4,7 +4,6 @@ from app.models.eval_inf_fac import EvaluacionProfesional, Informe, Factura
 
 
 class EvaluacionProfesionalDAO:
-    """Operaciones sobre la tabla EvaluacionProfesional."""
 
     @staticmethod
     def get_by_id(idEvaluacion):
@@ -13,13 +12,13 @@ class EvaluacionProfesionalDAO:
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM EvaluacionProfesional WHERE idEvaluacion = %s",
+                "SELECT * FROM EvaluacionProfesional WHERE idEvaluacion = ?",
                 (idEvaluacion,)
             )
-            row = cursor.fetchone()
+            row = Database.row_to_dict(cursor, cursor.fetchone())
             return EvaluacionProfesional(**row) if row else None
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_id: {e}")
@@ -29,20 +28,20 @@ class EvaluacionProfesionalDAO:
 
     @staticmethod
     def get_by_paciente(nombreUsuario_paciente):
-        """Devuelve todas las evaluaciones de un paciente ordenadas por fecha."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
                 """SELECT * FROM EvaluacionProfesional
-                   WHERE Paciente = %s ORDER BY fecha DESC""",
+                   WHERE Paciente = ? ORDER BY fecha DESC""",
                 (nombreUsuario_paciente,)
             )
-            return [EvaluacionProfesional(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [EvaluacionProfesional(**row) for row in rows]
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_paciente: {e}")
             return []
@@ -51,20 +50,20 @@ class EvaluacionProfesionalDAO:
 
     @staticmethod
     def get_by_trabajador(nombreUsuario_trabajador):
-        """Devuelve todas las evaluaciones hechas por un trabajador."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
                 """SELECT * FROM EvaluacionProfesional
-                   WHERE Trabajador = %s ORDER BY fecha DESC""",
+                   WHERE Trabajador = ? ORDER BY fecha DESC""",
                 (nombreUsuario_trabajador,)
             )
-            return [EvaluacionProfesional(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [EvaluacionProfesional(**row) for row in rows]
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_trabajador: {e}")
             return []
@@ -73,7 +72,6 @@ class EvaluacionProfesionalDAO:
 
     @staticmethod
     def create(evaluacion):
-        """Inserta una evaluación y devuelve el id generado."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -83,7 +81,7 @@ class EvaluacionProfesionalDAO:
         try:
             sql = """INSERT INTO EvaluacionProfesional
                      (Paciente, Trabajador, fecha, movilidad, estadoEmocional, apetito, observaciones)
-                     VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute(sql, (
                 evaluacion.paciente,
                 evaluacion.trabajador,
@@ -112,9 +110,9 @@ class EvaluacionProfesionalDAO:
         cursor = conn.cursor()
         try:
             sql = """UPDATE EvaluacionProfesional
-                     SET movilidad = %s, estadoEmocional = %s,
-                         apetito = %s, observaciones = %s
-                     WHERE idEvaluacion = %s"""
+                     SET movilidad = ?, estadoEmocional = ?,
+                         apetito = ?, observaciones = ?
+                     WHERE idEvaluacion = ?"""
             cursor.execute(sql, (
                 evaluacion.movilidad,
                 evaluacion.estadoEmocional,
@@ -141,7 +139,7 @@ class EvaluacionProfesionalDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM EvaluacionProfesional WHERE idEvaluacion = %s",
+                "DELETE FROM EvaluacionProfesional WHERE idEvaluacion = ?",
                 (idEvaluacion,)
             )
             conn.commit()
@@ -155,7 +153,6 @@ class EvaluacionProfesionalDAO:
 
 
 class InformeDAO:
-    """Operaciones sobre la tabla Informe."""
 
     @staticmethod
     def get_by_referencia(referencia):
@@ -164,13 +161,13 @@ class InformeDAO:
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Informe WHERE referencia = %s",
+                "SELECT * FROM Informe WHERE referencia = ?",
                 (referencia,)
             )
-            row = cursor.fetchone()
+            row = Database.row_to_dict(cursor, cursor.fetchone())
             return Informe(**row) if row else None
         except Error as e:
             print(f"Error en InformeDAO.get_by_referencia: {e}")
@@ -180,20 +177,20 @@ class InformeDAO:
 
     @staticmethod
     def get_by_paciente(nombreUsuario_paciente):
-        """Devuelve todos los informes de un paciente."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
                 """SELECT * FROM Informe
-                   WHERE Paciente = %s ORDER BY fechaGeneracion DESC""",
+                   WHERE Paciente = ? ORDER BY fechaGeneracion DESC""",
                 (nombreUsuario_paciente,)
             )
-            return [Informe(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Informe(**row) for row in rows]
         except Error as e:
             print(f"Error en InformeDAO.get_by_paciente: {e}")
             return []
@@ -211,7 +208,7 @@ class InformeDAO:
         try:
             sql = """INSERT INTO Informe
                      (referencia, Paciente, Trabajador, fechaGeneracion, periodoInicio, periodoFin)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?, ?, ?)"""
             cursor.execute(sql, (
                 informe.referencia,
                 informe.paciente,
@@ -239,7 +236,7 @@ class InformeDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Informe WHERE referencia = %s",
+                "DELETE FROM Informe WHERE referencia = ?",
                 (referencia,)
             )
             conn.commit()
@@ -253,7 +250,6 @@ class InformeDAO:
 
 
 class FacturaDAO:
-    """Operaciones sobre la tabla Factura."""
 
     @staticmethod
     def get_by_codigo(codigoFactura):
@@ -262,13 +258,13 @@ class FacturaDAO:
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Factura WHERE codigoFactura = %s",
+                "SELECT * FROM Factura WHERE codigoFactura = ?",
                 (codigoFactura,)
             )
-            row = cursor.fetchone()
+            row = Database.row_to_dict(cursor, cursor.fetchone())
             return Factura(**row) if row else None
         except Error as e:
             print(f"Error en FacturaDAO.get_by_codigo: {e}")
@@ -278,20 +274,20 @@ class FacturaDAO:
 
     @staticmethod
     def get_by_paciente(nombreUsuario_paciente):
-        """Devuelve todas las facturas de un paciente."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
                 """SELECT * FROM Factura
-                   WHERE Paciente = %s ORDER BY fechaEmision DESC""",
+                   WHERE Paciente = ? ORDER BY fechaEmision DESC""",
                 (nombreUsuario_paciente,)
             )
-            return [Factura(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Factura(**row) for row in rows]
         except Error as e:
             print(f"Error en FacturaDAO.get_by_paciente: {e}")
             return []
@@ -300,20 +296,20 @@ class FacturaDAO:
 
     @staticmethod
     def get_by_administrador(nombreUsuario_admin):
-        """Devuelve todas las facturas gestionadas por un administrador."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
                 """SELECT * FROM Factura
-                   WHERE Administrador = %s ORDER BY fechaEmision DESC""",
+                   WHERE Administrador = ? ORDER BY fechaEmision DESC""",
                 (nombreUsuario_admin,)
             )
-            return [Factura(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Factura(**row) for row in rows]
         except Error as e:
             print(f"Error en FacturaDAO.get_by_administrador: {e}")
             return []
@@ -331,7 +327,7 @@ class FacturaDAO:
         try:
             sql = """INSERT INTO Factura
                      (codigoFactura, Paciente, Administrador, fechaEmision, importeTotal, estadoPago)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?, ?, ?)"""
             cursor.execute(sql, (
                 factura.codigoFactura,
                 factura.paciente,
@@ -351,7 +347,6 @@ class FacturaDAO:
 
     @staticmethod
     def update_estado(codigoFactura, estadoPago):
-        """Actualiza el estado de pago de una factura."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -360,7 +355,7 @@ class FacturaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Factura SET estadoPago = %s WHERE codigoFactura = %s",
+                "UPDATE Factura SET estadoPago = ? WHERE codigoFactura = ?",
                 (estadoPago, codigoFactura)
             )
             conn.commit()
@@ -374,7 +369,6 @@ class FacturaDAO:
 
     @staticmethod
     def update_importe(codigoFactura, importeTotal):
-        """Actualiza el importe total de una factura."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -383,7 +377,7 @@ class FacturaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Factura SET importeTotal = %s WHERE codigoFactura = %s",
+                "UPDATE Factura SET importeTotal = ? WHERE codigoFactura = ?",
                 (importeTotal, codigoFactura)
             )
             conn.commit()
@@ -405,7 +399,7 @@ class FacturaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Factura WHERE codigoFactura = %s",
+                "DELETE FROM Factura WHERE codigoFactura = ?",
                 (codigoFactura,)
             )
             conn.commit()

@@ -4,20 +4,19 @@ from app.models.cuestionario import Cuestionario, Pregunta, Respuesta
 
 
 class CuestionarioDAO:
-    """Operaciones sobre la tabla Cuestionarios."""
 
     @staticmethod
     def get_all():
-        """Devuelve todos los cuestionarios."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute("SELECT * FROM Cuestionarios")
-            return [Cuestionario(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Cuestionario(**row) for row in rows]
         except Error as e:
             print(f"Error en CuestionarioDAO.get_all: {e}")
             return []
@@ -31,13 +30,13 @@ class CuestionarioDAO:
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Cuestionarios WHERE idCuestionario = %s",
+                "SELECT * FROM Cuestionarios WHERE idCuestionario = ?",
                 (idCuestionario,)
             )
-            row = cursor.fetchone()
+            row = Database.row_to_dict(cursor, cursor.fetchone())
             return Cuestionario(**row) if row else None
         except Error as e:
             print(f"Error en CuestionarioDAO.get_by_id: {e}")
@@ -47,7 +46,6 @@ class CuestionarioDAO:
 
     @staticmethod
     def create(cuestionario):
-        """Inserta un cuestionario y devuelve el id generado."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -56,7 +54,7 @@ class CuestionarioDAO:
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO Cuestionarios (titulo, tipo, fechaAsignacion)
-                     VALUES (%s, %s, %s)"""
+                     VALUES (?, ?, ?)"""
             cursor.execute(sql, (
                 cuestionario.titulo,
                 cuestionario.tipo,
@@ -81,8 +79,8 @@ class CuestionarioDAO:
         cursor = conn.cursor()
         try:
             sql = """UPDATE Cuestionarios
-                     SET titulo = %s, tipo = %s, fechaAsignacion = %s
-                     WHERE idCuestionario = %s"""
+                     SET titulo = ?, tipo = ?, fechaAsignacion = ?
+                     WHERE idCuestionario = ?"""
             cursor.execute(sql, (
                 cuestionario.titulo,
                 cuestionario.tipo,
@@ -108,7 +106,7 @@ class CuestionarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Cuestionarios WHERE idCuestionario = %s",
+                "DELETE FROM Cuestionarios WHERE idCuestionario = ?",
                 (idCuestionario,)
             )
             conn.commit()
@@ -122,23 +120,22 @@ class CuestionarioDAO:
 
 
 class PreguntaDAO:
-    """Operaciones sobre la tabla Preguntas."""
 
     @staticmethod
     def get_by_cuestionario(idCuestionario):
-        """Devuelve todas las preguntas de un cuestionario."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Preguntas WHERE idCuestionario = %s",
+                "SELECT * FROM Preguntas WHERE idCuestionario = ?",
                 (idCuestionario,)
             )
-            return [Pregunta(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Pregunta(**row) for row in rows]
         except Error as e:
             print(f"Error en PreguntaDAO.get_by_cuestionario: {e}")
             return []
@@ -152,13 +149,13 @@ class PreguntaDAO:
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Preguntas WHERE idPregunta = %s",
+                "SELECT * FROM Preguntas WHERE idPregunta = ?",
                 (idPregunta,)
             )
-            row = cursor.fetchone()
+            row = Database.row_to_dict(cursor, cursor.fetchone())
             return Pregunta(**row) if row else None
         except Error as e:
             print(f"Error en PreguntaDAO.get_by_id: {e}")
@@ -168,7 +165,6 @@ class PreguntaDAO:
 
     @staticmethod
     def create(pregunta):
-        """Inserta una pregunta y devuelve el id generado."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -177,7 +173,7 @@ class PreguntaDAO:
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO Preguntas (idCuestionario, enunciado, tipoRespuesta)
-                     VALUES (%s, %s, %s)"""
+                     VALUES (?, ?, ?)"""
             cursor.execute(sql, (
                 pregunta.idCuestionario,
                 pregunta.enunciado,
@@ -202,7 +198,7 @@ class PreguntaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Preguntas WHERE idPregunta = %s",
+                "DELETE FROM Preguntas WHERE idPregunta = ?",
                 (idPregunta,)
             )
             conn.commit()
@@ -216,23 +212,22 @@ class PreguntaDAO:
 
 
 class RespuestaDAO:
-    """Operaciones sobre la tabla Respuestas."""
 
     @staticmethod
     def get_by_paciente(idPaciente):
-        """Devuelve todas las respuestas de un paciente."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Respuestas WHERE idPaciente = %s ORDER BY fechaHora DESC",
+                "SELECT * FROM Respuestas WHERE idPaciente = ? ORDER BY fechaHora DESC",
                 (idPaciente,)
             )
-            return [Respuesta(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Respuesta(**row) for row in rows]
         except Error as e:
             print(f"Error en RespuestaDAO.get_by_paciente: {e}")
             return []
@@ -241,19 +236,19 @@ class RespuestaDAO:
 
     @staticmethod
     def get_by_pregunta(idPregunta):
-        """Devuelve todas las respuestas de una pregunta."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Respuestas WHERE idPregunta = %s ORDER BY fechaHora DESC",
+                "SELECT * FROM Respuestas WHERE idPregunta = ? ORDER BY fechaHora DESC",
                 (idPregunta,)
             )
-            return [Respuesta(**row) for row in cursor.fetchall()]
+            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            return [Respuesta(**row) for row in rows]
         except Error as e:
             print(f"Error en RespuestaDAO.get_by_pregunta: {e}")
             return []
@@ -262,7 +257,6 @@ class RespuestaDAO:
 
     @staticmethod
     def create(respuesta):
-        """Inserta una respuesta y devuelve el id generado."""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -271,7 +265,7 @@ class RespuestaDAO:
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO Respuestas (idPregunta, idPaciente, fechaHora, contenido)
-                     VALUES (%s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?)"""
             cursor.execute(sql, (
                 respuesta.idPregunta,
                 respuesta.idPaciente,
@@ -297,7 +291,7 @@ class RespuestaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Respuestas WHERE idRespuesta = %s",
+                "DELETE FROM Respuestas WHERE idRespuesta = ?",
                 (idRespuesta,)
             )
             conn.commit()

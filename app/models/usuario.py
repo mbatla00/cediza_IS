@@ -8,7 +8,7 @@ class Usuario:
         self._password = password
         self._email = email
         self._fechaNacimiento = fechaNacimiento
-        sefl._activo = activo 
+        self._activo = activo 
 
     
     @property
