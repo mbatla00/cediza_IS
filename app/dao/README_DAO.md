@@ -27,13 +27,13 @@ a **JDBC** (Java Database Connectivity). Cuando se haga la migración:
 
 ```
 dao/
-├── database.py       → Database (Singleton — CREAR PRIMERO)
-├── usuario_dao.py    → UsuarioDAO
-├── paciente_dao.py   → PacienteDAO, PacPubDAO, PacPriDAO
-├── trabajador_dao.py → TrabajadorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO
-└── otros_dao.py      → FamiliarDAO, ComentarioDAO, SesionDAO
+├── database.py          → Database (Singleton — CREAR PRIMERO)
+├── usuario_dao.py       → UsuarioDAO
+├── paciente_dao.py      → PacienteDAO, PacPubDAO, PacPriDAO
+├── trabajador_dao.py    → TrabajadorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO
+├── otros_dao.py         → FamiliarDAO, ComentarioDAO, SesionDAO
+└── cuestionario_dao.py  → CuestionarioDAO, PreguntaDAO, RespuestaDAO
 ```
-
 
 ---
 
@@ -45,9 +45,7 @@ dao/
 | `get_by_nombreUsuario(nombreUsuario)` | Login — devuelve el objeto del subtipo correcto via factoría (con doble LEFT JOIN a Pacientes y Trabajadores) |
 | `get_by_email(email)` | Búsqueda por email |
 | `get_by_dni(dni)` | Búsqueda por DNI |
-| `validar_dni(dni)` | Valida formato y letra de un DNI español |
-| `generar_nombre_usuario(nombre, apellido1, apellido2)` | Genera nombreUsuario sin acentos, sin espacios, en minúsculas. Si ya existe, añade sufijo numérico |
-| `create(usuario)` | Inserta en `Usuarios`. El campo email es opcional (usa `getattr`) |
+| `create(usuario)` | Inserta en `Usuarios`. El campo email es opcional |
 | `update(usuario)` | Actualiza Nombre, email, DNI y password |
 | `delete(nombreUsuario)` | Borrado lógico: marca `activo = 0` |
 
@@ -101,6 +99,23 @@ dao/
 | `SesionDAO.update(sesion)` | Actualiza una sesión existente |
 | `SesionDAO.delete(idSesion)` | Elimina una sesión |
 
+### CuestionarioDAO / PreguntaDAO / RespuestaDAO
+| Método | Descripción |
+|---|---|
+| `CuestionarioDAO.get_all()` | Lista todos los cuestionarios |
+| `CuestionarioDAO.get_by_id(id)` | Busca un cuestionario por ID |
+| `CuestionarioDAO.create(cuestionario)` | Inserta un cuestionario y devuelve el id generado |
+| `CuestionarioDAO.update(cuestionario)` | Actualiza título, tipo y fecha |
+| `CuestionarioDAO.delete(id)` | Elimina un cuestionario |
+| `PreguntaDAO.get_by_cuestionario(id)` | Lista preguntas de un cuestionario |
+| `PreguntaDAO.get_by_id(id)` | Busca una pregunta por ID |
+| `PreguntaDAO.create(pregunta)` | Inserta una pregunta y devuelve el id generado |
+| `PreguntaDAO.delete(id)` | Elimina una pregunta |
+| `RespuestaDAO.get_by_paciente(u)` | Lista respuestas de un paciente (más reciente primero) |
+| `RespuestaDAO.get_by_pregunta(id)` | Lista respuestas de una pregunta (más reciente primero) |
+| `RespuestaDAO.create(respuesta)` | Inserta una respuesta y devuelve el id generado |
+| `RespuestaDAO.delete(id)` | Elimina una respuesta |
+
 ---
 
 ## 💡 EJEMPLO DE USO
@@ -110,7 +125,7 @@ dao/
 from app.dao.usuario_dao import UsuarioDAO
 
 usuario = UsuarioDAO.get_by_nombreUsuario('mariagarcia')
-if usuario and usuario.contraseña == password_introducida:
+if usuario and usuario.password == password_introducida:
     print(f"Bienvenido {usuario.nombre}")   # objeto ya del subtipo correcto
 
 
@@ -128,7 +143,7 @@ datos = {
     'Dias_ingresado': 10
 }
 
-pac = UsuarioFactory.crear(datos)
+pac = UsuarioFactory.crear(datos)   # genera nombreUsuario automáticamente
 
 UsuarioDAO.create(pac)              # 1. inserta en Usuarios
 PacienteDAO.create(pac)             # 2. inserta en Pacientes
@@ -154,7 +169,12 @@ trab = UsuarioFactory.crear(datos)
 UsuarioDAO.create(trab)             # 1. inserta en Usuarios
 TrabajadorDAO.create(trab)          # 2. inserta en Trabajadores
 AuxiliarDAO.create(trab)            # 3. inserta en Auxiliares
+
+
+# --- Borrar un usuario (borrado lógico) ---
+UsuarioDAO.delete('GarciaLopezMaria')   # marca activo = 0, no elimina el registro
 ```
+
 ---
 
 ## 🛡️ REGLAS DE ORO
@@ -166,13 +186,15 @@ AuxiliarDAO.create(trab)            # 3. inserta en Auxiliares
 - Los inserts de pacientes y trabajadores son **siempre en cascada** — el orden importa:
   `Usuarios` → `Pacientes`/`Trabajadores` → tabla específica
 - Esa cascada la gestiona el **controlador**, no el DAO
+- El borrado de usuarios es **lógico** (`activo = 0`) — nunca se elimina el registro
 
 ---
 
 ## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
 
-- `get_by_nombreUsuario` ahora hace doble LEFT JOIN con `Pacientes` y `Trabajadores` para obtener el `Tipo` y construir el objeto del subtipo correcto.
-- `create` usa `getattr(usuario, 'email', None)` para que el campo email sea opcional.
-- `delete` usa borrado lógico (`activo = 0`) en lugar de borrado físico.
-- `update` ahora actualiza también el campo `email`.
-- El campo `contraseña` en BD se renombró a `password` para evitar problemas de codificación.
+- `get_by_nombreUsuario` hace doble LEFT JOIN con `Pacientes` y `Trabajadores` para obtener el `Tipo` y construir el objeto del subtipo correcto
+- `create` usa `getattr(usuario, 'email', None)` para que el campo email sea opcional
+- `delete` usa borrado lógico (`activo = 0`) en lugar de borrado físico
+- `update` ahora actualiza también el campo `email`
+- El campo `contraseña` en BD se renombró a `password` para evitar problemas de codificación
+- Añadidos `CuestionarioDAO`, `PreguntaDAO` y `RespuestaDAO` para las nuevas tablas

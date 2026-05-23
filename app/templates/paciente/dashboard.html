@@ -1,6 +1,60 @@
 {% extends "base.html" %}
-{% block title %}Panel Paciente{% endblock %}
+
+{% block title %}Mi Panel - CEDIZA{% endblock %}
+
 {% block content %}
-<h1>Panel de Paciente</h1>
-<p>Dashboard en construcción, lo completa quien le toque</p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2"><i class="bi bi-house-heart"></i> Mi Panel de Paciente</h1>
+            <p class="text-muted">¡Hola, {{ session.usuario_nombre }}! ¿Qué te gustaría hacer hoy?</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {# TARJETA DE EJERCICIO DIARIO (CUESTIONARIO) #}
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-clipboard2-pulse"></i> Ejercicio Diario
+                </div>
+                <div class="card-body d-flex flex-column text-center p-4">
+                    <h5 class="card-title mb-3">Cuestionario de Salud</h5>
+                    {% if ya_respondio_hoy %}
+                        <p class="card-text fs-5 mb-4 text-success">
+                            <i class="bi bi-check-circle-fill"></i> ¡Ya has completado el cuestionario de hoy!
+                        </p>
+                        <a href="{{ url_for('paciente.cuestionario') }}"
+                            class="btn btn-outline-primary btn-lg mt-auto py-2 disabled">
+                            Completado
+                        </a>
+                    {% else %}
+                        <p class="card-text fs-5 mb-4">Ayúdanos a saber cómo te encuentras hoy contestando unas breves preguntas.</p>
+                        <a href="{{ url_for('paciente.cuestionario') }}"
+                            class="btn btn-primary btn-lg mt-auto py-2">
+                            Comenzar Cuestionario
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# TARJETA DE MIS DATOS (PERFIL) #}
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-person-badge"></i> Mis Datos
+                </div>
+                <div class="card-body d-flex flex-column text-center p-4">
+                    <h5 class="card-title mb-3">Perfil Personal</h5>
+                    <p class="card-text fs-5 mb-4">Consulta tu información personal y contactos de emergencia.</p>
+                    <a href="{{ url_for('paciente.perfil') }}"
+                        class="btn btn-secondary btn-lg mt-auto py-2">
+                        Ver Mi Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

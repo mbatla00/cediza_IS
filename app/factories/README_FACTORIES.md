@@ -47,7 +47,7 @@ El formato asume:
 - **3 partes** → `'Nombre Apellido1 Apellido2'` → usa `Nombre + Apellido1`
 - **4 partes** → `'Nombre1 Nombre2 Apellido1 Apellido2'` → usa `Nombre1 + Apellido1`
 
-> ⚠️ Si el `nombreUsuario` ya existe en BD, el método `generar_nombre_usuario` 
+> ⚠️ Si el `nombreUsuario` ya existe en BD, el método `generar_nombre_usuario`
 > en `UsuarioDAO` añade automáticamente un sufijo numérico
 > (`'mariagarcia1'`, `'mariagarcia2'`...) hasta encontrar uno libre.
 
@@ -64,14 +64,14 @@ datos_formulario = {
     'Tipo': 'privado',
     'Nombre': 'Carlos Ruiz Mora',
     'DNI': '87654321B',
-    'contraseña': 'pass123',
+    'password': 'pass123',
     'IVA': 21,
     'cuenta': 'ES12 1234 5678 9012 3456 7890',
     'horas': 10
 }
 
 paciente = UsuarioFactory.crear(datos_formulario)
-# nombreUsuario se genera automáticamente → 'RuizCarlos'
+# nombreUsuario se genera automáticamente → 'carlosruiz'
 # devuelve un objeto PacientePrivado
 
 
@@ -79,10 +79,10 @@ paciente = UsuarioFactory.crear(datos_formulario)
 row = {
     'Rol': 'trabajador',
     'Tipo': 'especialista',
-    'nombreUsuario': 'MartinezLaura',
+    'nombreUsuario': 'lauramartinez',
     'Nombre': 'Laura Martinez Gil',
     'DNI': '11223344C',
-    'contraseña': 'pass456',
+    'password': 'pass456',
     'Especialidad': 'Psicología',
     'Horario': 'Mañanas'
 }
@@ -102,7 +102,7 @@ trabajador = TrabajadorFactory.crear({
     'Tipo': 'auxiliar',
     'Nombre': 'Juan Lopez Reyes',
     'DNI': '99887766D',
-    'contraseña': 'pass789',
+    'password': 'pass789',
     'Horario': 'Tardes'
 })
 ```

@@ -32,4 +32,7 @@ def create_app():
     # Los demás blueprints se registrarán cuando sus controladores existan
     # Esto evita errores si alguien no ha creado aún su parte
 
+    from app.controllers.paciente import paciente_bp
+    app.register_blueprint(paciente_bp)
+
     return app

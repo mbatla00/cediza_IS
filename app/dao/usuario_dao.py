@@ -28,13 +28,22 @@ class UsuarioDAO:
                 WHERE u.nombreUsuario = %s
             """, (nombreUsuario,))
             row = cursor.fetchone()
+            
             if row:
                 # Unificar el campo Tipo
                 if row.get('TipoPaciente'):
                     row['Tipo'] = row['TipoPaciente']
                 elif row.get('TipoTrabajador'):
                     row['Tipo'] = row['TipoTrabajador']
-            return UsuarioFactory.crear(row) if row else None
+                
+                # Crear el objeto y parchear el email
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and 'email' in row:
+                    usuario_obj.email = row.get('email')
+                
+                return usuario_obj
+            return None
+            
         except Error as e:
             print(f"Error en get_by_nombreUsuario: {e}")
             return None
@@ -59,7 +68,14 @@ class UsuarioDAO:
                 (email,)
             )
             row = cursor.fetchone()
-            return UsuarioFactory.crear(row) if row else None
+            
+            if row:
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and 'email' in row:
+                    usuario_obj.email = row.get('email')
+                return usuario_obj
+                
+            return None
         except Error as e:
             print(f"Error en get_by_email: {e}")
             return None
@@ -84,7 +100,14 @@ class UsuarioDAO:
                 (dni,)
             )
             row = cursor.fetchone()
-            return UsuarioFactory.crear(row) if row else None
+            
+            if row:
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and 'email' in row:
+                    usuario_obj.email = row.get('email')
+                return usuario_obj
+                
+            return None
         except Error as e:
             print(f"Error en get_by_dni: {e}")
             return None
