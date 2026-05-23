@@ -72,7 +72,7 @@ class Usuario:
         return self._activo
     
     @activo.setter
-    def activo (sef, value):
+    def activo (self, value):
         self._activo = value
 
     def to_dict(self):

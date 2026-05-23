@@ -18,7 +18,7 @@ class PacienteFactory:
         if not datos.get('nombreUsuario'):
             datos['nombreUsuario'] = UsuarioFactory._generar_nombreUsuario(datos.get('Nombre', ''))
 
-        # 🛡️ CLÁUSULA DE ULTRA-PROTECCIÓN: Buscamos todas las variantes posibles
+        # CLÁUSULA DE ULTRA-PROTECCIÓN: Buscamos todas las variantes posibles
         tipo_raw = datos.get('Tipo') or datos.get('tipo') or datos.get('tipoPaciente') or datos.get('TipoPaciente')
         
         # Si sigue sin aparecer el tipo, lo deducimos por sus propiedades exclusivas
@@ -173,6 +173,7 @@ class UsuarioFactory:
             return PacienteFactory.crear(datos)
         elif tipo == 'trabajador':
             return TrabajadorFactory.crear(datos)
+
         elif tipo == 'admin':
             datos_filtrados = {
                 'nombreUsuario': datos.get('nombreUsuario'),
@@ -183,5 +184,6 @@ class UsuarioFactory:
             # Limpiamos valores nulos
             datos_filtrados = {k: v for k, v in datos_filtrados.items() if v is not None}
             return Admin(**datos_filtrados)
+
         else:
             raise ValueError(f"Rol desconocido: '{tipo}'. Valores validos: paciente, trabajador, admin")
