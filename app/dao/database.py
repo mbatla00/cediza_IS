@@ -29,6 +29,8 @@ class Database:
                     [Config.MYSQL_USER, Config.MYSQL_PASSWORD],
                     jar_file
                 )
+                # Obliga a JDBC a esperar el .commit() manual de los DAOs para que no se repitan
+                self._connection.jconn.setAutoCommit(False)
                 print("✅ Conexión JDBC a MySQL establecida")
             except Exception as e:
                 print(f"❌ Error de conexión: {e}")
