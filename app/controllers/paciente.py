@@ -17,7 +17,6 @@ paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
 def dashboard():
     username = session.get('usuario')
 
-    # Comprobamos si el paciente ya respondió el cuestionario hoy
     respuestas_hoy = RespuestaDAO.get_by_paciente(username)
     ya_respondio_hoy = any(
         r.fechaHora and r.fechaHora.date() == date.today()
@@ -35,7 +34,6 @@ def dashboard():
 def cuestionario():
     username = session.get('usuario')
 
-    # Bloquear si ya respondió hoy
     respuestas_hoy = RespuestaDAO.get_by_paciente(username)
     ya_respondio_hoy = any(
         r.fechaHora and r.fechaHora.date() == date.today()
@@ -45,7 +43,6 @@ def cuestionario():
         flash('Ya has completado el cuestionario de hoy. ¡Hasta mañana!', 'info')
         return redirect(url_for('paciente.dashboard'))
 
-    # Cargamos el cuestionario diario
     cuestionarios = CuestionarioDAO.get_all()
     cuestionario_diario = next(
         (c for c in cuestionarios if c.tipo == 'diario'), None
@@ -72,7 +69,8 @@ def cuestionario():
 @role_required('paciente')
 def responder():
     username = session.get('usuario')
-    ahora = datetime.now()
+    # JDBC no acepta datetime directamente, pasamos string
+    ahora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     errores = False
     for key, valor in request.form.items():
@@ -104,6 +102,37 @@ def responder():
     return redirect(url_for('paciente.dashboard'))
 
 
+# --- HISTORIAL DE RESPUESTAS DEL PACIENTE ---
+@paciente_bp.route('/historial')
+@login_required
+@role_required('paciente')
+def historial():
+    username = session.get('usuario')
+
+    respuestas = RespuestaDAO.get_by_paciente(username)
+
+    historial_agrupado = {}
+    for r in respuestas:
+        fecha = r.fechaHora.date() if r.fechaHora else None
+        if fecha not in historial_agrupado:
+            historial_agrupado[fecha] = []
+        historial_agrupado[fecha].append(r)
+
+    preguntas_dict = {}
+    try:
+        cuestionarios = CuestionarioDAO.get_all()
+        for c in cuestionarios:
+            preguntas = PreguntaDAO.get_by_cuestionario(c.idCuestionario)
+            for p in preguntas:
+                preguntas_dict[p.idPregunta] = p.enunciado
+    except Exception as e:
+        print(f"Error cargando preguntas en historial: {e}")
+
+    return render_template('paciente/historial.html',
+                           historial_agrupado=historial_agrupado,
+                           preguntas_dict=preguntas_dict)
+
+
 # --- CU-02: VER Y ACTUALIZAR PERFIL DEL PACIENTE ---
 @paciente_bp.route('/perfil', methods=['GET', 'POST'])
 @login_required
@@ -128,7 +157,6 @@ def perfil():
 
         return redirect(url_for('paciente.perfil'))
 
-    # GET: cargar datos desde BD
     usuario_db = UsuarioDAO.get_by_nombreUsuario(username)
     paciente_db = PacienteDAO.get_by_nombreUsuario(username)
     familiares = FamiliarDAO.get_by_paciente(username)

@@ -61,7 +61,9 @@ class CuestionarioDAO:
                 cuestionario.fechaAsignacion
             ))
             conn.commit()
-            return cursor.lastrowid
+            # JDBC usa getGeneratedKeys en lugar de lastrowid
+            keys = cursor._rs
+            return keys.getInt(1) if keys and keys.next() else None
         except Error as e:
             print(f"Error en CuestionarioDAO.create: {e}")
             conn.rollback()
@@ -180,7 +182,8 @@ class PreguntaDAO:
                 pregunta.tipoRespuesta
             ))
             conn.commit()
-            return cursor.lastrowid
+            keys = cursor._rs
+            return keys.getInt(1) if keys and keys.next() else None
         except Error as e:
             print(f"Error en PreguntaDAO.create: {e}")
             conn.rollback()
@@ -269,11 +272,12 @@ class RespuestaDAO:
             cursor.execute(sql, (
                 respuesta.idPregunta,
                 respuesta.idPaciente,
-                respuesta.fechaHora,
+                # JDBC no acepta datetime de Python, hay que pasarlo como string
+                str(respuesta.fechaHora) if respuesta.fechaHora else None,
                 respuesta.contenido
             ))
             conn.commit()
-            return cursor.lastrowid
+            return True  # devolvemos True en lugar de lastrowid que no existe en JDBC
         except Error as e:
             print(f"Error en RespuestaDAO.create: {e}")
             conn.rollback()
