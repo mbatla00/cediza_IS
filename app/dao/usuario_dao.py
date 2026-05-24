@@ -7,117 +7,110 @@ import re
 
 class UsuarioDAO:
 
-    # -------------------------------------------------------------
-    # Buscar por nombre de usuario (PK)
-    # -------------------------------------------------------------
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        """Devuelve un objeto Usuario o None"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute("""
                 SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
                 FROM Usuarios u
                 LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
                 LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
-                WHERE u.nombreUsuario = %s
+                WHERE u.nombreUsuario = ?
             """, (nombreUsuario,))
-            row = cursor.fetchone()
+
+            row = Database.row_to_dict(cursor, cursor.fetchone())
+
             if row:
-                # Unificar el campo Tipo
                 if row.get('TipoPaciente'):
                     row['Tipo'] = row['TipoPaciente']
                 elif row.get('TipoTrabajador'):
                     row['Tipo'] = row['TipoTrabajador']
-            return UsuarioFactory.crear(row) if row else None
+                
+                # Crear el objeto y parchear el email
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and 'email' in row:
+                    usuario_obj.email = row.get('email')
+                
+                return usuario_obj
+            return None
+            
         except Error as e:
             print(f"Error en get_by_nombreUsuario: {e}")
             return None
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Buscar por email
-    # -------------------------------------------------------------
     @staticmethod
     def get_by_email(email):
-        """Busca un usuario por email. Devuelve Usuario o None"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Usuarios WHERE email = %s",
+                "SELECT * FROM Usuarios WHERE email = ?",
                 (email,)
             )
-            row = cursor.fetchone()
-            return UsuarioFactory.crear(row) if row else None
+            row = Database.row_to_dict(cursor, cursor.fetchone())
+            if row:
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and ('email' in row or 'Email' in row):
+                    usuario_obj.email = row.get('email') or row.get('Email')
+                return usuario_obj
+                
+            return None
         except Error as e:
             print(f"Error en get_by_email: {e}")
             return None
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Buscar por DNI
-    # -------------------------------------------------------------
     @staticmethod
     def get_by_dni(dni):
-        """Busca un usuario por DNI. Devuelve Usuario o None"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
             return None
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Usuarios WHERE DNI = %s",
+                "SELECT * FROM Usuarios WHERE DNI = ?",
                 (dni,)
             )
-            row = cursor.fetchone()
-            return UsuarioFactory.crear(row) if row else None
+            row = Database.row_to_dict(cursor, cursor.fetchone())
+            if row:
+                usuario_obj = UsuarioFactory.crear(row)
+                if usuario_obj and ('email' in row or 'Email' in row):
+                    usuario_obj.email = row.get('email') or row.get('Email')
+                return usuario_obj
+                
+            return None
         except Error as e:
             print(f"Error en get_by_dni: {e}")
             return None
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Validar DNI español
-    # -------------------------------------------------------------
     @staticmethod
     def validar_dni(dni):
-        """
-        Valida formato y letra de un DNI español.
-        Devuelve True si es válido, False si no.
-        """
         if not re.match(r'^\d{8}[A-Za-z]$', dni):
             return False
-
         letras = "TRWAGMYFPDXBNJZSQVHLCKE"
         numero = int(dni[:-1])
         letra = dni[-1].upper()
         return letras[numero % 23] == letra
 
-    # -------------------------------------------------------------
-    # Generar nombre de usuario sin acentos ni espacios
-    # -------------------------------------------------------------
     @staticmethod
     def generar_nombre_usuario(nombre, apellido1, apellido2=""):
-        """
-        Genera nombreUsuario = nombre + apellido1 [+ apellido2].
-        Sin acentos, sin espacios, en minúsculas.
-        Si ya existe, añade número al final.
-        """
         base = f"{nombre}{apellido1}{apellido2}".lower()
         base = unicodedata.normalize('NFKD', base).encode('ASCII', 'ignore').decode('ASCII')
         base = ''.join(c for c in base if c.isalnum())
@@ -127,15 +120,10 @@ class UsuarioDAO:
         while UsuarioDAO.get_by_nombreUsuario(nombre_final) is not None:
             nombre_final = f"{base}{contador}"
             contador += 1
-
         return nombre_final
 
-    # -------------------------------------------------------------
-    # Crear usuario
-    # -------------------------------------------------------------
     @staticmethod
     def create(usuario):
-        """Inserta un nuevo usuario. Devuelve True si éxito, False si fallo"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -144,8 +132,10 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             email = getattr(usuario, 'email', None)
+
             sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+            VALUES (?, ?, ?, ?, ?, ?, ?)"""
+
             cursor.execute(sql, (
                 usuario.nombreUsuario,
                 usuario.nombre,
@@ -164,12 +154,8 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Actualizar usuario
-    # -------------------------------------------------------------
     @staticmethod
     def update(usuario):
-        """Actualiza nombre, email, DNI y contraseña"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -178,8 +164,8 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             sql = """UPDATE Usuarios
-            SET Nombre = %s, email = %s, DNI = %s, password = %s
-            WHERE nombreUsuario = %s"""
+            SET Nombre = ?, email = ?, DNI = ?, password = ?
+            WHERE nombreUsuario = ?"""
             cursor.execute(sql, (
                 usuario.nombre,
                 usuario.email,
@@ -196,12 +182,8 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Eliminar usuario (borrado lógico)
-    # -------------------------------------------------------------
     @staticmethod
     def delete(nombreUsuario):
-        """Marca un usuario como inactivo"""
         db = Database()
         conn = db.get_connection()
         if conn is None:
@@ -210,7 +192,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = %s",
+                "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = ?",
                 (nombreUsuario,)
             )
             conn.commit()
@@ -233,7 +215,7 @@ class UsuarioDAO:
         if conn is None:
             return []
 
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         try:
             cursor.execute("""
                 SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
@@ -241,32 +223,68 @@ class UsuarioDAO:
                 LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
                 LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
             """)
-            rows = cursor.fetchall()
+            raw_rows = cursor.fetchall()
             
             usuarios = []
-            for row in rows:
-                # 1. Protegemos el Rol: si es None, se convierte en '' antes del .lower()
-                rol = (row.get('Rol') or '').lower()
-                
-                # 2. Protegemos el Tipo: nos aseguramos de que jamás se envíe un None a la Factory
-                if rol == 'paciente':
-                    row['Tipo'] = row.get('TipoPaciente') or ''
-                elif rol == 'trabajador':
-                    row['Tipo'] = row.get('TipoTrabajador') or ''
-                else:
-                    row['Tipo'] = ''
-
-                try:
-                    # 3. Cambiamos a 'Exception' para capturar tanto ValueError como AttributeError
-                    usuario_objeto = UsuarioFactory.crear(row)
-                    usuarios.append(usuario_objeto)
-                except Exception as e:
-                    # Si la Factory falla por cualquier otra columna NULL, lo reportamos y continuamos
-                    print(f"Alerta: Saltando usuario corrupto '{row.get('nombreUsuario')}'. Motivo: {e}")
+            for raw_row in raw_rows:
+                row_raw = Database.row_to_dict(cursor, raw_row)
+                if not row_raw:
                     continue
                 
+                row = {}
+                for k, v in row_raw.items():
+                    row[k] = v
+                    row[k.lower()] = v
+                
+                # Mapeos explícitos de seguridad para asegurar compatibilidad con las propiedades
+                if 'nombreusuario' in row: row['nombreUsuario'] = row['nombreusuario']
+                if 'tipopaciente' in row: row['TipoPaciente'] = row['tipopaciente']
+                if 'tipotrabajador' in row: row['TipoTrabajador'] = row['tipotrabajador']
+                if 'fechanacimiento' in row: row['fechaNacimiento'] = row['fechanacimiento']
+                if 'dias_ingresado' in row: row['Dias_ingresado'] = row['dias_ingresado']
+
+                val_activo = row.get('activo')
+                if val_activo is None:
+                    val_activo = row.get('Activo')
+                
+                if val_activo is True or val_activo == 1 or str(val_activo).lower() in ('1', 'true'):
+                    estado_corregido = 1
+                else:
+                    estado_corregido = 0
+                
+                # Lo guardamos de todas las formas posibles en el diccionario para la Factory
+                row['activo'] = estado_corregido
+                row['Activo'] = estado_corregido
+
+                # 1. Protegemos el Rol buscando en cualquier variante de caja
+                rol = (row.get('Rol') or row.get('rol') or '').lower()
+                row['Rol'] = rol
+                
+                # 2. Protegemos el Tipo unificando procedencias
+                if rol == 'paciente':
+                    tipo_val = row.get('TipoPaciente') or row.get('tipopaciente') or ''
+                    row['Tipo'] = tipo_val
+                    row['tipo'] = tipo_val
+                elif rol == 'trabajador':
+                    tipo_val = row.get('TipoTrabajador') or row.get('tipotrabajador') or ''
+                    row['Tipo'] = tipo_val
+                    row['tipo'] = tipo_val
+                else:
+                    row['Tipo'] = ''
+                    row['tipo'] = ''
+
+                try:
+                    usuario_objeto = UsuarioFactory.crear(row)
+                    if usuario_objeto:
+                        usuario_objeto.activo = estado_corregido
+                        usuarios.append(usuario_objeto)
+                except Exception as e:
+                    print(f"Alerta: Saltando usuario '{row.get('nombreUsuario') or row.get('nombreusuario')}'. Motivo: {e}")
+                    continue
+            
             return usuarios
-        except Error as e:
+            
+        except Exception as e:
             print(f"Error crítico en database al listar usuarios: {e}")
             return []
         finally:
