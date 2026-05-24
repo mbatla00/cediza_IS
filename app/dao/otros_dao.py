@@ -135,11 +135,11 @@ class ComentarioDAO:
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO comentarios (Auxiliar, Paciente, dia, nota)
-                     VALUES (?, ?, ?, ?)"""
+                     VALUES (?, ?, CURDATE(), ?)"""
+                # Nos aseguramos de enviar la fecha como texto 'YYYY-MM-DD para evitar errores gracias a CURDATE() en el SQL'
             cursor.execute(sql, (
                 comentario.auxiliar,
                 comentario.paciente,
-                comentario.dia,
                 comentario.nota
             ))
             conn.commit()

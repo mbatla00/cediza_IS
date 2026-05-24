@@ -71,7 +71,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-success text-white fw-bold">
-                    <i class="bi bi-pencil-square"></i> Nueva Anotación Diaria (Formato Libre)
+                    <i class="bi bi-pencil-square"></i> Nueva Anotación Diaria 
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('trabajador.nueva_nota', nombreUsuario=paciente.nombreUsuario) }}">
@@ -90,7 +90,7 @@
 
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-secondary text-white fw-bold">
-                    <i class="bi bi-clock-history"></i> Historial de Evolución Cronológica
+                    <i class="bi bi-clock-history"></i> Historial de Evolución 
                 </div>
                 <div class="card-body">
                     {% if idx or notes or notas %}

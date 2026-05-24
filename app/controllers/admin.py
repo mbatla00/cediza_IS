@@ -4,6 +4,7 @@ from app.dao.paciente_dao import PacienteDAO, PacPubDAO, PacPriDAO
 from app.models.paciente_tipos import PacPub, PacPri
 from app.dao.usuario_dao import UsuarioDAO 
 from app.models.usuario import Usuario
+from app.dao.database import Database
 
 # DEFINIMOS EL BLUEPRINT UNA SOLA VEZ
 admin_bp = Blueprint('admin', __name__)
@@ -145,7 +146,7 @@ def cambiar_estado_usuario(nombre_usuario):
         if conn:
             cursor = conn.cursor()
             try:
-                cursor.execute("UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = %s", (nombre_usuario,))
+                cursor.execute("UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = ?", (nombre_usuario,))
                 conn.commit()
                 exito = True
             except Exception as e:
