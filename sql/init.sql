@@ -124,7 +124,6 @@ DROP TABLE IF EXISTS `cediza`.`Pacientes` ;
 CREATE TABLE IF NOT EXISTS `cediza`.`Pacientes` (
   `nombreUsuario` VARCHAR(50) NOT NULL,
   `Tipo` VARCHAR(45) NULL,
-  `foto` VARCHAR(200) NULL,
   `diagnostico` VARCHAR(200) NULL,
   PRIMARY KEY (`nombreUsuario`),
   CONSTRAINT `fk_pacientes_usuarios`

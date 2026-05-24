@@ -41,7 +41,7 @@ automáticamente a partir del campo `Nombre` con el formato `NombreApellido1` en
 | Nombre completo | nombreUsuario generado |
 |---|---|
 | `'Maria Garcia Lopez'` | `'mariagarcia'` |
-| `'Maria Carmen Garcia Lopez'` | `'mariagarcia1'` |
+| `'Maria Carmen Garcia Lopez'` | `'mariagarcia'` (sin sufijo — lo gestiona el controlador) |
 
 El formato asume:
 - **3 partes** → `'Nombre Apellido1 Apellido2'` → usa `Nombre + Apellido1`
@@ -58,7 +58,7 @@ El formato asume:
 ```python
 from app.factories.usuario_factory import UsuarioFactory
 
-# --- Caso 1: datos vienen de un formulario ---
+# --- Caso 1: paciente desde formulario ---
 datos_formulario = {
     'Rol': 'paciente',
     'Tipo': 'privado',
@@ -67,7 +67,9 @@ datos_formulario = {
     'password': 'pass123',
     'IVA': 21,
     'cuenta': 'ES12 1234 5678 9012 3456 7890',
-    'horas': 10
+    'horas': 10,
+    'fechaNacimiento': '1985-03-10',
+    'diagnostico': 'Ansiedad'
 }
 
 paciente = UsuarioFactory.crear(datos_formulario)
@@ -75,7 +77,7 @@ paciente = UsuarioFactory.crear(datos_formulario)
 # devuelve un objeto PacientePrivado
 
 
-# --- Caso 2: datos vienen de la BD (row de un JOIN) ---
+# --- Caso 2: trabajador desde la BD (row de un JOIN) ---
 row = {
     'Rol': 'trabajador',
     'Tipo': 'especialista',
@@ -94,8 +96,21 @@ print(especialista.especialidad)    # 'Psicología'
 print(especialista.tipo)            # 'especialista'
 
 
-# --- Caso 3: usar subfactoría directamente ---
-# Solo si ya sabes que es un trabajador y quieres saltarte el paso de Rol
+# --- Caso 3: administrador ---
+datos_admin = {
+    'Rol': 'admin',
+    'nombreUsuario': 'admin',
+    'Nombre': 'Administrador',
+    'DNI': '12345678Z',
+    'password': 'admin123'
+}
+
+admin = UsuarioFactory.crear(datos_admin)
+# devuelve un objeto Administrador
+
+
+# --- Caso 4: usar subfactoría directamente ---
+# Solo si ya sabes el tipo concreto y quieres saltarte el paso de Rol
 from app.factories.usuario_factory import TrabajadorFactory
 
 trabajador = TrabajadorFactory.crear({
@@ -126,13 +141,14 @@ UsuarioFactory._generar_nombreUsuario('Maria')
 
 # ✅ Admin sí es un rol válido
 UsuarioFactory.crear({'Rol': 'admin', 'nombreUsuario': 'admin', 'Nombre': 'Administrador', 'DNI': '12345678Z', 'password': 'admin123'})
-# Devuelve un objeto Admin
+# Devuelve un objeto Administrador
 ```
+
+---
 
 ## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
 
-- **Añadido rol `admin`**: se crea directamente como objeto `Admin` sin pasar por subfactoría.
-- **Formato de `nombreUsuario`**: ahora es `NombreApellido1` en minúsculas (ej: `mariagarcia`), no `Apellido1Nombre1`.
-- **Todas las factorías usan `password`** en lugar de `contraseña` para coincidir con la BD.
-- **`PacienteFactory` y `TrabajadorFactory`** obtienen `password` del dict de datos que viene de la BD.
-- **El método `generar_nombre_usuario`** en `UsuarioDAO` ya evita duplicados añadiendo sufijo numérico.
+- **Añadido rol `admin`**: se crea directamente como objeto `Administrador` sin pasar por subfactoría
+- **Formato de `nombreUsuario`**: ahora es `NombreApellido1` en minúsculas (ej: `mariagarcia`)
+- **Todas las factorías usan `password`** en lugar de `contraseña` para coincidir con la BD
+- **El método `generar_nombre_usuario`** en `UsuarioDAO` ya evita duplicados añadiendo sufijo numérico
