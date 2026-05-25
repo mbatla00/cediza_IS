@@ -78,6 +78,40 @@
                 </div>
             </div>
 
+            {# SECCIÓN DE SESIONES DEL PACIENTE #}
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-calendar3"></i> Sesiones programadas
+                    <button class="btn btn-sm btn-light float-end" data-bs-toggle="collapse" data-bs-target="#sesionesCollapse">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="collapse" id="sesionesCollapse">
+                    <div class="card-body">
+                        {% if sesiones_paciente %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr><th>Fecha</th><th>Especialista</th><th>Comentarios</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for s in sesiones_paciente %}
+                                        <tr>
+                                            <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                            <td>{{ s.especialista }}</td>
+                                            <td>{{ s.comentarios or '-' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No hay sesiones programadas para este paciente.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
             <!-- Historial de Evaluaciones (colapsable) -->
             <div class="card shadow-sm border-0 mt-4">
                 <div class="collapse" id="historialEvaluaciones">

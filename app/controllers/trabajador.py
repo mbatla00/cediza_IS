@@ -21,7 +21,32 @@ trabajador_bp = Blueprint('trabajador', __name__)
 def dashboard():
     pacientes = PacienteDAO.get_all()
     nombre_empleado = session.get('nombre', 'Trabajador')
-    return render_template('trabajador/dashboard.html', pacientes=pacientes, nombre_empleado=nombre_empleado)
+    
+    # Obtener el tipo de trabajador del usuario logueado
+    usuario_actual = session.get('usuario')
+    tipo_trabajador = None
+    
+    db = Database()
+    conn = db.get_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT Tipo FROM Trabajadores WHERE nombreUsuario = ?",
+                (usuario_actual,)
+            )
+            row = cursor.fetchone()
+            if row:
+                tipo_trabajador = row[0]
+        except Exception as e:
+            print(f"Error al obtener tipo de trabajador: {e}")
+        finally:
+            cursor.close()
+    
+    return render_template('trabajador/dashboard.html', 
+                         pacientes=pacientes, 
+                         nombre_empleado=nombre_empleado,
+                         tipo_trabajador=tipo_trabajador)
 
 
 # --- DETALLE DEL PACIENTE ---
@@ -34,7 +59,6 @@ def detalle_paciente(nombreUsuario):
         flash('El paciente solicitado no existe en el sistema.', 'danger')
         return redirect(url_for('trabajador.dashboard'))
 
-    # Cargar teléfono y fechaNacimiento desde Usuarios
     db = Database()
     conn = db.get_connection()
     if conn:
@@ -57,20 +81,22 @@ def detalle_paciente(nombreUsuario):
 
     notas_clinicas = ComentarioDAO.get_by_paciente(nombreUsuario)
     contactos_emergencia = FamiliarDAO.get_by_paciente(nombreUsuario)
-
-    # Cargar evaluaciones del paciente usando el DAO
     evaluaciones = EvaluacionProfesionalDAO.get_by_paciente(nombreUsuario)
+
+    from app.dao.otros_dao import SesionDAO
+    sesiones_paciente = SesionDAO.get_by_paciente(nombreUsuario)
 
     return render_template(
         'trabajador/paciente_detalle.html',
         paciente=paciente,
         notas=notas_clinicas,
         contactos=contactos_emergencia,
-        evaluaciones=evaluaciones
+        evaluaciones=evaluaciones,
+        sesiones_paciente=sesiones_paciente
     )
 
 
-# --- EDITAR DATOS DEL PACIENTE (SIN CUENTA BANCARIA) ---
+# --- EDITAR DATOS DEL PACIENTE ---
 @trabajador_bp.route('/trabajador/paciente/<nombreUsuario>/editar', methods=['POST'])
 @login_required
 @role_required('trabajador')
@@ -170,18 +196,13 @@ def nuevo_contacto(nombreUsuario):
 @login_required
 @role_required('trabajador')
 def evaluar_paciente(nombreUsuario):
-    print(f"DEBUG: Evaluando paciente: {nombreUsuario}")
-    
-    # Verificar si ya existe evaluación hoy
     hoy = date.today()
     evaluaciones_hoy = EvaluacionProfesionalDAO.get_by_paciente(nombreUsuario)
     ya_evaluo_hoy = False
     
     for e in evaluaciones_hoy:
-        # Manejar diferentes formatos de fecha
         if hasattr(e, 'fecha'):
             fecha_eval = e.fecha
-            # Si fecha es string, convertir a date
             if isinstance(fecha_eval, str):
                 try:
                     fecha_eval = datetime.strptime(fecha_eval, '%Y-%m-%d').date()
@@ -190,7 +211,6 @@ def evaluar_paciente(nombreUsuario):
                         fecha_eval = datetime.strptime(fecha_eval, '%Y-%m-%d %H:%M:%S').date()
                     except:
                         continue
-            # Si es datetime, convertir a date
             elif isinstance(fecha_eval, datetime):
                 fecha_eval = fecha_eval.date()
             
@@ -204,7 +224,6 @@ def evaluar_paciente(nombreUsuario):
     
     paciente = PacienteDAO.get_by_nombreUsuario(nombreUsuario)
     if not paciente:
-        print(f"DEBUG: Paciente no encontrado: {nombreUsuario}")
         flash('Paciente no encontrado.', 'danger')
         return redirect(url_for('trabajador.dashboard'))
     
@@ -218,7 +237,6 @@ def evaluar_paciente(nombreUsuario):
 def guardar_evaluacion(nombreUsuario):
     trabajador = session.get('usuario')
     
-    # Verificar si ya existe evaluación hoy (doble verificación de seguridad)
     hoy = date.today()
     evaluaciones_hoy = EvaluacionProfesionalDAO.get_by_paciente(nombreUsuario)
     ya_evaluo_hoy = False
@@ -250,16 +268,13 @@ def guardar_evaluacion(nombreUsuario):
     apetito = request.form.get('apetito')
     observaciones = request.form.get('observaciones', '').strip()
     
-    # Validar campos obligatorios
     if not estadoEmocional or not movilidad or not apetito:
         flash('Todos los campos obligatorios deben estar marcados.', 'danger')
         return redirect(url_for('trabajador.evaluar_paciente', nombreUsuario=nombreUsuario))
     
-    # Crear objeto EvaluacionProfesional con los nombres CORRECTOS de parámetros
-    # El __init__ espera: Paciente, Trabajador, fecha, movilidad, estadoEmocional, apetito, observaciones
     nueva_evaluacion = EvaluacionProfesional(
-        Paciente=nombreUsuario,       # ← CORREGIDO: Mayúscula inicial
-        Trabajador=trabajador,        # ← CORREGIDO: Mayúscula inicial
+        Paciente=nombreUsuario,
+        Trabajador=trabajador,
         fecha=hoy,
         movilidad=int(movilidad),
         estadoEmocional=int(estadoEmocional),
@@ -267,10 +282,144 @@ def guardar_evaluacion(nombreUsuario):
         observaciones=observaciones
     )
     
-    # Guardar usando el DAO
     if EvaluacionProfesionalDAO.create(nueva_evaluacion):
         flash('Evaluación guardada correctamente.', 'success')
     else:
         flash('Error al guardar la evaluación.', 'danger')
     
     return redirect(url_for('trabajador.detalle_paciente', nombreUsuario=nombreUsuario))
+
+
+# ============== SECCIÓN ESPECIALISTA ==============
+
+# --- DASHBOARD ESPECIALISTA (con depuración) ---
+@trabajador_bp.route('/especialista/dashboard')
+@login_required
+@role_required('trabajador')
+def especialista_dashboard():
+    usuario = session.get('usuario')
+    print(f"\n🔍 DEBUG ESPECIALISTA DASHBOARD")
+    print(f"   Usuario en sesión: {usuario}")
+    
+    db = Database()
+    conn = db.get_connection()
+    es_especialista = False
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT Tipo FROM Trabajadores WHERE nombreUsuario = ?",
+                (usuario,)
+            )
+            row = cursor.fetchone()
+            print(f"   Tipo en Trabajadores: {row[0] if row else 'NO ENCONTRADO'}")
+            if row and row[0] == 'especialista':
+                es_especialista = True
+        except Exception as e:
+            print(f"   Error al verificar tipo: {e}")
+        finally:
+            cursor.close()
+    
+    if not es_especialista:
+        flash('Acceso solo para especialistas.', 'danger')
+        return redirect(url_for('trabajador.dashboard'))
+    
+    from app.dao.otros_dao import SesionDAO
+    
+    # Ver todas las sesiones en la BD (sin filtrar)
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM Sesion")
+            todas = cursor.fetchall()
+            print(f"   Total sesiones en BD: {len(todas)}")
+            for s in todas:
+                print(f"      -> Paciente: {s[1]}, Especialista: {s[2]}, Fecha: {s[3]}, Hora: {s[4]}")
+        except Exception as e:
+            print(f"   Error al consultar sesiones: {e}")
+        finally:
+            cursor.close()
+    
+    sesiones = SesionDAO.get_by_especialista(usuario)
+    print(f"   Sesiones encontradas para '{usuario}': {len(sesiones)}")
+    for s in sesiones:
+        print(f"      -> {s}")
+    
+    pacientes = PacienteDAO.get_all()
+    
+    return render_template('trabajador/especialista_dashboard.html', 
+                         sesiones=sesiones, 
+                         pacientes=pacientes,
+                         nombre_especialista=session.get('nombre', 'Especialista'))
+
+
+# --- CREAR NUEVA SESIÓN ---
+@trabajador_bp.route('/especialista/crear-sesion', methods=['POST'])
+@login_required
+@role_required('trabajador')
+def crear_sesion():
+    especialista = session.get('usuario')
+    
+    db = Database()
+    conn = db.get_connection()
+    es_especialista = False
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT Tipo FROM Trabajadores WHERE nombreUsuario = ?",
+                (especialista,)
+            )
+            row = cursor.fetchone()
+            if row and row[0] == 'especialista':
+                es_especialista = True
+        except:
+            pass
+        finally:
+            cursor.close()
+    
+    if not es_especialista:
+        flash('Acceso solo para especialistas.', 'danger')
+        return redirect(url_for('trabajador.dashboard'))
+    
+    paciente = request.form.get('paciente')
+    fecha = request.form.get('fecha')
+    hora = request.form.get('hora')
+    comentarios = request.form.get('comentarios', '').strip()
+    
+    if not paciente or not fecha or not hora:
+        flash('Paciente, fecha y hora son obligatorios.', 'danger')
+        return redirect(url_for('trabajador.especialista_dashboard'))
+    
+    from app.dao.otros_dao import SesionDAO
+    from app.models.sesion import Sesion
+    
+    nueva_sesion = Sesion(
+        Paciente=paciente,
+        Especialista=especialista,
+        comentarios=comentarios,
+        Fecha=fecha,
+        Hora=hora
+    )
+    
+    resultado = SesionDAO.create(nueva_sesion)
+    if resultado:
+        flash('Sesión creada correctamente.', 'success')
+    else:
+        flash('Error al crear la sesión.', 'danger')
+    
+    return redirect(url_for('trabajador.especialista_dashboard'))
+
+
+# --- VER SESIONES DEL PACIENTE ---
+@trabajador_bp.route('/especialista/paciente/<nombreUsuario>/sesiones')
+@login_required
+@role_required('trabajador')
+def ver_sesiones_paciente(nombreUsuario):
+    from app.dao.otros_dao import SesionDAO
+    sesiones = SesionDAO.get_by_paciente(nombreUsuario)
+    paciente = PacienteDAO.get_by_nombreUsuario(nombreUsuario)
+    
+    return render_template('trabajador/especialista_sesiones_paciente.html',
+                         sesiones=sesiones,
+                         paciente=paciente)

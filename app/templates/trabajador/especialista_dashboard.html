@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Especialista - CEDIZA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2"><i class="bi bi-calendar3"></i> Panel de Especialista</h1>
+            <p class="text-muted">Bienvenido/a, {{ nombre_especialista }}. Gestiona tus sesiones y pacientes.</p>
+        </div>
+        <div class="col text-end">
+            <a href="{{ url_for('trabajador.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al panel general
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {# FORMULARIO PARA CREAR NUEVA SESIÓN #}
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-plus-circle"></i> Crear nueva sesión
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('trabajador.crear_sesion') }}">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Paciente *</label>
+                            <select class="form-select" name="paciente" required>
+                                <option value="">-- Seleccionar paciente --</option>
+                                {% for p in pacientes %}
+                                <option value="{{ p.nombreUsuario }}">{{ p.nombre }} ({{ p.nombreUsuario }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha *</label>
+                            <input type="date" class="form-control" name="fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Hora *</label>
+                            <input type="time" class="form-control" name="hora" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comentarios</label>
+                            <textarea class="form-control" name="comentarios" rows="3" placeholder="(Opcional) Notas sobre la sesión..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save"></i> Crear sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {# LISTADO DE SESIONES PROGRAMADAS #}
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-calendar-week"></i> Mis sesiones programadas
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Paciente</th>
+                                    <th>Comentarios</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if sesiones %}
+                                    {% for s in sesiones %}
+                                    <tr>
+                                        <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                        <td>{{ s.hora if s.hora else '-' }}</td>
+                                        <td>
+                                            <a href="{{ url_for('trabajador.detalle_paciente', nombreUsuario=s.paciente) }}">
+                                                {{ s.paciente }}
+                                            </a>
+                                        </td>
+                                        <td>{{ s.comentarios or '-' }}</td>
+                                        <td class="text-center">
+                                            <a href="{{ url_for('trabajador.detalle_paciente', nombreUsuario=s.paciente) }}" class="btn btn-sm btn-outline-info">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No tienes sesiones programadas.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
