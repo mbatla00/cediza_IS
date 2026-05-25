@@ -35,7 +35,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Teléfono</label>
-                            <input type="tel" class="form-control" name="telefono" pattern="[0-9]{9}" title="9 dígitos sin espacios" placeholder="(Ejemplo: 666777888)">
+                            <input type="tel" class="form-control" name="telefono" placeholder="(Ejemplo: 666777888)">
                         </div>
                     </div>
 
@@ -92,33 +92,6 @@
                         </div>
                     </div>
 
-                    <script>
-                    function agregarEnfermedad() {
-                        var input = document.getElementById('otra_enfermedad_input');
-                        var nombre = input.value.trim();
-                        if (!nombre) return;
-
-                        var container = document.querySelector('.row.g-2.mb-3');
-                        var div = document.createElement('div');
-                        div.className = 'col-md-4';
-                        div.innerHTML = `
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="enfermedades" value="nueva_${nombre}" id="enf_nueva_${nombre}" checked>
-                                <label class="form-check-label" for="enf_nueva_${nombre}">${nombre}</label>
-                            </div>
-                        `;
-                        container.appendChild(div);
-
-                        var hidden = document.createElement('input');
-                        hidden.type = 'hidden';
-                        hidden.name = 'otra_enfermedad';
-                        hidden.value = nombre;
-                        document.querySelector('form').appendChild(hidden);
-
-                        input.value = '';
-                    }
-                    </script>
-
                     {# CONTACTOS DE EMERGENCIA #}
                     <hr class="my-4">
                     <h5 class="mb-3"><i class="bi bi-telephone-fill text-danger"></i> Contactos de Emergencia</h5>
@@ -134,38 +107,13 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" name="contacto_telefono" pattern="[0-9]{9}" title="9 dígitos" placeholder="(Ejemplo: 666777888)">
+                                <input type="tel" class="form-control" name="contacto_telefono" placeholder="(Ejemplo: 666777888)">
                             </div>
                         </div>
                     </div>
                     <button type="button" class="btn btn-sm btn-outline-danger mb-4" onclick="agregarContacto()">
                         <i class="bi bi-plus-lg"></i> Añadir otro contacto
                     </button>
-
-                    <script>
-                    function agregarContacto() {
-                        var container = document.getElementById('contactosContainer');
-                        var fila = document.createElement('div');
-                        fila.className = 'row g-3 mb-3 contacto-fila';
-                        fila.innerHTML = `
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
-                            </div>
-                            <div class="col-md-3">
-                                <input type="tel" class="form-control" name="contacto_telefono" pattern="[0-9]{9}" title="9 dígitos" placeholder="(Ejemplo: 666777888)">
-                            </div>
-                            <div class="col-md-1 d-flex align-items-end">
-                                <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.contacto-fila').remove()">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        `;
-                        container.appendChild(fila);
-                    }
-                    </script>
 
                     <div class="d-flex justify-content-between border-top pt-3">
                         <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light">Cancelar</a>
@@ -178,4 +126,54 @@
         </div>
     </div>
 </div>
+
+<script>
+function agregarEnfermedad() {
+    var input = document.getElementById('otra_enfermedad_input');
+    var nombre = input.value.trim();
+    if (!nombre) return;
+
+    var container = document.querySelector('.row.g-2.mb-3');
+    var div = document.createElement('div');
+    div.className = 'col-md-4';
+    div.innerHTML = `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="enfermedades" value="nueva_${nombre}" id="enf_nueva_${nombre}" checked>
+            <label class="form-check-label" for="enf_nueva_${nombre}">${nombre}</label>
+        </div>
+    `;
+    container.appendChild(div);
+
+    var hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'otra_enfermedad';
+    hidden.value = nombre;
+    document.querySelector('form').appendChild(hidden);
+
+    input.value = '';
+}
+
+function agregarContacto() {
+    var container = document.getElementById('contactosContainer');
+    var fila = document.createElement('div');
+    fila.className = 'row g-3 mb-3 contacto-fila';
+    fila.innerHTML = `
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
+        </div>
+        <div class="col-md-3">
+            <input type="tel" class="form-control" name="contacto_telefono" placeholder="(Ejemplo: 666777888)">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.contacto-fila').remove()">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(fila);
+}
+</script>
 {% endblock %}

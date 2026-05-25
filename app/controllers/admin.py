@@ -7,6 +7,7 @@ from app.models.usuario import Usuario
 from app.dao.otros_dao import FamiliarDAO
 from app.models.familiar import Familiar
 from app.dao.database import Database
+import re
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -42,19 +43,39 @@ def nuevo_paciente():
         else:
             nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
 
+        # VALIDACIONES
+        
+        # 1. Validar DNI
+        if not UsuarioDAO.validar_dni(dni):
+            flash('El DNI introducido no es válido.', 'danger')
+            return redirect(url_for('admin.nuevo_paciente'))
+        
+        # 2. Validar teléfono principal (si no está vacío)
+        if telefono and telefono.strip():
+            if not re.match(r'^\d{9}$', telefono):
+                flash('El teléfono debe tener exactamente 9 dígitos, sin espacios.', 'danger')
+                return redirect(url_for('admin.nuevo_paciente'))
+        
+        # 3. Validar teléfonos de contactos
+        contacto_telefonos = request.form.getlist('contacto_telefono')
+        for telefono_c in contacto_telefonos:
+            if telefono_c and telefono_c.strip():
+                if not re.match(r'^\d{9}$', telefono_c):
+                    flash('Los teléfonos de contacto deben tener exactamente 9 dígitos, sin espacios.', 'danger')
+                    return redirect(url_for('admin.nuevo_paciente'))
+        
+        # 4. Validar que no exista el usuario
+        if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
+            flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado.', 'warning')
+            return redirect(url_for('admin.nuevo_paciente'))
+        
+        # 5. Validar que no exista el DNI
+        if UsuarioDAO.get_by_dni(dni):
+            flash(f'Ya existe un usuario con el DNI {dni}.', 'danger')
+            return redirect(url_for('admin.nuevo_paciente'))
+
+        # Si llegamos aquí, todas las validaciones pasaron
         try:
-            if not UsuarioDAO.validar_dni(dni):
-                flash('El DNI introducido no es válido.', 'danger')
-                return redirect(url_for('admin.nuevo_paciente'))
-
-            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
-                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado.', 'warning')
-                return redirect(url_for('admin.nuevo_paciente'))
-
-            if UsuarioDAO.get_by_dni(dni):
-                flash(f'Ya existe un usuario con el DNI {dni}.', 'danger')
-                return redirect(url_for('admin.nuevo_paciente'))
-
             nuevo_usuario = Usuario(
                 nombreUsuario=nombre_usuario,
                 Nombre=nombre_completo,
@@ -123,10 +144,12 @@ def nuevo_paciente():
                     # Enfermedades seleccionadas
                     enfermedades_ids = request.form.getlist('enfermedades')
                     for enf_id in enfermedades_ids:
-                        cursor.execute(
-                            "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
-                            (nombre_usuario, enf_id)
-                        )
+                        if not enf_id.startswith('nueva_'):  # Solo IDs numéricos
+                            cursor.execute(
+                                "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                                (nombre_usuario, enf_id)
+                            )
+                    
                     # Otra enfermedad
                     otra = request.form.get('otra_enfermedad')
                     if otra and otra.strip():
@@ -156,6 +179,7 @@ def nuevo_paciente():
                     conn.commit()
                 except Exception as e:
                     print(f"Error al guardar enfermedades/contactos: {e}")
+                    conn.rollback()
                 finally:
                     cursor.close()
 
@@ -164,6 +188,7 @@ def nuevo_paciente():
 
         except Exception as e:
             flash(f'Error crítico: {str(e)}', 'danger')
+            return redirect(url_for('admin.nuevo_paciente'))
 
     # GET: Cargar enfermedades
     db = Database()
@@ -175,8 +200,8 @@ def nuevo_paciente():
             cursor.execute("SELECT * FROM Enfermedades ORDER BY nombre")
             rows = cursor.fetchall()
             enfermedades = [{'id': r[0], 'nombre': r[1]} for r in rows]
-        except:
-            pass
+        except Exception as e:
+            print(f"Error cargando enfermedades: {e}")
         finally:
             cursor.close()
 
@@ -258,6 +283,7 @@ def nuevo_trabajador():
 
         except Exception as e:
             flash(f'Error crítico: {str(e)}', 'danger')
+            return redirect(url_for('admin.nuevo_trabajador'))
 
     return render_template('admin/trabajador_form.html')
 
@@ -289,6 +315,12 @@ def editar_usuario(nombre_usuario):
         usuario.telefono = request.form.get('telefono')
         password = request.form.get('password')
 
+        # Validar teléfono en edición
+        if usuario.telefono and usuario.telefono.strip():
+            if not re.match(r'^\d{9}$', usuario.telefono):
+                flash('El teléfono debe tener exactamente 9 dígitos, sin espacios.', 'danger')
+                return redirect(url_for('admin.editar_usuario', nombre_usuario=nombre_usuario))
+
         if password and password.strip():
             usuario.password = password.strip()
 
@@ -314,10 +346,11 @@ def editar_usuario(nombre_usuario):
                                        (usuario.nombreUsuario,))
                         enfermedades_ids = request.form.getlist('enfermedades')
                         for enf_id in enfermedades_ids:
-                            cursor.execute(
-                                "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
-                                (usuario.nombreUsuario, enf_id)
-                            )
+                            if not enf_id.startswith('nueva_'):
+                                cursor.execute(
+                                    "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                                    (usuario.nombreUsuario, enf_id)
+                                )
                         otra = request.form.get('otra_enfermedad')
                         if otra and otra.strip():
                             cursor.execute("INSERT INTO Enfermedades (nombre) VALUES (?)", (otra.strip(),))
@@ -340,6 +373,9 @@ def editar_usuario(nombre_usuario):
                             relacion_c = contacto_relaciones[i].strip() if i < len(contacto_relaciones) else ''
                             telefono_c = contacto_telefonos[i].strip() if i < len(contacto_telefonos) else ''
                             if nombre_c and telefono_c:
+                                if not re.match(r'^\d{9}$', telefono_c):
+                                    flash('Los teléfonos de contacto deben tener exactamente 9 dígitos, sin espacios.', 'danger')
+                                    return redirect(url_for('admin.editar_usuario', nombre_usuario=nombre_usuario))
                                 cursor.execute(
                                     """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
                                        VALUES (?, ?, ?, ?)""",
@@ -361,6 +397,7 @@ def editar_usuario(nombre_usuario):
                     conn.commit()
                 except Exception as e:
                     print(f"Error al actualizar: {e}")
+                    conn.rollback()
                 finally:
                     cursor.close()
 
