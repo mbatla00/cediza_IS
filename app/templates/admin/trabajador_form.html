@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Alta de Trabajador{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-warning text-dark py-3">
+                <h4 class="mb-0"><i class="bi bi-person-badge-fill"></i> Registro de Trabajador</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin.nuevo_trabajador') }}">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre Completo *</label>
+                            <input type="text" class="form-control" name="nombre_completo" required placeholder="(Ejemplo: Ana García López)">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre de Usuario *</label>
+                            <input type="text" class="form-control" name="nombre_usuario" required placeholder="(Ejemplo: anagarcia)">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">DNI *</label>
+                            <input type="text" class="form-control" name="dni" required placeholder="(Ejemplo: 12345678A)">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="(Ejemplo: correo@ejemplo.com)">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Tipo de Trabajador *</label>
+                            <select class="form-select" name="tipo" required>
+                                <option value="auxiliar">Auxiliar</option>
+                                <option value="coordinador">Coordinador</option>
+                                <option value="especialista">Especialista</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Horario</label>
+                            <select class="form-select" name="horario">
+                                <option value="">(Sin asignar)</option>
+                                <option value="Mañana">Mañana</option>
+                                <option value="Tarde">Tarde</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Contraseña *</label>
+                            <input type="password" class="form-control" name="password" required placeholder="Contraseña inicial">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4" id="campoEspecialidad" style="display:none;">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Especialidad</label>
+                            <input type="text" class="form-control" name="especialidad" placeholder="(Ejemplo: Fisioterapia)">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light">Cancelar</a>
+                        <button type="submit" class="btn btn-warning px-4">
+                            <i class="bi bi-check-lg"></i> Confirmar Alta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('select[name="tipo"]').addEventListener('change', function() {
+    var campo = document.getElementById('campoEspecialidad');
+    campo.style.display = this.value === 'especialista' ? 'flex' : 'none';
+});
+</script>
+{% endblock %}

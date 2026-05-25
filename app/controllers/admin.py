@@ -2,22 +2,24 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app.controllers.auth import login_required, role_required
 from app.dao.paciente_dao import PacienteDAO, PacPubDAO, PacPriDAO
 from app.models.paciente_tipos import PacPub, PacPri
-from app.dao.usuario_dao import UsuarioDAO 
+from app.dao.usuario_dao import UsuarioDAO
 from app.models.usuario import Usuario
+from app.dao.otros_dao import FamiliarDAO
+from app.models.familiar import Familiar
 from app.dao.database import Database
 
-# DEFINIMOS EL BLUEPRINT UNA SOLA VEZ
 admin_bp = Blueprint('admin', __name__)
 
-# --- CU-00: PANEL PRINCIPAL ---
+
+# --- DASHBOARD ---
 @admin_bp.route('/admin/dashboard')
 @login_required
 @role_required('admin')
 def dashboard():
-    """Muestra el panel principal con acceso a todas las funciones de gestión."""
     return render_template('admin/dashboard.html')
 
-# --- CU-01: ALTA DE PACIENTE ---
+
+# --- ALTA DE PACIENTE ---
 @admin_bp.route('/admin/pacientes/nuevo', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
@@ -26,103 +28,411 @@ def nuevo_paciente():
         nombre_completo = request.form.get('nombre_completo')
         dni = request.form.get('dni')
         email = request.form.get('email')
-        fecha_nacimiento_input = request.form.get('fecha_nacimiento') # <--- CAPTURAMOS EL NUEVO CAMPO
+        fecha_nacimiento_input = request.form.get('fecha_nacimiento')
+        telefono = request.form.get('telefono')
         tipo = request.form.get('tipo')
         cuenta = request.form.get('cuenta')
         nombre_usuario_manual = request.form.get('nombre_usuario_manual')
+        password = request.form.get('password', dni)
 
-        # Controlamos si la fecha viene vacía del HTML para transformarla en NULL seguro
         fecha_nacimiento = fecha_nacimiento_input if fecha_nacimiento_input and fecha_nacimiento_input.strip() else None
 
-        # LÓGICA DE DECISIÓN DEL NOMBRE DE USUARIO
         if nombre_usuario_manual and nombre_usuario_manual.strip():
             nombre_usuario = nombre_usuario_manual.strip().replace(' ', '').lower()[:50]
         else:
             nombre_usuario = nombre_completo.replace(' ', '').lower()[:50]
 
         try:
-            # CONTROL DE DUPLICADOS
-            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
-                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado. Elige otro.', 'warning')
+            if not UsuarioDAO.validar_dni(dni):
+                flash('El DNI introducido no es válido.', 'danger')
                 return redirect(url_for('admin.nuevo_paciente'))
 
-            # A. CREAR EL USUARIO PADRE (Añadimos fechaNacimiento)
+            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
+                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado.', 'warning')
+                return redirect(url_for('admin.nuevo_paciente'))
+
+            if UsuarioDAO.get_by_dni(dni):
+                flash(f'Ya existe un usuario con el DNI {dni}.', 'danger')
+                return redirect(url_for('admin.nuevo_paciente'))
+
             nuevo_usuario = Usuario(
-                nombreUsuario=nombre_usuario, 
+                nombreUsuario=nombre_usuario,
                 Nombre=nombre_completo,
                 DNI=dni,
                 Rol='paciente',
-                password=dni, 
+                password=password,
                 email=email,
-                fechaNacimiento=fecha_nacimiento # <--- SE LO PASAMOS AL MODELO
+                fechaNacimiento=fecha_nacimiento
             )
-            
+
             if not UsuarioDAO.create(nuevo_usuario):
                 flash('Error al crear la cuenta de usuario base.', 'danger')
                 return redirect(url_for('admin.nuevo_paciente'))
 
-            # B. TABLAS PACIENTES Y TIPO DETALLADO 
-            # (Nota: Las tablas específicas no guardan la fecha, solo la tabla padre 'Usuarios')
+            # Guardar teléfono en Usuarios
+            if telefono:
+                db = Database()
+                conn = db.get_connection()
+                if conn:
+                    cursor = conn.cursor()
+                    try:
+                        cursor.execute(
+                            "UPDATE Usuarios SET telefono = ? WHERE nombreUsuario = ?",
+                            (telefono, nombre_usuario)
+                        )
+                        conn.commit()
+                    except Exception as e:
+                        print(f"Error al guardar teléfono: {e}")
+                    finally:
+                        cursor.close()
+
             if tipo == 'publico':
                 nuevo_p = PacPub(
-                    nombreUsuario=nombre_usuario, 
-                    Nombre=nombre_completo, 
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre_completo,
                     DNI=dni,
-                    password=dni,
+                    password=password,
                     Dias_ingresado=0,
                     email=email
                 )
                 exito = PacienteDAO.create(nuevo_p) and PacPubDAO.create(nuevo_p)
             else:
                 if not cuenta:
-                    flash('Error: Los pacientes privados necesitan una cuenta bancaria.', 'warning')
+                    flash('Los pacientes privados necesitan cuenta bancaria.', 'warning')
                     return redirect(url_for('admin.nuevo_paciente'))
-                
                 nuevo_p = PacPri(
-                    nombreUsuario=nombre_usuario, 
-                    Nombre=nombre_completo, 
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre_completo,
                     DNI=dni,
-                    password=dni,
+                    password=password,
                     cuenta=cuenta,
                     email=email
                 )
                 exito = PacienteDAO.create(nuevo_p) and PacPriDAO.create(nuevo_p)
 
-            if exito:
-                flash(f'Éxito: Paciente {nombre_completo} ({nombre_usuario}) registrado correctamente.', 'success')
-                return redirect(url_for('admin.dashboard'))
-            else:
-                flash('Error al guardar datos específicos del paciente.', 'danger')
-        
+            if not exito:
+                flash('Error al guardar datos del paciente.', 'danger')
+                return redirect(url_for('admin.nuevo_paciente'))
+
+            # Guardar enfermedades y contactos
+            db = Database()
+            conn = db.get_connection()
+            if conn:
+                cursor = conn.cursor()
+                try:
+                    # Enfermedades seleccionadas
+                    enfermedades_ids = request.form.getlist('enfermedades')
+                    for enf_id in enfermedades_ids:
+                        cursor.execute(
+                            "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                            (nombre_usuario, enf_id)
+                        )
+                    # Otra enfermedad
+                    otra = request.form.get('otra_enfermedad')
+                    if otra and otra.strip():
+                        cursor.execute("INSERT INTO Enfermedades (nombre) VALUES (?)", (otra.strip(),))
+                        conn.commit()
+                        nuevo_id = cursor.lastrowid
+                        cursor.execute(
+                            "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                            (nombre_usuario, nuevo_id)
+                        )
+
+                    # Contactos de emergencia (múltiples)
+                    contacto_nombres = request.form.getlist('contacto_nombre')
+                    contacto_relaciones = request.form.getlist('contacto_relacion')
+                    contacto_telefonos = request.form.getlist('contacto_telefono')
+
+                    for i in range(len(contacto_nombres)):
+                        nombre_c = contacto_nombres[i].strip() if i < len(contacto_nombres) else ''
+                        relacion_c = contacto_relaciones[i].strip() if i < len(contacto_relaciones) else ''
+                        telefono_c = contacto_telefonos[i].strip() if i < len(contacto_telefonos) else ''
+                        if nombre_c and telefono_c:
+                            cursor.execute(
+                                "INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono) VALUES (?, ?, ?, ?)",
+                                (nombre_c, nombre_usuario, relacion_c, telefono_c)
+                            )
+
+                    conn.commit()
+                except Exception as e:
+                    print(f"Error al guardar enfermedades/contactos: {e}")
+                finally:
+                    cursor.close()
+
+            flash(f'Paciente {nombre_completo} registrado correctamente.', 'success')
+            return redirect(url_for('admin.dashboard'))
+
         except Exception as e:
-            flash(f'Error crítico de Base de Datos: {str(e)}', 'danger')
+            flash(f'Error crítico: {str(e)}', 'danger')
 
-    return render_template('admin/paciente_form.html')
+    # GET: Cargar enfermedades
+    db = Database()
+    conn = db.get_connection()
+    enfermedades = []
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM Enfermedades ORDER BY nombre")
+            rows = cursor.fetchall()
+            enfermedades = [{'id': r[0], 'nombre': r[1]} for r in rows]
+        except:
+            pass
+        finally:
+            cursor.close()
 
-# --- CU-04: LISTADO DE USUARIOS (GESTIÓN DE BAJAS) ---
+    return render_template('admin/paciente_form.html', enfermedades=enfermedades)
+
+
+# --- ALTA DE TRABAJADOR ---
+@admin_bp.route('/admin/trabajadores/nuevo', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def nuevo_trabajador():
+    if request.method == 'POST':
+        nombre_completo = request.form.get('nombre_completo')
+        nombre_usuario = request.form.get('nombre_usuario').strip().lower()
+        dni = request.form.get('dni')
+        email = request.form.get('email')
+        tipo = request.form.get('tipo')
+        password = request.form.get('password')
+        horario = request.form.get('horario')
+        especialidad = request.form.get('especialidad')
+
+        try:
+            if not UsuarioDAO.validar_dni(dni):
+                flash('El DNI introducido no es válido.', 'danger')
+                return redirect(url_for('admin.nuevo_trabajador'))
+
+            if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
+                flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado.', 'warning')
+                return redirect(url_for('admin.nuevo_trabajador'))
+
+            nuevo_usr = Usuario(
+                nombreUsuario=nombre_usuario,
+                Nombre=nombre_completo,
+                DNI=dni,
+                Rol='trabajador',
+                password=password,
+                email=email
+            )
+
+            if not UsuarioDAO.create(nuevo_usr):
+                flash('Error al crear la cuenta de usuario.', 'danger')
+                return redirect(url_for('admin.nuevo_trabajador'))
+
+            db = Database()
+            conn = db.get_connection()
+            if conn:
+                cursor = conn.cursor()
+                try:
+                    cursor.execute(
+                        "INSERT INTO Trabajadores (nombreUsuario, Tipo) VALUES (?, ?)",
+                        (nombre_usuario, tipo)
+                    )
+
+                    if tipo == 'auxiliar':
+                        cursor.execute(
+                            "INSERT INTO Auxiliares (nombreUsuario, Horario) VALUES (?, ?)",
+                            (nombre_usuario, horario or 'Mañana')
+                        )
+                    elif tipo == 'coordinador':
+                        cursor.execute(
+                            "INSERT INTO coordinadores (nombreUsuario) VALUES (?)",
+                            (nombre_usuario,)
+                        )
+                    elif tipo == 'especialista':
+                        cursor.execute(
+                            "INSERT INTO Especialistas (nombreUsuario, Especialidad, Horario) VALUES (?, ?, ?)",
+                            (nombre_usuario, especialidad or '', horario or '')
+                        )
+
+                    conn.commit()
+                    flash(f'Trabajador {nombre_completo} registrado correctamente.', 'success')
+                except Exception as e:
+                    conn.rollback()
+                    flash(f'Error al guardar trabajador: {e}', 'danger')
+                finally:
+                    cursor.close()
+
+            return redirect(url_for('admin.dashboard'))
+
+        except Exception as e:
+            flash(f'Error crítico: {str(e)}', 'danger')
+
+    return render_template('admin/trabajador_form.html')
+
+
+# --- LISTADO DE USUARIOS ---
 @admin_bp.route('/admin/usuarios')
 @login_required
 @role_required('admin')
 def listar_usuarios():
-    """Muestra la lista de todos los usuarios para poder gestionarlos."""
-    try:
-        # 1. Llamamos a tu nuevo método del DAO para traer los 5 usuarios de la BD
-        usuarios_bd = UsuarioDAO.get_all()
-    except Exception as e:
-        print(f"Error al buscar usuarios: {e}")
-        usuarios_bd = []
-        flash('Error al cargar la lista de usuarios.', 'danger')
-        
-
+    usuarios_bd = UsuarioDAO.get_all()
     return render_template('admin/usuarios_lista.html', usuarios=usuarios_bd)
 
 
-# --- CU-05: GESTIÓN DE BAJAS (PACIENTES Y TRABAJADORES) ---
+# --- EDITAR USUARIO ---
+@admin_bp.route('/admin/usuarios/editar/<nombre_usuario>', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def editar_usuario(nombre_usuario):
+    usuario = UsuarioDAO.get_by_nombreUsuario(nombre_usuario)
+    if not usuario:
+        flash('Usuario no encontrado.', 'danger')
+        return redirect(url_for('admin.listar_usuarios'))
+
+    if request.method == 'POST':
+        usuario.nombre = request.form.get('nombre')
+        usuario.email = request.form.get('email')
+        usuario.dni = request.form.get('dni')
+        usuario.fechaNacimiento = request.form.get('fecha_nacimiento') or None
+        usuario.telefono = request.form.get('telefono')
+        password = request.form.get('password')
+
+        if password and password.strip():
+            usuario.password = password.strip()
+
+        if UsuarioDAO.update(usuario):
+            db = Database()
+            conn = db.get_connection()
+            if conn:
+                cursor = conn.cursor()
+                try:
+                    # Guardar telefono y fechaNacimiento directo en Usuarios
+                    cursor.execute(
+                        "UPDATE Usuarios SET telefono = ?, fechaNacimiento = ? WHERE nombreUsuario = ?",
+                        (usuario.telefono, usuario.fechaNacimiento, usuario.nombreUsuario)
+                    )
+
+                    if usuario.rol == 'paciente':
+                        tipo_pac = request.form.get('tipo')
+                        cursor.execute("UPDATE Pacientes SET Tipo = ? WHERE nombreUsuario = ?",
+                                       (tipo_pac, usuario.nombreUsuario))
+
+                        # Enfermedades
+                        cursor.execute("DELETE FROM PacienteEnfermedad WHERE paciente = ?",
+                                       (usuario.nombreUsuario,))
+                        enfermedades_ids = request.form.getlist('enfermedades')
+                        for enf_id in enfermedades_ids:
+                            cursor.execute(
+                                "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                                (usuario.nombreUsuario, enf_id)
+                            )
+                        otra = request.form.get('otra_enfermedad')
+                        if otra and otra.strip():
+                            cursor.execute("INSERT INTO Enfermedades (nombre) VALUES (?)", (otra.strip(),))
+                            conn.commit()
+                            nuevo_id = cursor.lastrowid
+                            cursor.execute(
+                                "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
+                                (usuario.nombreUsuario, nuevo_id)
+                            )
+
+                        # Contactos de emergencia
+                        cursor.execute("DELETE FROM Familiares WHERE Paciente = ?",
+                                       (usuario.nombreUsuario,))
+                        contacto_nombres = request.form.getlist('contacto_nombre')
+                        contacto_relaciones = request.form.getlist('contacto_relacion')
+                        contacto_telefonos = request.form.getlist('contacto_telefono')
+
+                        for i in range(len(contacto_nombres)):
+                            nombre_c = contacto_nombres[i].strip() if i < len(contacto_nombres) else ''
+                            relacion_c = contacto_relaciones[i].strip() if i < len(contacto_relaciones) else ''
+                            telefono_c = contacto_telefonos[i].strip() if i < len(contacto_telefonos) else ''
+                            if nombre_c and telefono_c:
+                                cursor.execute(
+                                    """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
+                                       VALUES (?, ?, ?, ?)""",
+                                    (nombre_c, usuario.nombreUsuario, relacion_c, telefono_c)
+                                )
+
+                    elif usuario.rol == 'trabajador':
+                        tipo_trab = request.form.get('tipo_trabajador')
+                        horario = request.form.get('horario')
+                        cursor.execute("UPDATE Trabajadores SET Tipo = ? WHERE nombreUsuario = ?",
+                                       (tipo_trab, usuario.nombreUsuario))
+                        if tipo_trab == 'auxiliar':
+                            cursor.execute("UPDATE Auxiliares SET Horario = ? WHERE nombreUsuario = ?",
+                                           (horario, usuario.nombreUsuario))
+                        elif tipo_trab == 'especialista':
+                            cursor.execute("UPDATE Especialistas SET Horario = ? WHERE nombreUsuario = ?",
+                                           (horario, usuario.nombreUsuario))
+
+                    conn.commit()
+                except Exception as e:
+                    print(f"Error al actualizar: {e}")
+                finally:
+                    cursor.close()
+
+            flash('Usuario actualizado correctamente.', 'success')
+        else:
+            flash('Error al actualizar el usuario.', 'danger')
+
+        return redirect(url_for('admin.listar_usuarios'))
+
+    # GET: Cargar datos
+    db = Database()
+    conn = db.get_connection()
+    enfermedades = []
+    paciente_enfermedades = []
+    contactos = []
+
+    if conn:
+        cursor = conn.cursor()
+        try:
+            # Cargar fechaNacimiento y telefono
+            cursor.execute(
+                "SELECT fechaNacimiento, telefono FROM Usuarios WHERE nombreUsuario = ?",
+                (usuario.nombreUsuario,)
+            )
+            row = cursor.fetchone()
+            if row:
+                if row[0]:
+                    usuario.fechaNacimiento = row[0]
+                if row[1]:
+                    usuario.telefono = row[1]
+
+            # Enfermedades disponibles
+            cursor.execute("SELECT * FROM Enfermedades ORDER BY nombre")
+            rows = cursor.fetchall()
+            enfermedades = [{'id': r[0], 'nombre': r[1]} for r in rows]
+
+            # Enfermedades del paciente
+            if usuario.rol == 'paciente':
+                cursor.execute(
+                    "SELECT enfermedad_id FROM PacienteEnfermedad WHERE paciente = ?",
+                    (usuario.nombreUsuario,)
+                )
+                paciente_enfermedades = [r[0] for r in cursor.fetchall()]
+
+            # Contactos
+            cursor.execute(
+                "SELECT Nombre, Relacion, Telefono FROM Familiares WHERE Paciente = ?",
+                (usuario.nombreUsuario,)
+            )
+            rows = cursor.fetchall()
+            contactos = [
+                {'nombre': r[0], 'relacion': r[1], 'telefono': r[2]}
+                for r in rows
+            ]
+
+        except Exception as e:
+            print(f"Error al cargar datos: {e}")
+        finally:
+            cursor.close()
+
+    return render_template('admin/editar_usuario.html',
+                           usuario=usuario,
+                           enfermedades=enfermedades,
+                           paciente_enfermedades=paciente_enfermedades,
+                           contactos=contactos)
+
+
+# --- GESTIÓN DE BAJAS ---
 @admin_bp.route('/admin/usuarios/gestion-bajas')
 @login_required
 @role_required('admin')
 def gestion_bajas():
-    """Muestra la lista de todos los usuarios usando el DAO original."""
     usuarios_bd = UsuarioDAO.get_all()
     return render_template('admin/usuarios_lista.html', usuarios=usuarios_bd)
 
@@ -131,15 +441,12 @@ def gestion_bajas():
 @login_required
 @role_required('admin')
 def cambiar_estado_usuario(nombre_usuario):
-    """Procesa el cambio de estado usando los métodos del DAO."""
-    estado_actual = request.form.get('estado_actual') == '1' # En MySQL BOOLEAN es 1 o 0
-    
+    estado_actual = request.form.get('estado_actual') == '1'
+
     if estado_actual:
-        # SI ESTÁ ACTIVO -> Usamos tu método delete() existente para pasarlo a 0
         exito = UsuarioDAO.delete(nombre_usuario)
         accion = "dado de BAJA"
     else:
-        # SI ESTÁ INACTIVO -> Lo reactivamos con un query rápido pasándolo a 1
         db = Database()
         conn = db.get_connection()
         exito = False
@@ -154,10 +461,10 @@ def cambiar_estado_usuario(nombre_usuario):
             finally:
                 cursor.close()
         accion = "REACTIVADO"
-    
+
     if exito:
         flash(f'El usuario {nombre_usuario} ha sido {accion} correctamente.', 'success')
     else:
-        flash(f'Error al procesar la solicitud del usuario {nombre_usuario}.', 'danger')
-        
+        flash(f'Error al procesar la solicitud.', 'danger')
+
     return redirect(url_for('admin.gestion_bajas'))

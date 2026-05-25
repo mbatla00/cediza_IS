@@ -32,7 +32,6 @@ class UsuarioDAO:
                 elif row.get('TipoTrabajador'):
                     row['Tipo'] = row['TipoTrabajador']
                 
-                # Crear el objeto y parchear el email
                 usuario_obj = UsuarioFactory.crear(row)
                 if usuario_obj and 'email' in row:
                     usuario_obj.email = row.get('email')
@@ -204,9 +203,6 @@ class UsuarioDAO:
         finally:
             cursor.close()
 
-    # -------------------------------------------------------------
-    # Obtener todos los usuarios del sistema (Saneado contra NULLs)
-    # -------------------------------------------------------------
     @staticmethod
     def get_all():
         """Devuelve una lista de todos los objetos Usuario válidos en el sistema."""
@@ -236,12 +232,10 @@ class UsuarioDAO:
                     row[k] = v
                     row[k.lower()] = v
                 
-                # Mapeos explícitos de seguridad para asegurar compatibilidad con las propiedades
                 if 'nombreusuario' in row: row['nombreUsuario'] = row['nombreusuario']
                 if 'tipopaciente' in row: row['TipoPaciente'] = row['tipopaciente']
                 if 'tipotrabajador' in row: row['TipoTrabajador'] = row['tipotrabajador']
                 if 'fechanacimiento' in row: row['fechaNacimiento'] = row['fechanacimiento']
-                if 'dias_ingresado' in row: row['Dias_ingresado'] = row['dias_ingresado']
 
                 val_activo = row.get('activo')
                 if val_activo is None:
@@ -252,15 +246,12 @@ class UsuarioDAO:
                 else:
                     estado_corregido = 0
                 
-                # Lo guardamos de todas las formas posibles en el diccionario para la Factory
                 row['activo'] = estado_corregido
                 row['Activo'] = estado_corregido
 
-                # 1. Protegemos el Rol buscando en cualquier variante de caja
                 rol = (row.get('Rol') or row.get('rol') or '').lower()
                 row['Rol'] = rol
                 
-                # 2. Protegemos el Tipo unificando procedencias
                 if rol == 'paciente':
                     tipo_val = row.get('TipoPaciente') or row.get('tipopaciente') or ''
                     row['Tipo'] = tipo_val

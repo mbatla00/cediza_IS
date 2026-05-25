@@ -19,6 +19,7 @@
                 </div>
                 <div class="card-body">
                     <p class="mb-2"><strong>Usuario:</strong> {{ paciente.nombreUsuario }}</p>
+                    <p class="mb-2"><strong>Teléfono:</strong> {{ paciente.telefono or 'No registrado' }}</p>
                     <p class="mb-0"><strong>Régimen:</strong> 
                         {% if paciente.tipo == 'publico' %}
                             <span class="badge bg-info text-dark">Público</span>
@@ -46,7 +47,9 @@
                                 <input type="text" name="relacion_contacto" class="form-control form-control-sm" placeholder="Parentesco (Ej: Hijo/a)" required>
                             </div>
                             <div class="mb-2">
-                                <input type="tel" name="telefono_contacto" class="form-control form-control-sm" placeholder="Teléfono de contacto" required>
+                                <input type="tel" name="telefono_contacto" class="form-control form-control-sm" 
+                                    placeholder="Teléfono (9 dígitos)" required
+                                    pattern="[0-9]{9}" title="Introduce un número de 9 dígitos sin espacios">
                             </div>
                             <button type="submit" class="btn btn-danger btn-sm w-100">Guardar Contacto</button>
                         </form>
@@ -93,7 +96,7 @@
                     <i class="bi bi-clock-history"></i> Historial de Evolución 
                 </div>
                 <div class="card-body">
-                    {% if idx or notes or notas %}
+                    {% if notas %}
                         <div class="position-relative ps-3 border-start border-2 border-light">
                         {% for n in notas %}
                             <div class="mb-4 position-relative">

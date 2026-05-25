@@ -5,6 +5,7 @@ from app.dao.paciente_dao import PacienteDAO
 from app.dao.otros_dao import FamiliarDAO
 from app.dao.cuestionario_dao import CuestionarioDAO, PreguntaDAO, RespuestaDAO
 from app.models.cuestionario import Respuesta
+from app.dao.database import Database
 from datetime import datetime, date
 
 paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
@@ -17,7 +18,6 @@ paciente_bp = Blueprint('paciente', __name__, url_prefix='/paciente')
 def dashboard():
     username = session.get('usuario')
 
-    # Comprobamos si el paciente ya respondió el cuestionario hoy
     respuestas_hoy = RespuestaDAO.get_by_paciente(username)
     ya_respondio_hoy = any(
         r.fechaHora and r.fechaHora.date() == date.today()
@@ -28,14 +28,13 @@ def dashboard():
                            ya_respondio_hoy=ya_respondio_hoy)
 
 
-# --- CU-07: MOSTRAR CUESTIONARIO DIARIO ---
+# --- MOSTRAR CUESTIONARIO DIARIO ---
 @paciente_bp.route('/cuestionario')
 @login_required
 @role_required('paciente')
 def cuestionario():
     username = session.get('usuario')
 
-    # Bloquear si ya respondió hoy
     respuestas_hoy = RespuestaDAO.get_by_paciente(username)
     ya_respondio_hoy = any(
         r.fechaHora and r.fechaHora.date() == date.today()
@@ -45,7 +44,6 @@ def cuestionario():
         flash('Ya has completado el cuestionario de hoy. ¡Hasta mañana!', 'info')
         return redirect(url_for('paciente.dashboard'))
 
-    # Cargamos el cuestionario diario
     cuestionarios = CuestionarioDAO.get_all()
     cuestionario_diario = next(
         (c for c in cuestionarios if c.tipo == 'diario'), None
@@ -66,7 +64,7 @@ def cuestionario():
                            preguntas=preguntas)
 
 
-# --- CU-08: GUARDAR RESPUESTAS DEL CUESTIONARIO ---
+# --- GUARDAR RESPUESTAS DEL CUESTIONARIO ---
 @paciente_bp.route('/responder', methods=['POST'])
 @login_required
 @role_required('paciente')
@@ -104,36 +102,57 @@ def responder():
     return redirect(url_for('paciente.dashboard'))
 
 
-# --- CU-02: VER Y ACTUALIZAR PERFIL DEL PACIENTE ---
-@paciente_bp.route('/perfil', methods=['GET', 'POST'])
+# --- VER PERFIL DEL PACIENTE (SOLO LECTURA) ---
+@paciente_bp.route('/perfil')
 @login_required
 @role_required('paciente')
-def perfil():
-    username = session.get('usuario')
+def ver_perfil():
+    usuario_nombre = session.get('usuario')
+    paciente = PacienteDAO.get_by_nombreUsuario(usuario_nombre)
+    usuario = UsuarioDAO.get_by_nombreUsuario(usuario_nombre)
 
-    if request.method == 'POST':
-        nuevo_email = request.form.get('email', '').strip()
+    # Cargar fechaNacimiento y telefono desde Usuarios
+    db = Database()
+    conn = db.get_connection()
+    if conn and usuario:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT fechaNacimiento, telefono FROM Usuarios WHERE nombreUsuario = ?",
+                (usuario_nombre,)
+            )
+            row = cursor.fetchone()
+            if row:
+                if row[0]:
+                    usuario.fechaNacimiento = row[0]
+                if row[1]:
+                    usuario.telefono = row[1]
+        except:
+            pass
+        finally:
+            cursor.close()
 
-        usuario_db = UsuarioDAO.get_by_nombreUsuario(username)
-        if not usuario_db:
-            flash('Error: usuario no encontrado.', 'danger')
-            return redirect(url_for('paciente.perfil'))
-
-        usuario_db.email = nuevo_email if nuevo_email else None
-
-        if UsuarioDAO.update(usuario_db):
-            flash('Cambios guardados correctamente.', 'success')
-        else:
-            flash('Error al guardar los cambios. Inténtalo de nuevo.', 'danger')
-
-        return redirect(url_for('paciente.perfil'))
-
-    # GET: cargar datos desde BD
-    usuario_db = UsuarioDAO.get_by_nombreUsuario(username)
-    paciente_db = PacienteDAO.get_by_nombreUsuario(username)
-    familiares = FamiliarDAO.get_by_paciente(username)
+    # Cargar contactos
+    familiares = []
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "SELECT Nombre, Relacion, Telefono FROM Familiares WHERE Paciente = ?",
+                (usuario_nombre,)
+            )
+            rows = cursor.fetchall()
+            familiares = [
+                {'nombre': r[0], 'relacion': r[1], 'telefono': r[2]}
+                for r in rows
+            ]
+        except:
+            pass
+        finally:
+            if 'cursor' in locals():
+                cursor.close()
 
     return render_template('paciente/perfil.html',
-                           usuario=usuario_db,
-                           paciente=paciente_db,
-                           familiares=familiares)
+                         usuario=usuario,
+                         paciente=paciente,
+                         familiares=familiares)
