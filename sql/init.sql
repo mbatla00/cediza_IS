@@ -433,7 +433,7 @@ INSERT INTO Enfermedades (nombre) VALUES
 ('Parkinson'),
 ('Demencia senil'),
 ('Artrosis'),
-('Depresión')
+('Depresion')
 ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
 
 SET SQL_MODE=@OLD_SQL_MODE;
