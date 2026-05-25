@@ -1,6 +1,8 @@
 from mysql.connector import Error
 from app.dao.database import Database
 from app.models.eval_inf_fac import EvaluacionProfesional, Informe, Factura
+from datetime import date
+import jpype
 
 
 class EvaluacionProfesionalDAO:
@@ -79,21 +81,31 @@ class EvaluacionProfesionalDAO:
 
         cursor = conn.cursor()
         try:
+            # Convertir fecha de Python a java.sql.Date para JDBC
+            fecha_a_guardar = evaluacion.fecha
+            if isinstance(fecha_a_guardar, date):
+                # Convertir datetime.date de Python a java.sql.Date
+                SQLDate = jpype.JClass("java.sql.Date")
+                # java.sql.Date espera milisegundos desde epoch
+                import time
+                timestamp = int(time.mktime(fecha_a_guardar.timetuple()) * 1000)
+                fecha_a_guardar = SQLDate(timestamp)
+            
             sql = """INSERT INTO EvaluacionProfesional
                      (Paciente, Trabajador, fecha, movilidad, estadoEmocional, apetito, observaciones)
                      VALUES (?, ?, ?, ?, ?, ?, ?)"""
             cursor.execute(sql, (
                 evaluacion.paciente,
                 evaluacion.trabajador,
-                evaluacion.fecha,
+                fecha_a_guardar,
                 evaluacion.movilidad,
                 evaluacion.estadoEmocional,
                 evaluacion.apetito,
                 evaluacion.observaciones
             ))
             conn.commit()
-            return cursor.lastrowid
-        except Error as e:
+            return True
+        except Exception as e:
             print(f"Error en EvaluacionProfesionalDAO.create: {e}")
             conn.rollback()
             return None
@@ -206,6 +218,24 @@ class InformeDAO:
 
         cursor = conn.cursor()
         try:
+            # Convertir fechas para JDBC
+            fecha_gen = informe.fechaGeneracion
+            periodo_ini = informe.periodoInicio
+            periodo_fin = informe.periodoFin
+            
+            import time
+            SQLDate = jpype.JClass("java.sql.Date")
+            
+            if isinstance(fecha_gen, date):
+                timestamp = int(time.mktime(fecha_gen.timetuple()) * 1000)
+                fecha_gen = SQLDate(timestamp)
+            if isinstance(periodo_ini, date):
+                timestamp = int(time.mktime(periodo_ini.timetuple()) * 1000)
+                periodo_ini = SQLDate(timestamp)
+            if isinstance(periodo_fin, date):
+                timestamp = int(time.mktime(periodo_fin.timetuple()) * 1000)
+                periodo_fin = SQLDate(timestamp)
+            
             sql = """INSERT INTO Informe
                      (referencia, Paciente, Trabajador, fechaGeneracion, periodoInicio, periodoFin)
                      VALUES (?, ?, ?, ?, ?, ?)"""
@@ -213,9 +243,9 @@ class InformeDAO:
                 informe.referencia,
                 informe.paciente,
                 informe.trabajador,
-                informe.fechaGeneracion,
-                informe.periodoInicio,
-                informe.periodoFin
+                fecha_gen,
+                periodo_ini,
+                periodo_fin
             ))
             conn.commit()
             return True
@@ -325,6 +355,14 @@ class FacturaDAO:
 
         cursor = conn.cursor()
         try:
+            # Convertir fecha para JDBC
+            fecha_emision = factura.fechaEmision
+            if isinstance(fecha_emision, date):
+                import time
+                SQLDate = jpype.JClass("java.sql.Date")
+                timestamp = int(time.mktime(fecha_emision.timetuple()) * 1000)
+                fecha_emision = SQLDate(timestamp)
+            
             sql = """INSERT INTO Factura
                      (codigoFactura, Paciente, Administrador, fechaEmision, importeTotal, estadoPago)
                      VALUES (?, ?, ?, ?, ?, ?)"""
@@ -332,7 +370,7 @@ class FacturaDAO:
                 factura.codigoFactura,
                 factura.paciente,
                 factura.administrador,
-                factura.fechaEmision,
+                fecha_emision,
                 factura.importeTotal,
                 factura.estadoPago
             ))

@@ -15,9 +15,8 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            # Traemos los datos cruzados limpiamente
             cursor.execute("""
-                SELECT p.*, u.activo 
+                SELECT p.*, u.Nombre, u.activo 
                 FROM Pacientes p
                 JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
                 WHERE u.activo = 1
@@ -32,10 +31,9 @@ class PacienteDAO:
                 
                 row = {k.lower(): v for k, v in row_raw.items()}
                 
-                # Construimos pasando los parámetros exactamente como los pide paciente.py
                 paciente_obj = Paciente(
                     nombreUsuario=row.get('nombreusuario'),
-                    Nombre=row.get('nombre'),
+                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
                     DNI=row.get('dni'),
                     fechaNacimiento=row.get('fechanacimiento'),
                     email=row.get('email'),
@@ -61,7 +59,12 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * FROM Pacientes WHERE nombreUsuario = ?", (nombreUsuario,))
+            cursor.execute("""
+                SELECT p.*, u.Nombre, u.activo 
+                FROM Pacientes p
+                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
+                WHERE p.nombreUsuario = ?
+            """, (nombreUsuario,))
             raw_row = cursor.fetchone()
             
             if raw_row:
@@ -73,7 +76,7 @@ class PacienteDAO:
                 
                 return Paciente(
                     nombreUsuario=row.get('nombreusuario'),
-                    Nombre=row.get('nombre'),
+                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
                     DNI=row.get('dni'),
                     fechaNacimiento=row.get('fechanacimiento'),
                     email=row.get('email'),
@@ -142,29 +145,11 @@ class PacPubDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * FROM Pacientes WHERE nombreUsuario = ?", (nombreUsuario,))
-            raw_row = cursor.fetchone()
-            
-            if raw_row:
-                row_raw = Database.row_to_dict(cursor, raw_row)
-                if not row_raw:
-                    return None
-                
-                row = {k.lower(): v for k, v in row_raw.items()}
-                
-                return Paciente(
-                    nombreUsuario=row.get('nombreusuario'),
-                    Nombre=row.get('nombre'),
-                    DNI=row.get('dni'),
-                    fechaNacimiento=row.get('fechanacimiento'),
-                    email=row.get('email'),
-                    activo=row.get('activo'),
-                    Tipo=row.get('tipo'),           
-                    diagnostico=row.get('diagnostico') 
-                )
-            return None
-        except Exception as e:
-            print(f"Error crítico en PacienteDAO.get_by_nombreUsuario: {e}")
+            cursor.execute("SELECT * FROM Pac_pub WHERE nombreUsuario = ?", (nombreUsuario,))
+            row = Database.row_to_dict(cursor, cursor.fetchone())
+            return PacPub(**row) if row else None
+        except Error as e:
+            print(f"Error en PacPubDAO.get_by_nombreUsuario: {e}")
             return None
         finally:
             cursor.close()

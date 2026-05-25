@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Evaluar Paciente - CEDIZA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-warning text-dark py-3">
+                <h4 class="mb-0"><i class="bi bi-clipboard2-heart"></i> Evaluación Rápida</h4>
+                <small>Paciente: {{ paciente.nombre }} ({{ paciente.nombreUsuario }})</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('trabajador.guardar_evaluacion', nombreUsuario=paciente.nombreUsuario) }}" id="evaluacionForm">
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Estado Emocional *</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estadoEmocional" value="1" required>
+                                <label class="form-check-label">1 - Muy mal</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estadoEmocional" value="2" required>
+                                <label class="form-check-label">2 - Mal</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estadoEmocional" value="3" required>
+                                <label class="form-check-label">3 - Regular</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estadoEmocional" value="4" required>
+                                <label class="form-check-label">4 - Bien</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estadoEmocional" value="5" required>
+                                <label class="form-check-label">5 - Muy bien</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Movilidad *</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="movilidad" value="1" required>
+                                <label class="form-check-label">1 - Inmovilizado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="movilidad" value="2" required>
+                                <label class="form-check-label">2 - Con mucha dificultad</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="movilidad" value="3" required>
+                                <label class="form-check-label">3 - Con algo de dificultad</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="movilidad" value="4" required>
+                                <label class="form-check-label">4 - Con poca dificultad</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="movilidad" value="5" required>
+                                <label class="form-check-label">5 - Normal</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Apetito *</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="apetito" value="1" required>
+                                <label class="form-check-label">1 - No come nada (Muy mal)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="apetito" value="2" required>
+                                <label class="form-check-label">2 - Come muy poco (Mal)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="apetito" value="3" required>
+                                <label class="form-check-label">3 - Come regular</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="apetito" value="4" required>
+                                <label class="form-check-label">4 - Come bien</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="apetito" value="5" required>
+                                <label class="form-check-label">5 - Come muy bien</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Observaciones</label>
+                        <textarea class="form-control" name="observaciones" rows="3" placeholder="(Opcional) Comentarios adicionales..."></textarea>
+                    </div>
+
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle"></i> Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                    </div>
+
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <a href="{{ url_for('trabajador.detalle_paciente', nombreUsuario=paciente.nombreUsuario) }}" class="btn btn-light">
+                            <i class="bi bi-arrow-left"></i> Volver al expediente
+                        </a>
+                        <button type="submit" class="btn btn-warning px-4">
+                            <i class="bi bi-save"></i> Guardar Evaluación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación adicional antes de enviar
+document.getElementById('evaluacionForm').addEventListener('submit', function(e) {
+    const emocional = document.querySelector('input[name="estadoEmocional"]:checked');
+    const movilidad = document.querySelector('input[name="movilidad"]:checked');
+    const apetito = document.querySelector('input[name="apetito"]:checked');
+    
+    let errores = [];
+    if (!emocional) errores.push('Estado Emocional');
+    if (!movilidad) errores.push('Movilidad');
+    if (!apetito) errores.push('Apetito');
+    
+    if (errores.length > 0) {
+        alert('Debes seleccionar: ' + errores.join(', '));
+        e.preventDefault();
+        return false;
+    }
+    return true;
+});
+</script>
+{% endblock %}

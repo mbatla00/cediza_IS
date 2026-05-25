@@ -11,6 +11,52 @@
         </div>
     </div>
 
+    <!-- Tarjetas de acciones rápidas -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-warning text-dark">
+                    <i class="bi bi-clipboard2-heart"></i> Evaluación Rápida
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Evaluar paciente</h5>
+                    <p class="card-text text-muted">Registra el estado emocional, movilidad y apetito de un paciente.</p>
+                    <div class="mt-auto">
+                        <label class="form-label fw-bold">Seleccionar paciente:</label>
+                        <select class="form-select" id="pacienteSelect" onchange="irAEvaluar()">
+                            <option value="">-- Seleccionar paciente --</option>
+                            {% for p in pacientes %}
+                            <option value="{{ p.nombreUsuario }}">{{ p.nombreUsuario }} - {{ p.nombre if p.nombre else '' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-pencil-square"></i> Nota Clínica
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Añadir anotación</h5>
+                    <p class="card-text text-muted">Registra observaciones rápidas sobre la evolución del paciente.</p>
+                    <div class="mt-auto">
+                        <label class="form-label fw-bold">Seleccionar paciente:</label>
+                        <select class="form-select" id="pacienteNotaSelect" onchange="irANota()">
+                            <option value="">-- Seleccionar paciente --</option>
+                            {% for p in pacientes %}
+                            <option value="{{ p.nombreUsuario }}">{{ p.nombreUsuario }} - {{ p.nombre if p.nombre else '' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de pacientes -->
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white py-3">
             <h5 class="mb-0"><i class="bi bi-people-fill"></i> Lista de Pacientes Residentes</h5>
@@ -21,6 +67,7 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Nombre de Usuario</th>
+                            <th>Nombre Completo</th>
                             <th>Tipo de Régimen</th>
                             <th class="text-end pe-4">Acciones</th>
                         </tr>
@@ -30,6 +77,7 @@
                             {% for p in pacientes %}
                             <tr>
                                 <td class="ps-4 fw-bold text-secondary">{{ p.nombreUsuario }}</td>
+                                <td>{{ p.nombre if p.nombre else '-' }}</td>
                                 <td>
                                     {% if p.tipo == 'publico' %}
                                         <span class="badge bg-info text-dark">Público</span>
@@ -38,15 +86,20 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="{{ url_for('trabajador.detalle_paciente', nombreUsuario=p.nombreUsuario) }}" class="btn btn-outline-primary btn-sm px-3">
-                                        <i class="bi bi-folder2-open"></i> Ver Expediente
-                                    </a>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('trabajador.detalle_paciente', nombreUsuario=p.nombreUsuario) }}" class="btn btn-outline-primary">
+                                            <i class="bi bi-folder2-open"></i> Expediente
+                                        </a>
+                                        <a href="{{ url_for('trabajador.evaluar_paciente', nombreUsuario=p.nombreUsuario) }}" class="btn btn-outline-warning">
+                                            <i class="bi bi-clipboard2-heart"></i> Evaluar
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="3" class="text-center py-4 text-muted"> No hay pacientes registrados en el sistema.</td>
+                                <td colspan="4" class="text-center py-4 text-muted">No hay pacientes registrados en el sistema.</td>
                             </tr>
                         {% endif %}
                     </tbody>
@@ -55,4 +108,24 @@
         </div>
     </div>
 </div>
+
+<script>
+function irAEvaluar() {
+    var paciente = document.getElementById('pacienteSelect').value;
+    if (paciente) {
+        // Construir la URL correctamente usando la ruta base
+        var baseUrl = "{{ url_for('trabajador.evaluar_paciente', nombreUsuario='__PACIENTE__') }}";
+        window.location.href = baseUrl.replace('__PACIENTE__', paciente);
+    }
+}
+
+function irANota() {
+    var paciente = document.getElementById('pacienteNotaSelect').value;
+    if (paciente) {
+        // Construir la URL correctamente usando la ruta base
+        var baseUrl = "{{ url_for('trabajador.detalle_paciente', nombreUsuario='__PACIENTE__') }}";
+        window.location.href = baseUrl.replace('__PACIENTE__', paciente) + "#nota";
+    }
+}
+</script>
 {% endblock %}
