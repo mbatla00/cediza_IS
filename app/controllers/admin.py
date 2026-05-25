@@ -144,7 +144,7 @@ def nuevo_paciente():
                     # Enfermedades seleccionadas
                     enfermedades_ids = request.form.getlist('enfermedades')
                     for enf_id in enfermedades_ids:
-                        if not enf_id.startswith('nueva_'):  # Solo IDs numéricos
+                        if not enf_id.startswith('nueva_'):
                             cursor.execute(
                                 "INSERT INTO PacienteEnfermedad (paciente, enfermedad_id) VALUES (?, ?)",
                                 (nombre_usuario, enf_id)
@@ -208,7 +208,7 @@ def nuevo_paciente():
     return render_template('admin/paciente_form.html', enfermedades=enfermedades)
 
 
-# --- ALTA DE TRABAJADOR ---
+# --- ALTA DE TRABAJADOR (REFACTORIZADO CON DAOs) ---
 @admin_bp.route('/admin/trabajadores/nuevo', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
@@ -221,18 +221,25 @@ def nuevo_trabajador():
         tipo = request.form.get('tipo')
         password = request.form.get('password')
         horario = request.form.get('horario')
-        horario_especialista = request.form.get('horario_especialista')
         especialidad = request.form.get('especialidad')
 
         try:
+            # Validar DNI
             if not UsuarioDAO.validar_dni(dni):
                 flash('El DNI introducido no es válido.', 'danger')
                 return redirect(url_for('admin.nuevo_trabajador'))
 
+            # Validar nombre de usuario único
             if UsuarioDAO.get_by_nombreUsuario(nombre_usuario):
                 flash(f'El nombre de usuario "{nombre_usuario}" ya está ocupado.', 'warning')
                 return redirect(url_for('admin.nuevo_trabajador'))
 
+            # Validar DNI único
+            if UsuarioDAO.get_by_dni(dni):
+                flash(f'Ya existe un usuario con el DNI {dni}.', 'danger')
+                return redirect(url_for('admin.nuevo_trabajador'))
+
+            # 1. Crear usuario base en Usuarios
             nuevo_usr = Usuario(
                 nombreUsuario=nombre_usuario,
                 Nombre=nombre_completo,
@@ -246,40 +253,63 @@ def nuevo_trabajador():
                 flash('Error al crear la cuenta de usuario.', 'danger')
                 return redirect(url_for('admin.nuevo_trabajador'))
 
-            db = Database()
-            conn = db.get_connection()
-            if conn:
-                cursor = conn.cursor()
-                try:
-                    cursor.execute(
-                        "INSERT INTO Trabajadores (nombreUsuario, Tipo) VALUES (?, ?)",
-                        (nombre_usuario, tipo)
-                    )
+            # 2. Crear registro en Trabajadores usando TrabajadorDAO
+            from app.models.trabajador import Trabajador
+            from app.dao.trabajador_dao import TrabajadorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO
+            
+            trabajador = Trabajador(
+                nombreUsuario=nombre_usuario,
+                Nombre=nombre_completo,
+                DNI=dni,
+                password=password,
+                Tipo=tipo
+            )
+            if not TrabajadorDAO.create(trabajador):
+                flash('Error al registrar el trabajador.', 'danger')
+                return redirect(url_for('admin.nuevo_trabajador'))
 
-                    if tipo == 'auxiliar':
-                        cursor.execute(
-                            "INSERT INTO Auxiliares (nombreUsuario, Horario) VALUES (?, ?)",
-                            (nombre_usuario, horario or 'Mañana')
-                        )
-                    elif tipo == 'coordinador':
-                        cursor.execute(
-                            "INSERT INTO coordinadores (nombreUsuario) VALUES (?)",
-                            (nombre_usuario,)
-                        )
-                    elif tipo == 'especialista':
-                        cursor.execute(
-                            "INSERT INTO Especialistas (nombreUsuario, Especialidad, Horario) VALUES (?, ?, ?)",
-                            (nombre_usuario, especialidad or '', horario or '')
-                        )
+            # 3. Crear registro en tabla específica según el tipo
+            if tipo == 'auxiliar':
+                from app.models.trabajador_tipos import Auxiliar
+                auxiliar = Auxiliar(
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre_completo,
+                    DNI=dni,
+                    password=password,
+                    Horario=horario or 'Mañana'
+                )
+                if not AuxiliarDAO.create(auxiliar):
+                    flash('Error al registrar el auxiliar.', 'danger')
+                    return redirect(url_for('admin.nuevo_trabajador'))
 
-                    conn.commit()
-                    flash(f'Trabajador {nombre_completo} registrado correctamente.', 'success')
-                except Exception as e:
-                    conn.rollback()
-                    flash(f'Error al guardar trabajador: {e}', 'danger')
-                finally:
-                    cursor.close()
+            elif tipo == 'coordinador':
+                from app.models.trabajador_tipos import Coordinador
+                coordinador = Coordinador(
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre_completo,
+                    DNI=dni,
+                    password=password,
+                    infoInteres=None
+                )
+                if not CoordinadorDAO.create(coordinador):
+                    flash('Error al registrar el coordinador.', 'danger')
+                    return redirect(url_for('admin.nuevo_trabajador'))
 
+            elif tipo == 'especialista':
+                from app.models.trabajador_tipos import Especialista
+                especialista = Especialista(
+                    nombreUsuario=nombre_usuario,
+                    Nombre=nombre_completo,
+                    DNI=dni,
+                    password=password,
+                    Especialidad=especialidad or '',
+                    Horario=horario or ''
+                )
+                if not EspecialistaDAO.create(especialista):
+                    flash('Error al registrar el especialista.', 'danger')
+                    return redirect(url_for('admin.nuevo_trabajador'))
+
+            flash(f'Trabajador {nombre_completo} registrado correctamente.', 'success')
             return redirect(url_for('admin.dashboard'))
 
         except Exception as e:
@@ -294,9 +324,7 @@ def nuevo_trabajador():
 @login_required
 @role_required('admin')
 def listar_usuarios():
-    # Obtener todos los usuarios excepto el admin actual
     usuarios_bd = UsuarioDAO.get_all()
-    # Filtrar para no mostrar al admin actual
     usuarios_filtrados = [u for u in usuarios_bd if u.nombreUsuario != session.get('usuario')]
     return render_template('admin/usuarios_lista.html', usuarios=usuarios_filtrados)
 
@@ -319,7 +347,6 @@ def editar_usuario(nombre_usuario):
         usuario.telefono = request.form.get('telefono')
         password = request.form.get('password')
 
-        # Validar teléfono en edición
         if usuario.telefono and usuario.telefono.strip():
             if not re.match(r'^\d{9}$', usuario.telefono):
                 flash('El teléfono debe tener exactamente 9 dígitos, sin espacios.', 'danger')
@@ -334,7 +361,6 @@ def editar_usuario(nombre_usuario):
             if conn:
                 cursor = conn.cursor()
                 try:
-                    # Guardar telefono y fechaNacimiento directo en Usuarios
                     cursor.execute(
                         "UPDATE Usuarios SET telefono = ?, fechaNacimiento = ? WHERE nombreUsuario = ?",
                         (usuario.telefono, usuario.fechaNacimiento, usuario.nombreUsuario)
@@ -345,7 +371,6 @@ def editar_usuario(nombre_usuario):
                         cursor.execute("UPDATE Pacientes SET Tipo = ? WHERE nombreUsuario = ?",
                                        (tipo_pac, usuario.nombreUsuario))
 
-                        # Enfermedades
                         cursor.execute("DELETE FROM PacienteEnfermedad WHERE paciente = ?",
                                        (usuario.nombreUsuario,))
                         enfermedades_ids = request.form.getlist('enfermedades')
@@ -365,7 +390,6 @@ def editar_usuario(nombre_usuario):
                                 (usuario.nombreUsuario, nuevo_id)
                             )
 
-                        # Contactos de emergencia
                         cursor.execute("DELETE FROM Familiares WHERE Paciente = ?",
                                        (usuario.nombreUsuario,))
                         contacto_nombres = request.form.getlist('contacto_nombre')
@@ -391,16 +415,13 @@ def editar_usuario(nombre_usuario):
                         horario = request.form.get('horario')
                         especialidad = request.form.get('especialidad')
                         
-                        # Actualizar tipo en Trabajadores
                         cursor.execute("UPDATE Trabajadores SET Tipo = ? WHERE nombreUsuario = ?",
                                        (tipo_trab, usuario.nombreUsuario))
                         
-                        # Eliminar de todas las tablas específicas primero
                         cursor.execute("DELETE FROM Auxiliares WHERE nombreUsuario = ?", (usuario.nombreUsuario,))
                         cursor.execute("DELETE FROM Especialistas WHERE nombreUsuario = ?", (usuario.nombreUsuario,))
                         cursor.execute("DELETE FROM coordinadores WHERE nombreUsuario = ?", (usuario.nombreUsuario,))
                         
-                        # Insertar en la tabla correspondiente
                         if tipo_trab == 'auxiliar':
                             cursor.execute(
                                 "INSERT INTO Auxiliares (nombreUsuario, Horario) VALUES (?, ?)",
@@ -414,7 +435,7 @@ def editar_usuario(nombre_usuario):
                         elif tipo_trab == 'especialista':
                             cursor.execute(
                                 "INSERT INTO Especialistas (nombreUsuario, Especialidad, Horario) VALUES (?, ?, ?)",
-                                (usuario.nombreUsuario, especialidad or '', horario_especialista or '')
+                                (usuario.nombreUsuario, especialidad or '', horario or '')
                             )
 
                     conn.commit()
@@ -441,7 +462,6 @@ def editar_usuario(nombre_usuario):
     if conn:
         cursor = conn.cursor()
         try:
-            # Cargar fechaNacimiento y telefono
             cursor.execute(
                 "SELECT fechaNacimiento, telefono FROM Usuarios WHERE nombreUsuario = ?",
                 (usuario.nombreUsuario,)
@@ -453,12 +473,10 @@ def editar_usuario(nombre_usuario):
                 if row[1]:
                     usuario.telefono = row[1]
 
-            # Enfermedades disponibles
             cursor.execute("SELECT * FROM Enfermedades ORDER BY nombre")
             rows = cursor.fetchall()
             enfermedades = [{'id': r[0], 'nombre': r[1]} for r in rows]
 
-            # Enfermedades del paciente
             if usuario.rol == 'paciente':
                 cursor.execute(
                     "SELECT enfermedad_id FROM PacienteEnfermedad WHERE paciente = ?",
@@ -466,7 +484,6 @@ def editar_usuario(nombre_usuario):
                 )
                 paciente_enfermedades = [r[0] for r in cursor.fetchall()]
 
-            # Contactos
             cursor.execute(
                 "SELECT Nombre, Relacion, Telefono FROM Familiares WHERE Paciente = ?",
                 (usuario.nombreUsuario,)
@@ -477,7 +494,6 @@ def editar_usuario(nombre_usuario):
                 for r in rows
             ]
 
-            # Datos del trabajador
             if usuario.rol == 'trabajador':
                 cursor.execute(
                     "SELECT Tipo FROM Trabajadores WHERE nombreUsuario = ?",
@@ -525,7 +541,6 @@ def editar_usuario(nombre_usuario):
 @role_required('admin')
 def gestion_bajas():
     usuarios_bd = UsuarioDAO.get_all()
-    # Filtrar para no mostrar al admin actual
     usuarios_filtrados = [u for u in usuarios_bd if u.nombreUsuario != session.get('usuario')]
     return render_template('admin/usuarios_lista.html', usuarios=usuarios_filtrados)
 
@@ -534,7 +549,6 @@ def gestion_bajas():
 @login_required
 @role_required('admin')
 def cambiar_estado_usuario(nombre_usuario):
-    # No permitir darse de baja a sí mismo
     if nombre_usuario == session.get('usuario'):
         flash('No puedes darte de baja a ti mismo.', 'danger')
         return redirect(url_for('admin.gestion_bajas'))
@@ -568,7 +582,7 @@ def cambiar_estado_usuario(nombre_usuario):
     return redirect(url_for('admin.gestion_bajas'))
 
 
-# --- PERFIL DEL ADMIN (para editar su propia información) ---
+# --- PERFIL DEL ADMIN ---
 @admin_bp.route('/admin/perfil', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
@@ -586,7 +600,6 @@ def perfil():
         usuario.telefono = request.form.get('telefono')
         password = request.form.get('password')
 
-        # Validar teléfono en edición
         if usuario.telefono and usuario.telefono.strip():
             if not re.match(r'^\d{9}$', usuario.telefono):
                 flash('El teléfono debe tener exactamente 9 dígitos, sin espacios.', 'danger')
@@ -617,7 +630,6 @@ def perfil():
 
         return redirect(url_for('admin.perfil'))
 
-    # GET: Cargar datos
     db = Database()
     conn = db.get_connection()
     if conn:
@@ -641,7 +653,7 @@ def perfil():
     return render_template('admin/perfil.html', usuario=usuario)
 
 
-# --- PERFIL DEL TRABAJADOR (para editar su propia información) ---
+# --- PERFIL DEL TRABAJADOR ---
 @admin_bp.route('/trabajador/perfil', methods=['GET', 'POST'])
 @login_required
 @role_required('trabajador')
@@ -659,7 +671,6 @@ def perfil_trabajador():
         usuario.telefono = request.form.get('telefono')
         password = request.form.get('password')
 
-        # Validar teléfono en edición
         if usuario.telefono and usuario.telefono.strip():
             if not re.match(r'^\d{9}$', usuario.telefono):
                 flash('El teléfono debe tener exactamente 9 dígitos, sin espacios.', 'danger')
@@ -690,7 +701,6 @@ def perfil_trabajador():
 
         return redirect(url_for('admin.perfil_trabajador'))
 
-    # GET: Cargar datos
     db = Database()
     conn = db.get_connection()
     if conn:
@@ -727,7 +737,6 @@ def crear_admin():
         password = request.form.get('password')
         telefono = request.form.get('telefono')
 
-        # Validaciones
         if not UsuarioDAO.validar_dni(dni):
             flash('El DNI introducido no es válido.', 'danger')
             return redirect(url_for('admin.crear_admin'))
@@ -759,7 +768,6 @@ def crear_admin():
                 flash('Error al crear la cuenta de administrador.', 'danger')
                 return redirect(url_for('admin.crear_admin'))
 
-            # Guardar teléfono
             if telefono:
                 db = Database()
                 conn = db.get_connection()
@@ -776,7 +784,6 @@ def crear_admin():
                     finally:
                         cursor.close()
 
-            # Crear registro en Administrador
             db = Database()
             conn = db.get_connection()
             if conn:
