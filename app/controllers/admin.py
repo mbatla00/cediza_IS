@@ -724,7 +724,7 @@ def perfil_trabajador():
     return render_template('trabajador/perfil.html', usuario=usuario)
 
 
-# --- CREAR NUEVO ADMIN ---
+# --- CREAR NUEVO ADMIN (REFACTORIZADO CON DAOs) ---
 @admin_bp.route('/admin/crear-admin', methods=['GET', 'POST'])
 @login_required
 @role_required('admin')
@@ -737,6 +737,7 @@ def crear_admin():
         password = request.form.get('password')
         telefono = request.form.get('telefono')
 
+        # Validaciones
         if not UsuarioDAO.validar_dni(dni):
             flash('El DNI introducido no es válido.', 'danger')
             return redirect(url_for('admin.crear_admin'))
@@ -755,6 +756,7 @@ def crear_admin():
             return redirect(url_for('admin.crear_admin'))
 
         try:
+            # 1. Crear usuario base
             nuevo_admin = Usuario(
                 nombreUsuario=nombre_usuario,
                 Nombre=nombre_completo,
@@ -768,6 +770,7 @@ def crear_admin():
                 flash('Error al crear la cuenta de administrador.', 'danger')
                 return redirect(url_for('admin.crear_admin'))
 
+            # 2. Guardar teléfono si existe
             if telefono:
                 db = Database()
                 conn = db.get_connection()
@@ -784,21 +787,18 @@ def crear_admin():
                     finally:
                         cursor.close()
 
-            db = Database()
-            conn = db.get_connection()
-            if conn:
-                cursor = conn.cursor()
-                try:
-                    cursor.execute(
-                        "INSERT INTO Administrador (nombreUsuario) VALUES (?)",
-                        (nombre_usuario,)
-                    )
-                    conn.commit()
-                except Exception as e:
-                    print(f"Error al crear registro de administrador: {e}")
-                    conn.rollback()
-                finally:
-                    cursor.close()
+            # 3. Crear registro en Administrador usando AdministradorDAO
+            from app.dao.admin_dao import AdministradorDAO
+            
+            # Crear objeto simple para el DAO
+            class TempAdmin:
+                def __init__(self, nombreUsuario):
+                    self.nombreUsuario = nombreUsuario
+            
+            admin_registro = TempAdmin(nombre_usuario)
+            if not AdministradorDAO.create(admin_registro):
+                flash('Error al crear el registro de administrador.', 'danger')
+                return redirect(url_for('admin.crear_admin'))
 
             flash(f'Administrador {nombre_completo} creado correctamente.', 'success')
             return redirect(url_for('admin.dashboard'))
