@@ -192,21 +192,52 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Tipo de Trabajador</label>
-                            <select class="form-select" name="tipo_trabajador">
-                                <option value="auxiliar" {% if usuario.tipo == 'auxiliar' %}selected{% endif %}>Auxiliar</option>
-                                <option value="coordinador" {% if usuario.tipo == 'coordinador' %}selected{% endif %}>Coordinador</option>
-                                <option value="especialista" {% if usuario.tipo == 'especialista' %}selected{% endif %}>Especialista</option>
+                            <select class="form-select" name="tipo_trabajador" id="tipo_trabajador" onchange="mostrarCamposTrabajador()">
+                                <option value="auxiliar" {% if datos_trabajador.tipo == 'auxiliar' %}selected{% endif %}>Auxiliar</option>
+                                <option value="coordinador" {% if datos_trabajador.tipo == 'coordinador' %}selected{% endif %}>Coordinador</option>
+                                <option value="especialista" {% if datos_trabajador.tipo == 'especialista' %}selected{% endif %}>Especialista</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        
+                        {# Campos de Auxiliar #}
+                        <div id="campos_auxiliar" class="col-md-6" style="display: none;">
                             <label class="form-label fw-bold">Horario</label>
                             <select class="form-select" name="horario">
                                 <option value="">(Sin asignar)</option>
-                                <option value="Mañana" {% if usuario.horario == 'Mañana' %}selected{% endif %}>Mañana</option>
-                                <option value="Tarde" {% if usuario.horario == 'Tarde' %}selected{% endif %}>Tarde</option>
+                                <option value="Mañana" {% if datos_trabajador.horario == 'Mañana' %}selected{% endif %}>Mañana</option>
+                                <option value="Tarde" {% if datos_trabajador.horario == 'Tarde' %}selected{% endif %}>Tarde</option>
                             </select>
                         </div>
                     </div>
+
+                    {# Campos de Especialista #}
+                    <div id="campos_especialista" class="row g-3 mb-3" style="display: none;">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Especialidad</label>
+                            <input type="text" class="form-control" name="especialidad" value="{{ datos_trabajador.especialidad or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Horario</label>
+                            <input type="text" class="form-control" name="horario_especialista" value="{{ datos_trabajador.horario or '' }}" placeholder="Ej: L-V 9:00-14:00">
+                        </div>
+                    </div>
+
+                    <script>
+                        function mostrarCamposTrabajador() {
+                            var tipo = document.getElementById('tipo_trabajador').value;
+                            
+                            // Mostrar/ocultar campo de auxiliar
+                            document.getElementById('campos_auxiliar').style.display = (tipo === 'auxiliar') ? 'block' : 'none';
+                            
+                            // Mostrar/ocultar campos de especialista
+                            document.getElementById('campos_especialista').style.display = (tipo === 'especialista') ? 'flex' : 'none';
+                        }
+                        
+                        // Ejecutar al cargar la página
+                        window.onload = function() {
+                            mostrarCamposTrabajador();
+                        };
+                    </script>
                     {% endif %}
 
                     {# CAMPOS DE ADMIN #}
