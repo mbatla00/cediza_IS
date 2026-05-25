@@ -132,12 +132,15 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             email = getattr(usuario, 'email', None)
-            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, DNI, Rol, password)
-            VALUES (?, ?, ?, ?, ?, ?)"""
+
+            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?)"""
+
             cursor.execute(sql, (
                 usuario.nombreUsuario,
                 usuario.nombre,
                 email,
+                usuario.fechaNacimiento,
                 usuario.dni,
                 usuario.rol,
                 usuario.password
@@ -198,5 +201,91 @@ class UsuarioDAO:
             print(f"Error en delete usuario: {e}")
             conn.rollback()
             return False
+        finally:
+            cursor.close()
+
+    # -------------------------------------------------------------
+    # Obtener todos los usuarios del sistema (Saneado contra NULLs)
+    # -------------------------------------------------------------
+    @staticmethod
+    def get_all():
+        """Devuelve una lista de todos los objetos Usuario válidos en el sistema."""
+        db = Database()
+        conn = db.get_connection()
+        if conn is None:
+            return []
+
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+            """)
+            raw_rows = cursor.fetchall()
+            
+            usuarios = []
+            for raw_row in raw_rows:
+                row_raw = Database.row_to_dict(cursor, raw_row)
+                if not row_raw:
+                    continue
+                
+                row = {}
+                for k, v in row_raw.items():
+                    row[k] = v
+                    row[k.lower()] = v
+                
+                # Mapeos explícitos de seguridad para asegurar compatibilidad con las propiedades
+                if 'nombreusuario' in row: row['nombreUsuario'] = row['nombreusuario']
+                if 'tipopaciente' in row: row['TipoPaciente'] = row['tipopaciente']
+                if 'tipotrabajador' in row: row['TipoTrabajador'] = row['tipotrabajador']
+                if 'fechanacimiento' in row: row['fechaNacimiento'] = row['fechanacimiento']
+                if 'dias_ingresado' in row: row['Dias_ingresado'] = row['dias_ingresado']
+
+                val_activo = row.get('activo')
+                if val_activo is None:
+                    val_activo = row.get('Activo')
+                
+                if val_activo is True or val_activo == 1 or str(val_activo).lower() in ('1', 'true'):
+                    estado_corregido = 1
+                else:
+                    estado_corregido = 0
+                
+                # Lo guardamos de todas las formas posibles en el diccionario para la Factory
+                row['activo'] = estado_corregido
+                row['Activo'] = estado_corregido
+
+                # 1. Protegemos el Rol buscando en cualquier variante de caja
+                rol = (row.get('Rol') or row.get('rol') or '').lower()
+                row['Rol'] = rol
+                
+                # 2. Protegemos el Tipo unificando procedencias
+                if rol == 'paciente':
+                    tipo_val = row.get('TipoPaciente') or row.get('tipopaciente') or ''
+                    row['Tipo'] = tipo_val
+                    row['tipo'] = tipo_val
+                elif rol == 'trabajador':
+                    tipo_val = row.get('TipoTrabajador') or row.get('tipotrabajador') or ''
+                    row['Tipo'] = tipo_val
+                    row['tipo'] = tipo_val
+                else:
+                    row['Tipo'] = ''
+                    row['tipo'] = ''
+
+                try:
+                    usuario_objeto = UsuarioFactory.crear(row)
+                    if usuario_objeto:
+                        usuario_objeto.activo = estado_corregido
+                        usuarios.append(usuario_objeto)
+                except Exception as e:
+                    print(f"Alerta: Saltando usuario '{row.get('nombreUsuario') or row.get('nombreusuario')}'. Motivo: {e}")
+                    continue
+            
+            return usuarios
+            
+        except Exception as e:
+            print(f"Error crítico en database al listar usuarios: {e}")
+            return []
         finally:
             cursor.close()

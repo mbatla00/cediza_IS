@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Expediente - {{ paciente.nombreUsuario }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-4">
+        <a href="{{ url_for('trabajador.dashboard') }}" class="btn btn-sm btn-light text-secondary mb-2">
+            <i class="bi bi-arrow-left"></i> Volver al listado
+        </a>
+        <h2 class="fw-bold text-dark">Ficha Clínica: <span class="text-primary">{{ paciente.nombreUsuario }}</span></h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-dark text-white fw-bold">
+                    <i class="bi bi-person-badge"></i> Información General
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Usuario:</strong> {{ paciente.nombreUsuario }}</p>
+                    <p class="mb-0"><strong>Régimen:</strong> 
+                        {% if paciente.tipo == 'publico' %}
+                            <span class="badge bg-info text-dark">Público</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Privado</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-telephone-fill"></i> Contactos de Emergencia</span>
+                    <button class="btn btn-xs btn-light py-0 px-2 text-danger" data-bs-toggle="collapse" data-bs-target="#formContacto">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="collapse mb-3 border-bottom pb-3" id="formContacto">
+                        <form method="POST" action="{{ url_for('trabajador.nuevo_contacto', nombreUsuario=paciente.nombreUsuario) }}">
+                            <div class="mb-2">
+                                <input type="text" name="nombre_contacto" class="form-control form-control-sm" placeholder="Nombre completo" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" name="relacion_contacto" class="form-control form-control-sm" placeholder="Parentesco (Ej: Hijo/a)" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="tel" name="telefono_contacto" class="form-control form-control-sm" placeholder="Teléfono de contacto" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Guardar Contacto</button>
+                        </form>
+                    </div>
+
+                    {% if contactos %}
+                        <div class="list-group list-group-flush">
+                        {% for c in contactos %}
+                            <div class="list-group-item px-0 py-2">
+                                <h6 class="mb-0 fw-bold">{{ c.nombre }} <small class="text-muted">({{ c.relacion }})</small></h6>
+                                <p class="mb-0 text-danger fw-boldSmall"><i class="bi bi-phone"></i> {{ c.telefono }}</p>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0 small py-2">No hay contactos de emergencia registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="bi bi-pencil-square"></i> Nueva Anotación Diaria 
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('trabajador.nueva_nota', nombreUsuario=paciente.nombreUsuario) }}">
+                        <div class="mb-3">
+                            <textarea name="nota_texto" class="form-control" rows="3" placeholder="Escribe observaciones sobre la evolución, estado físico o incidencias del paciente..." required></textarea>
+                            <div class="form-text text-muted small"><i class="bi bi-info-circle"></i> Obligatorio: Mínimo 5 caracteres por seguridad clínica.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-file-earmark-plus"></i> Guardar Nota Clinica
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    <i class="bi bi-clock-history"></i> Historial de Evolución 
+                </div>
+                <div class="card-body">
+                    {% if idx or notes or notas %}
+                        <div class="position-relative ps-3 border-start border-2 border-light">
+                        {% for n in notas %}
+                            <div class="mb-4 position-relative">
+                                <div class="position-absolute bg-primary rounded-circle" style="width:12px; height:12px; left:-22px; top:5px;"></div>
+                                <div class="bg-light p-3 rounded shadow-xs">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-secondary">Por: {{ n.auxiliar }}</span>
+                                        <small class="text-muted fw-bold"><i class="bi bi-calendar3"></i> {{ n.dia }}</small>
+                                    </div>
+                                    <p class="mb-0 text-dark" style="white-space: pre-line;">{{ n.nota }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4 my-0">El historial está vacío. Comienza añadiendo una anotación arriba.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

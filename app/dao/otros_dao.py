@@ -16,12 +16,14 @@ class FamiliarDAO:
 
         cursor = conn.cursor()
         try:
+
             cursor.execute(
                 "SELECT * FROM Familiares WHERE Paciente = ?",
                 (nombreUsuario_paciente,)
             )
             rows = Database.rows_to_dict(cursor, cursor.fetchall())
             return [Familiar(**row) for row in rows]
+
         except Error as e:
             print(f"Error en FamiliarDAO.get_by_paciente: {e}")
             return []
@@ -37,8 +39,10 @@ class FamiliarDAO:
 
         cursor = conn.cursor()
         try:
+
             sql = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
                      VALUES (?, ?, ?, ?)"""
+
             cursor.execute(sql, (
                 familiar.nombre,
                 familiar.paciente,
@@ -131,11 +135,11 @@ class ComentarioDAO:
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO comentarios (Auxiliar, Paciente, dia, nota)
-                     VALUES (?, ?, ?, ?)"""
+                     VALUES (?, ?, CURDATE(), ?)"""
+                # Nos aseguramos de enviar la fecha como texto 'YYYY-MM-DD para evitar errores gracias a CURDATE() en el SQL'
             cursor.execute(sql, (
                 comentario.auxiliar,
                 comentario.paciente,
-                comentario.dia,
                 comentario.nota
             ))
             conn.commit()

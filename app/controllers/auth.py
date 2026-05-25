@@ -126,13 +126,27 @@ def logout():
 @login_required
 def dashboard_redirect():
     """
-    Redirige al dashboard correspondiente según el rol.
-    Usa el patrón Factory para decidir qué plantilla mostrar.
+    Redirige al controlador/ruta correspondiente según el rol,
+    en lugar de pintar la plantilla directamente sin datos.
     """
     rol = session.get('rol')
-    template = DashboardFactory.get_template(rol)
-
-    if template:
+    
+    if rol == 'trabajador':
+        # Redirige a la función 'dashboard' dentro del Blueprint 'trabajador'
+        return redirect(url_for('trabajador.dashboard'))
+        
+    elif rol == 'admin':
+        # Si tienes una ruta específica para el admin, redirige aquí
+        # Por ahora, si no la tienes, dejamos la factoría antigua como respaldo:
+        try:
+            return redirect(url_for('admin.dashboard'))
+        except:
+            # Si aún no existe la ruta, usa la plantilla por defecto para que no falle
+            return render_template('admin/dashboard.html')
+        
+    elif rol == 'paciente':
+        # Si tienes una ruta para el paciente, cámbiala aquí también !!!!
+        template = DashboardFactory.get_template(rol)
         return render_template(template)
 
     flash('Error: rol no reconocido', 'danger')
