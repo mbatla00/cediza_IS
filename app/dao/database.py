@@ -42,13 +42,37 @@ class Database:
     def row_to_dict(cursor, row):
         if row is None:
             return None
-        columns = [col[0] for col in cursor.description]
-        return dict(zip(columns, row))
+        
+        # 🛡️ CORRECCIÓN JDBC: Limpiamos prefijos de tablas/alias (ej: 'p.nombreUsuario' -> 'nombreUsuario')
+        columns = [col[0].split('.')[-1] for col in cursor.description]
+        
+        res = dict(zip(columns, row))
+        
+        extended_res = {}
+        for k, v in res.items():
+            extended_res[k] = v          
+            extended_res[k.lower()] = v  
+            
+            # Mantenemos la compatibilidad de mayúsculas/minúsculas para el Tipo
+            if k.lower() == 'tipo':
+                extended_res['Tipo'] = v
+                extended_res['TipoPaciente'] = v
+                
+        return extended_res
+
+    @staticmethod
+    def rows_to_dict(cursor, rows):
+        if rows is None:
+            return []
+        return [Database.row_to_dict(cursor, row) for row in rows]
+
 
     @staticmethod
     def rows_to_dict(cursor, rows):
         columns = [col[0] for col in cursor.description]
-        return [dict(zip(columns, row)) for row in rows] 
+        return [dict(zip(columns, row)) for row in rows]
+
+
 
 
     def close(self):

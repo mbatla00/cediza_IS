@@ -15,23 +15,39 @@
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Nombre Completo *</label>
-                            <input type="text" class="form-control" name="nombre_completo" required placeholder="Ej: Juan Pérez Gómez">
+                            <input type="text" class="form-control" name="nombre_completo" required placeholder="(Ejemplo: Juan Pérez Gómez)">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Nombre de Usuario (Opcional)</label>
-                            <input type="text" class="form-control" name="nombre_usuario_manual" placeholder="Ej: jperez99">
-                            <div class="form-text">Si se deja vacío, se generará automáticamente con el nombre.</div>
+                            <input type="text" class="form-control" name="nombre_usuario_manual" placeholder="(Ejemplo: jperez99)">
+                            <div class="form-text">Si se deja vacío, se generará automáticamente.</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">DNI *</label>
+                            <input type="text" class="form-control" name="dni" required placeholder="(Ejemplo: 12345678A)">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" name="fecha_nacimiento">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" placeholder="(Ejemplo: 666777888)">
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">DNI *</label>
-                            <input type="text" class="form-control" name="dni" required placeholder="12345678A">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="(Ejemplo: correo@ejemplo.com)">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="correo@ejemplo.com">
+                            <label class="form-label fw-bold">Contraseña Inicial *</label>
+                            <input type="password" class="form-control" name="password" required placeholder="Contraseña para el paciente">
+                            <div class="form-text">El paciente usará esta contraseña para acceder.</div>
                         </div>
                     </div>
 
@@ -45,10 +61,59 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold">Cuenta Bancaria (Solo Privados)</label>
-                            <input type="text" class="form-control" name="cuenta" placeholder="ES12 3456 7890...">
+                            <input type="text" class="form-control" name="cuenta" placeholder="(Ejemplo: ES12 3456 7890...)">
                             <div class="form-text">Obligatorio si el tipo es Privado.</div>
                         </div>
                     </div>
+
+                    {# ENFERMEDADES #}
+                    <hr class="my-4">
+                    <h5 class="mb-3"><i class="bi bi-heart-pulse text-warning"></i> Enfermedades</h5>
+                    <div class="row g-2 mb-3">
+                        {% for enf in enfermedades %}
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="enfermedades" value="{{ enf.id }}" id="enf_{{ enf.id }}">
+                                <label class="form-check-label" for="enf_{{ enf.id }}">{{ enf.nombre }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row g-3 mb-3 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">Otra enfermedad</label>
+                            <input type="text" class="form-control" id="otra_enfermedad_input" placeholder="(Ejemplo: Esclerosis)">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-warning" onclick="agregarEnfermedad()">
+                                <i class="bi bi-plus-lg"></i> AÑADIR
+                            </button>
+                        </div>
+                    </div>
+
+                    {# CONTACTOS DE EMERGENCIA #}
+                    <hr class="my-4">
+                    <h5 class="mb-3"><i class="bi bi-telephone-fill text-danger"></i> Contactos de Emergencia</h5>
+                    <div id="contactosContainer">
+                        <div class="row g-3 mb-3 contacto-fila">
+                            <div class="col-md-4">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Parentesco</label>
+                                <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" name="contacto_telefono" placeholder="(Ejemplo: 666777888)">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger mb-4" onclick="agregarContacto()">
+                        <i class="bi bi-plus-lg"></i> Añadir otro contacto
+                    </button>
 
                     <div class="d-flex justify-content-between border-top pt-3">
                         <a href="{{ url_for('admin.dashboard') }}" class="btn btn-light">Cancelar</a>
@@ -61,4 +126,54 @@
         </div>
     </div>
 </div>
+
+<script>
+function agregarEnfermedad() {
+    var input = document.getElementById('otra_enfermedad_input');
+    var nombre = input.value.trim();
+    if (!nombre) return;
+
+    var container = document.querySelector('.row.g-2.mb-3');
+    var div = document.createElement('div');
+    div.className = 'col-md-4';
+    div.innerHTML = `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="enfermedades" value="nueva_${nombre}" id="enf_nueva_${nombre}" checked>
+            <label class="form-check-label" for="enf_nueva_${nombre}">${nombre}</label>
+        </div>
+    `;
+    container.appendChild(div);
+
+    var hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'otra_enfermedad';
+    hidden.value = nombre;
+    document.querySelector('form').appendChild(hidden);
+
+    input.value = '';
+}
+
+function agregarContacto() {
+    var container = document.getElementById('contactosContainer');
+    var fila = document.createElement('div');
+    fila.className = 'row g-3 mb-3 contacto-fila';
+    fila.innerHTML = `
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
+        </div>
+        <div class="col-md-3">
+            <input type="tel" class="form-control" name="contacto_telefono" placeholder="(Ejemplo: 666777888)">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.contacto-fila').remove()">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(fila);
+}
+</script>
 {% endblock %}

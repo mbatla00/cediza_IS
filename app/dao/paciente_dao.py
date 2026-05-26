@@ -15,11 +15,37 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("SELECT * FROM Pacientes")
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
-            return [Paciente(**row) for row in rows]
-        except Error as e:
-            print(f"Error en PacienteDAO.get_all: {e}")
+            cursor.execute("""
+                SELECT p.*, u.Nombre, u.activo 
+                FROM Pacientes p
+                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
+                WHERE u.activo = 1
+            """) 
+            raw_rows = cursor.fetchall()
+            
+            pacientes = []
+            for raw_row in raw_rows:
+                row_raw = Database.row_to_dict(cursor, raw_row)
+                if not row_raw:
+                    continue
+                
+                row = {k.lower(): v for k, v in row_raw.items()}
+                
+                paciente_obj = Paciente(
+                    nombreUsuario=row.get('nombreusuario'),
+                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
+                    DNI=row.get('dni'),
+                    fechaNacimiento=row.get('fechanacimiento'),
+                    email=row.get('email'),
+                    activo=row.get('activo'),
+                    Tipo=row.get('tipo'),           
+                    diagnostico=row.get('diagnostico') 
+                )
+                pacientes.append(paciente_obj)
+                
+            return pacientes
+        except Exception as e:
+            print(f"Error crítico en PacienteDAO.get_all: {e}")
             return []
         finally:
             cursor.close()
@@ -33,14 +59,34 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                "SELECT * FROM Pacientes WHERE nombreUsuario = ?",
-                (nombreUsuario,)
-            )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
-            return Paciente(**row) if row else None
-        except Error as e:
-            print(f"Error en PacienteDAO.get_by_nombreUsuario: {e}")
+            cursor.execute("""
+                SELECT p.*, u.Nombre, u.activo 
+                FROM Pacientes p
+                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
+                WHERE p.nombreUsuario = ?
+            """, (nombreUsuario,))
+            raw_row = cursor.fetchone()
+            
+            if raw_row:
+                row_raw = Database.row_to_dict(cursor, raw_row)
+                if not row_raw:
+                    return None
+                
+                row = {k.lower(): v for k, v in row_raw.items()}
+                
+                return Paciente(
+                    nombreUsuario=row.get('nombreusuario'),
+                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
+                    DNI=row.get('dni'),
+                    fechaNacimiento=row.get('fechanacimiento'),
+                    email=row.get('email'),
+                    activo=row.get('activo'),
+                    Tipo=row.get('tipo'),           
+                    diagnostico=row.get('diagnostico') 
+                )
+            return None
+        except Exception as e:
+            print(f"Error crítico en PacienteDAO.get_by_nombreUsuario: {e}")
             return None
         finally:
             cursor.close()
@@ -99,10 +145,7 @@ class PacPubDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                "SELECT * FROM Pac_pub WHERE nombreUsuario = ?",
-                (nombreUsuario,)
-            )
+            cursor.execute("SELECT * FROM Pac_pub WHERE nombreUsuario = ?", (nombreUsuario,))
             row = Database.row_to_dict(cursor, cursor.fetchone())
             return PacPub(**row) if row else None
         except Error as e:

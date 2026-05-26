@@ -1,11 +1,16 @@
+from datetime import date, datetime
+
 class Sesion:
     def __init__(self, idSesion=None, Paciente=None, Especialista=None,
-    comentarios=None, Fecha=None):
+                 comentarios=None, Fecha=None, Hora=None):
         self._idSesion = idSesion
-        self._paciente = Paciente    #FK -> Pacientes.nombreUsuario
-        self._especialista = Especialista   #FK -> Especialistas.nombreUsuario
+        self._paciente = Paciente
+        self._especialista = Especialista
         self._comentarios = comentarios
-        self._fecha = Fecha
+        self._fecha = None
+        self._hora = Hora
+        if Fecha:
+            self.fecha = Fecha
 
     @property
     def idSesion(self):
@@ -43,8 +48,6 @@ class Sesion:
     def fecha(self):
         return self._fecha
 
-    from datetime import date, datetime
-
     @fecha.setter
     def fecha(self, value):
         if value is None:
@@ -58,6 +61,14 @@ class Sesion:
                 raise ValueError("El formato de fecha debe ser 'YYYY-MM-DD'")
         else:
             raise TypeError(f"Tipo no válido para fecha: {type(value)}")
+
+    @property
+    def hora(self):
+        return self._hora
+
+    @hora.setter
+    def hora(self, value):
+        self._hora = value
     
     def to_dict(self):
         return {
@@ -65,7 +76,8 @@ class Sesion:
             'paciente': self.paciente,
             'especialista': self.especialista,
             'comentarios': self.comentarios,
-            'fecha': str(self.fecha) if self.fecha else None
+            'fecha': str(self.fecha) if self.fecha else None,
+            'hora': str(self.hora) if self.hora else None
         }
     
     def __repr__(self):

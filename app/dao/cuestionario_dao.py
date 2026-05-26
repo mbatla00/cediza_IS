@@ -1,4 +1,3 @@
-from mysql.connector import Error
 from app.dao.database import Database
 from app.models.cuestionario import Cuestionario, Pregunta, Respuesta
 
@@ -15,9 +14,21 @@ class CuestionarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute("SELECT * FROM Cuestionarios")
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
-            return [Cuestionario(**row) for row in rows]
-        except Error as e:
+            rows = cursor.fetchall()
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            
+            cuestionarios = []
+            for row in rows:
+                row_dict = dict(zip(columns, row))
+                cuestionario = Cuestionario(
+                    idCuestionario=row_dict.get('idCuestionario'),
+                    titulo=row_dict.get('titulo'),
+                    tipo=row_dict.get('tipo'),
+                    fechaAsignacion=row_dict.get('fechaAsignacion')
+                )
+                cuestionarios.append(cuestionario)
+            return cuestionarios
+        except Exception as e:
             print(f"Error en CuestionarioDAO.get_all: {e}")
             return []
         finally:
@@ -36,9 +47,18 @@ class CuestionarioDAO:
                 "SELECT * FROM Cuestionarios WHERE idCuestionario = ?",
                 (idCuestionario,)
             )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
-            return Cuestionario(**row) if row else None
-        except Error as e:
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            row_dict = dict(zip(columns, row))
+            return Cuestionario(
+                idCuestionario=row_dict.get('idCuestionario'),
+                titulo=row_dict.get('titulo'),
+                tipo=row_dict.get('tipo'),
+                fechaAsignacion=row_dict.get('fechaAsignacion')
+            )
+        except Exception as e:
             print(f"Error en CuestionarioDAO.get_by_id: {e}")
             return None
         finally:
@@ -61,10 +81,8 @@ class CuestionarioDAO:
                 cuestionario.fechaAsignacion
             ))
             conn.commit()
-            # JDBC usa getGeneratedKeys en lugar de lastrowid
-            keys = cursor._rs
-            return keys.getInt(1) if keys and keys.next() else None
-        except Error as e:
+            return True  # JDBC no tiene lastrowid
+        except Exception as e:
             print(f"Error en CuestionarioDAO.create: {e}")
             conn.rollback()
             return None
@@ -91,7 +109,7 @@ class CuestionarioDAO:
             ))
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en CuestionarioDAO.update: {e}")
             conn.rollback()
             return False
@@ -113,7 +131,7 @@ class CuestionarioDAO:
             )
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en CuestionarioDAO.delete: {e}")
             conn.rollback()
             return False
@@ -136,9 +154,21 @@ class PreguntaDAO:
                 "SELECT * FROM Preguntas WHERE idCuestionario = ?",
                 (idCuestionario,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
-            return [Pregunta(**row) for row in rows]
-        except Error as e:
+            rows = cursor.fetchall()
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            
+            preguntas = []
+            for row in rows:
+                row_dict = dict(zip(columns, row))
+                pregunta = Pregunta(
+                    idPregunta=row_dict.get('idPregunta'),
+                    idCuestionario=row_dict.get('idCuestionario'),
+                    enunciado=row_dict.get('enunciado'),
+                    tipoRespuesta=row_dict.get('tipoRespuesta')
+                )
+                preguntas.append(pregunta)
+            return preguntas
+        except Exception as e:
             print(f"Error en PreguntaDAO.get_by_cuestionario: {e}")
             return []
         finally:
@@ -157,9 +187,18 @@ class PreguntaDAO:
                 "SELECT * FROM Preguntas WHERE idPregunta = ?",
                 (idPregunta,)
             )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
-            return Pregunta(**row) if row else None
-        except Error as e:
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            row_dict = dict(zip(columns, row))
+            return Pregunta(
+                idPregunta=row_dict.get('idPregunta'),
+                idCuestionario=row_dict.get('idCuestionario'),
+                enunciado=row_dict.get('enunciado'),
+                tipoRespuesta=row_dict.get('tipoRespuesta')
+            )
+        except Exception as e:
             print(f"Error en PreguntaDAO.get_by_id: {e}")
             return None
         finally:
@@ -182,9 +221,8 @@ class PreguntaDAO:
                 pregunta.tipoRespuesta
             ))
             conn.commit()
-            keys = cursor._rs
-            return keys.getInt(1) if keys and keys.next() else None
-        except Error as e:
+            return True  # JDBC no tiene lastrowid
+        except Exception as e:
             print(f"Error en PreguntaDAO.create: {e}")
             conn.rollback()
             return None
@@ -206,7 +244,7 @@ class PreguntaDAO:
             )
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en PreguntaDAO.delete: {e}")
             conn.rollback()
             return False
@@ -229,9 +267,22 @@ class RespuestaDAO:
                 "SELECT * FROM Respuestas WHERE idPaciente = ? ORDER BY fechaHora DESC",
                 (idPaciente,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
-            return [Respuesta(**row) for row in rows]
-        except Error as e:
+            rows = cursor.fetchall()
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            
+            respuestas = []
+            for row in rows:
+                row_dict = dict(zip(columns, row))
+                respuesta = Respuesta(
+                    idRespuesta=row_dict.get('idRespuesta'),
+                    idPregunta=row_dict.get('idPregunta'),
+                    idPaciente=row_dict.get('idPaciente'),
+                    fechaHora=row_dict.get('fechaHora'),
+                    contenido=row_dict.get('contenido')
+                )
+                respuestas.append(respuesta)
+            return respuestas
+        except Exception as e:
             print(f"Error en RespuestaDAO.get_by_paciente: {e}")
             return []
         finally:
@@ -250,9 +301,22 @@ class RespuestaDAO:
                 "SELECT * FROM Respuestas WHERE idPregunta = ? ORDER BY fechaHora DESC",
                 (idPregunta,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
-            return [Respuesta(**row) for row in rows]
-        except Error as e:
+            rows = cursor.fetchall()
+            columns = [col[0].split('.')[-1] for col in cursor.description]
+            
+            respuestas = []
+            for row in rows:
+                row_dict = dict(zip(columns, row))
+                respuesta = Respuesta(
+                    idRespuesta=row_dict.get('idRespuesta'),
+                    idPregunta=row_dict.get('idPregunta'),
+                    idPaciente=row_dict.get('idPaciente'),
+                    fechaHora=row_dict.get('fechaHora'),
+                    contenido=row_dict.get('contenido')
+                )
+                respuestas.append(respuesta)
+            return respuestas
+        except Exception as e:
             print(f"Error en RespuestaDAO.get_by_pregunta: {e}")
             return []
         finally:
@@ -263,25 +327,25 @@ class RespuestaDAO:
         db = Database()
         conn = db.get_connection()
         if conn is None:
-            return None
+            return False
 
         cursor = conn.cursor()
         try:
             sql = """INSERT INTO Respuestas (idPregunta, idPaciente, fechaHora, contenido)
                      VALUES (?, ?, ?, ?)"""
+            fecha_hora_str = str(respuesta.fechaHora) if respuesta.fechaHora else None
             cursor.execute(sql, (
                 respuesta.idPregunta,
                 respuesta.idPaciente,
-                # JDBC no acepta datetime de Python, hay que pasarlo como string
-                str(respuesta.fechaHora) if respuesta.fechaHora else None,
+                fecha_hora_str,
                 respuesta.contenido
             ))
             conn.commit()
-            return True  # devolvemos True en lugar de lastrowid que no existe en JDBC
-        except Error as e:
+            return True  # ← CORREGIDO: devuelve True si se guardó bien
+        except Exception as e:
             print(f"Error en RespuestaDAO.create: {e}")
             conn.rollback()
-            return None
+            return False
         finally:
             cursor.close()
 
@@ -300,7 +364,7 @@ class RespuestaDAO:
             )
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en RespuestaDAO.delete: {e}")
             conn.rollback()
             return False

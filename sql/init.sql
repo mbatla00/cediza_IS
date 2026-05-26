@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Usuarios` (
   `Rol` VARCHAR(45) NULL,
   `password` VARCHAR(45) NULL DEFAULT 'paciente',
   `activo` BOOLEAN DEFAULT TRUE,
+  `telefono` VARCHAR(20) NULL,
   PRIMARY KEY (`nombreUsuario`),
   UNIQUE INDEX `DNI_UNIQUE` (`DNI` ASC))
 ENGINE = InnoDB;
@@ -171,6 +172,42 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `cediza`.`Enfermedades`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`Enfermedades` ;
+
+CREATE TABLE IF NOT EXISTS `cediza`.`Enfermedades` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `nombre_UNIQUE` (`nombre` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `cediza`.`PacienteEnfermedad`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `cediza`.`PacienteEnfermedad` ;
+
+CREATE TABLE IF NOT EXISTS `cediza`.`PacienteEnfermedad` (
+  `paciente` VARCHAR(50) NOT NULL,
+  `enfermedad_id` INT NOT NULL,
+  PRIMARY KEY (`paciente`, `enfermedad_id`),
+  INDEX `fk_paciente_enfermedad_enfermedad_idx` (`enfermedad_id` ASC),
+  CONSTRAINT `fk_paciente_enfermedad_paciente`
+    FOREIGN KEY (`paciente`)
+    REFERENCES `cediza`.`Pacientes` (`nombreUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_paciente_enfermedad_enfermedad`
+    FOREIGN KEY (`enfermedad_id`)
+    REFERENCES `cediza`.`Enfermedades` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `cediza`.`Familiares`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `cediza`.`Familiares` ;
@@ -179,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Familiares` (
   `Nombre` VARCHAR(100) NOT NULL,
   `Paciente` VARCHAR(50) NOT NULL,
   `Relacion` VARCHAR(45) NOT NULL DEFAULT 'Hij@',
-  `Telefono` INT(9) NULL,
+  `Telefono` VARCHAR(20) NULL,
   PRIMARY KEY (`Nombre`, `Paciente`),
   INDEX `paciente_idx` (`Paciente` ASC),
   CONSTRAINT `fk_familiares_pacientes`
@@ -201,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Sesion` (
   `Especialista` VARCHAR(50) NOT NULL,
   `comentarios` VARCHAR(200) NULL,
   `Fecha` DATE NULL,
+  `hora` TIME NULL,
   PRIMARY KEY (`idSesion`),
   INDEX `Especialista_idx` (`Especialista` ASC),
   INDEX `paciente_idx` (`Paciente` ASC),
@@ -252,9 +290,9 @@ CREATE TABLE IF NOT EXISTS `cediza`.`EvaluacionProfesional` (
   `Paciente` VARCHAR(50) NOT NULL,
   `Trabajador` VARCHAR(50) NOT NULL,
   `fecha` DATE NOT NULL,
-  `movilidad` VARCHAR(45) NULL,
-  `estadoEmocional` VARCHAR(45) NULL,
-  `apetito` VARCHAR(45) NULL,
+  `movilidad` INT NULL,
+  `estadoEmocional` INT NULL,
+  `apetito` INT NULL,
   `observaciones` VARCHAR(200) NULL,
   PRIMARY KEY (`idEvaluacion`),
   INDEX `paciente_idx` (`Paciente` ASC),
@@ -387,6 +425,17 @@ CREATE TABLE IF NOT EXISTS `cediza`.`Respuestas` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Datos iniciales
+-- -----------------------------------------------------
+INSERT INTO Enfermedades (nombre) VALUES
+('Alzheimer'),
+('Parkinson'),
+('Demencia senil'),
+('Artrosis'),
+('Depresion')
+ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

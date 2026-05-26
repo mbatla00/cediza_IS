@@ -36,15 +36,31 @@
             <!-- Menú de navegación -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <span class="badge bg-light text-dark me-3 p-2">
-                            {{ session.usuario_nombre }} ({{ session.rol }})
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
-                            <i class="bi bi-box-arrow-right"></i> Salir
+                    <!-- Menú desplegable para el usuario -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ session.usuario_nombre }}
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if session.rol == 'admin' %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin.perfil') }}">
+                                    <i class="bi bi-gear"></i> Mi Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('admin.crear_admin') }}">
+                                    <i class="bi bi-person-plus"></i> Crear Administrador
+                                </a></li>
+                            {% elif session.rol == 'trabajador' %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin.perfil_trabajador') }}">
+                                    <i class="bi bi-gear"></i> Mi Perfil
+                                </a></li>
+                            {% endif %}
+                            <!-- Paciente NO tiene opción de editar perfil aquí -->
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Salir
+                            </a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>
