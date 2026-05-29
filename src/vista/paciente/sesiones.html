@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Sesiones - CEDIZA{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2"><i class="bi bi-calendar3"></i> Mis Sesiones</h1>
+            <p class="text-muted">Consulta tus sesiones programadas con especialistas.</p>
+        </div>
+        <div class="col text-end">
+            <a href="{{ url_for('paciente.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al panel
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {# PRÓXIMAS SESIONES #}
+        <div class="col-12">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-calendar-check"></i> Próximas sesiones
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Especialista</th>
+                                    <th>Comentarios</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if sesiones_proximas %}
+                                    {% for s in sesiones_proximas %}
+                                    <tr>
+                                        <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                        <td>{{ s.hora.strftime('%H:%M') if s.hora else '-' }}</td>
+                                        <td>{{ s.especialista }}</td>
+                                        <td>{{ s.comentarios or '-' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            No tienes sesiones próximas programadas.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# SESIONES PASADAS #}
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-clock-history"></i> Sesiones pasadas
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Especialista</th>
+                                    <th>Comentarios</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if sesiones_pasadas %}
+                                    {% for s in sesiones_pasadas %}
+                                    <tr>
+                                        <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                        <td>{{ s.hora.strftime('%H:%M') if s.hora else '-' }}</td>
+                                        <td>{{ s.especialista }}</td>
+                                        <td>{{ s.comentarios or '-' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            No tienes sesiones pasadas.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
