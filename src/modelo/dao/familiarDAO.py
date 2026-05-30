@@ -1,7 +1,10 @@
 from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Familiar
 
-#GET_BY_PACIENTE = 2
+GET_BY_PACIENTE = "SELECT * FROM Familiares WHERE Paciente = ?"
+CREATE = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
+                     VALUES (?, ?, ?, ?)"""
+DELETE = "DELETE FROM Familiares WHERE Nombre = ? AND Paciente = ?"
 
 class FamiliarDAO:
 
@@ -15,7 +18,7 @@ class FamiliarDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Familiares WHERE Paciente = ?",
+                GET_BY_PACIENTE,
                 (nombreUsuario_paciente,)
             )
             rows = Database.rows_to_dict(cursor, cursor.fetchall())
@@ -35,9 +38,7 @@ class FamiliarDAO:
 
         cursor = conn.cursor()
         try:
-            sql = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
-                     VALUES (?, ?, ?, ?)"""
-            cursor.execute(sql, (
+            cursor.execute(CREATE, (
                 familiar.nombre,
                 familiar.paciente,
                 familiar.relacion,
@@ -62,7 +63,7 @@ class FamiliarDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Familiares WHERE Nombre = ? AND Paciente = ?",
+                DELETE,
                 (nombre, nombreUsuario_paciente)
             )
             conn.commit()

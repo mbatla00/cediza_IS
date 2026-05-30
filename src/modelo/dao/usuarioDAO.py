@@ -1,9 +1,29 @@
-from mysql.connector import Error
 from src.modelo.conexion.Conexion import Conexion
 from src.modelo.factories import UsuarioFactory
 import unicodedata
 import re
 
+GET_BY_USER = """
+                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+                WHERE u.nombreUsuario = ?
+            """
+GET_BY_EMAIL = "SELECT * FROM Usuarios WHERE email = ?"
+GET_BY_DNI = "SELECT * FROM Usuarios WHERE DNI = ?"
+CREATE = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?)"""
+UPDATE = """UPDATE Usuarios
+            SET Nombre = ?, email = ?, DNI = ?, password = ?
+            WHERE nombreUsuario = ?"""
+DELETE = "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = ?"
+GET_ALL = """
+                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
+                FROM Usuarios u
+                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
+                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
+            """
 
 class UsuarioDAO:
 
@@ -16,13 +36,7 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("""
-                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
-                FROM Usuarios u
-                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
-                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
-                WHERE u.nombreUsuario = ?
-            """, (nombreUsuario,))
+            cursor.execute(GET_BY_USER, (nombreUsuario,))
 
             row = Database.row_to_dict(cursor, cursor.fetchone())
 
@@ -55,7 +69,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Usuarios WHERE email = ?",
+                GET_BY_EMAIL,
                 (email,)
             )
             row = Database.row_to_dict(cursor, cursor.fetchone())
@@ -82,7 +96,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Usuarios WHERE DNI = ?",
+                GET_BY_DNI,
                 (dni,)
             )
             row = Database.row_to_dict(cursor, cursor.fetchone())
@@ -132,10 +146,7 @@ class UsuarioDAO:
         try:
             email = getattr(usuario, 'email', None)
 
-            sql = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?)"""
-
-            cursor.execute(sql, (
+            cursor.execute(CREATE, (
                 usuario.nombreUsuario,
                 usuario.nombre,
                 email,
@@ -162,10 +173,7 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            sql = """UPDATE Usuarios
-            SET Nombre = ?, email = ?, DNI = ?, password = ?
-            WHERE nombreUsuario = ?"""
-            cursor.execute(sql, (
+            cursor.execute(UPDATE, (
                 usuario.nombre,
                 usuario.email,
                 usuario.dni,
@@ -191,7 +199,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = ?",
+                DELETE,
                 (nombreUsuario,)
             )
             conn.commit()
@@ -213,12 +221,7 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("""
-                SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
-                FROM Usuarios u
-                LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
-                LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
-            """)
+            cursor.execute(GET_ALL)
             raw_rows = cursor.fetchall()
             
             usuarios = []

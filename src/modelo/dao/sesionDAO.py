@@ -1,132 +1,15 @@
-from mysql.connector import Error
 from src.modelo.conexion.Conexion import Conexion
-from src.modelo.vo import Familiar, Comentario, Sesion
-from datetime import datetime
+from src.modelo.vo import Sesion
 
-
-
-
-
-class ComentarioDAO:
-
-    @staticmethod
-    def get_by_paciente(nombreUsuario_paciente):
-        db = Conexion()
-        conn = db.get_connection()
-        if conn is None:
-            return []
-
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Paciente = ? ORDER BY dia DESC, hora DESC",
-                (nombreUsuario_paciente,)
-            )
-            rows = cursor.fetchall()
-            
-            comentarios = []
-            for row in rows:
-                row_dict = {
-                    'id': row[0],
-                    'Auxiliar': row[1],
-                    'Paciente': row[2],
-                    'dia': row[3],
-                    'hora': row[4],
-                    'nota': row[5]
-                }
-                comentarios.append(Comentario(**row_dict))
-            return comentarios
-        except Exception as e:
-            print(f"Error en ComentarioDAO.get_by_paciente: {e}")
-            return []
-        finally:
-            cursor.close()
-
-    @staticmethod
-    def get_by_trabajador(nombreUsuario_trabajador):
-        db = Conexion()
-        conn = db.get_connection()
-        if conn is None:
-            return []
-
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Auxiliar = ? ORDER BY dia DESC, hora DESC",
-                (nombreUsuario_trabajador,)
-            )
-            rows = cursor.fetchall()
-            
-            comentarios = []
-            for row in rows:
-                row_dict = {
-                    'id': row[0],
-                    'Auxiliar': row[1],
-                    'Paciente': row[2],
-                    'dia': row[3],
-                    'hora': row[4],
-                    'nota': row[5]
-                }
-                comentarios.append(Comentario(**row_dict))
-            return comentarios
-        except Exception as e:
-            print(f"Error en ComentarioDAO.get_by_trabajador: {e}")
-            return []
-        finally:
-            cursor.close()
-
-    @staticmethod
-    def create(comentario):
-        db = Conexion()
-        conn = db.get_connection()
-        if conn is None:
-            return False
-
-        cursor = conn.cursor()
-        try:
-            dia_str = str(comentario.dia) if comentario.dia else None
-            hora_str = str(comentario.hora) if comentario.hora else None
-            
-            sql = """INSERT INTO comentarios (Auxiliar, Paciente, dia, hora, nota)
+GET_BY_ID = "SELECT * FROM Sesion WHERE idSesion = ?"
+GET_BY_PACIENTE = "SELECT * FROM Sesion WHERE Paciente = ? ORDER BY Fecha ASC"
+GET_BY_ESPECIALISTA = "SELECT * FROM Sesion WHERE Especialista = ? ORDER BY Fecha ASC"
+CREATE = """INSERT INTO Sesion (Paciente, Especialista, comentarios, Fecha, Hora)
                      VALUES (?, ?, ?, ?, ?)"""
-            cursor.execute(sql, (
-                comentario.auxiliar,
-                comentario.paciente,
-                dia_str,
-                hora_str,
-                comentario.nota
-            ))
-            conn.commit()
-            return True
-        except Exception as e:
-            print(f"Error en ComentarioDAO.create: {e}")
-            conn.rollback()
-            return False
-        finally:
-            cursor.close()
-
-    @staticmethod
-    def delete(auxiliar, paciente, dia):
-        db = Conexion()
-        conn = db.get_connection()
-        if conn is None:
-            return False
-
-        cursor = conn.cursor()
-        try:
-            cursor.execute(
-                "DELETE FROM comentarios WHERE Auxiliar = ? AND Paciente = ? AND dia = ?",
-                (auxiliar, paciente, dia)
-            )
-            conn.commit()
-            return True
-        except Error as e:
-            print(f"Error en ComentarioDAO.delete: {e}")
-            conn.rollback()
-            return False
-        finally:
-            cursor.close()
-
+UPDATE = """UPDATE Sesion
+                     SET Paciente = ?, Especialista = ?, comentarios = ?, Fecha = ?, Hora = ?
+                     WHERE idSesion = ?"""
+DELETE = "DELETE FROM Sesion WHERE idSesion = ?"
 
 class SesionDAO:
 
@@ -140,7 +23,7 @@ class SesionDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Sesion WHERE idSesion = ?",
+                GET_BY_ID,
                 (idSesion,)
             )
             row = cursor.fetchone()
@@ -187,7 +70,7 @@ class SesionDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Sesion WHERE Paciente = ? ORDER BY Fecha ASC",
+                GET_BY_PACIENTE,
                 (nombreUsuario_paciente,)
             )
             rows = cursor.fetchall()
@@ -236,7 +119,7 @@ class SesionDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "SELECT * FROM Sesion WHERE Especialista = ? ORDER BY Fecha ASC",
+                GET_BY_ESPECIALISTA,
                 (nombreUsuario_especialista,)
             )
             rows = cursor.fetchall()
@@ -287,9 +170,7 @@ class SesionDAO:
             fecha_str = str(sesion.fecha) if sesion.fecha else None
             hora_str = str(sesion.hora) if sesion.hora else None
             
-            sql = """INSERT INTO Sesion (Paciente, Especialista, comentarios, Fecha, Hora)
-                     VALUES (?, ?, ?, ?, ?)"""
-            cursor.execute(sql, (
+            cursor.execute(CREATE, (
                 sesion.paciente,
                 sesion.especialista,
                 sesion.comentarios,
@@ -317,10 +198,7 @@ class SesionDAO:
             fecha_str = str(sesion.fecha) if sesion.fecha else None
             hora_str = str(sesion.hora) if sesion.hora else None
             
-            sql = """UPDATE Sesion
-                     SET Paciente = ?, Especialista = ?, comentarios = ?, Fecha = ?, Hora = ?
-                     WHERE idSesion = ?"""
-            cursor.execute(sql, (
+            cursor.execute(UPDATE, (
                 sesion.paciente,
                 sesion.especialista,
                 sesion.comentarios,
@@ -347,7 +225,7 @@ class SesionDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Sesion WHERE idSesion = ?",
+                DELETE,
                 (idSesion,)
             )
             conn.commit()

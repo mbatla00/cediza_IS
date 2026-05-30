@@ -6,7 +6,13 @@ from .evaluacionDAO import EvaluacionProfesionalDAO
 from .informeDAO import InformeDAO
 from .facturaDAO import FacturaDAO
 from .familiarDAO import FamiliarDAO
-from .otros_dao import ComentarioDAO, SesionDAO
-from .paciente_dao import PacienteDAO, PacPubDAO, PacPriDAO
-from .trabajador_dao import TrabajadorDAO, AuxiliarDAO, EspecialistaDAO, CoordinadorDAO
-from .usuario_dao import UsuarioDAO
+from .comentarioDAO import ComentarioDAO
+from .sesionDAO import SesionDAO
+from .pacPubDAO import PacPubDAO
+from .pacPriDAO import PacPriDAO
+from .pacienteDAO import PacienteDAO
+from .auxiliarDAO import AuxiliarDAO
+from .coordinadorDAO import CoordinadorDAO
+from .especialistaDAO import EspecialistaDAO
+from .trabajadorDAO import TrabajadorDAO
+from .UsuarioDAO import UsuarioDAO
