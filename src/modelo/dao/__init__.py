@@ -1,8 +1,12 @@
-from .admin_dao import AdministradorDAO
-from .cuestionario_dao import CuestionarioDAO, PreguntaDAO, RespuestaDAO
-from .database import Database
-from .eval_inf_fac_dao import EvaluacionProfesionalDAO, InformeDAO, FacturaDAO
-from .otros_dao import FamiliarDAO, ComentarioDAO, SesionDAO
+from .adminDAO import AdministradorDAO
+from .cuestionarioDAO import CuestionarioDAO
+from .preguntaDAO import PreguntaDAO
+from .respuestaDAO import RespuestaDAO
+from .evaluacionDAO import EvaluacionProfesionalDAO
+from .informeDAO import InformeDAO
+from .facturaDAO import FacturaDAO
+from .familiarDAO import FamiliarDAO
+from .otros_dao import ComentarioDAO, SesionDAO
 from .paciente_dao import PacienteDAO, PacPubDAO, PacPriDAO
 from .trabajador_dao import TrabajadorDAO, AuxiliarDAO, EspecialistaDAO, CoordinadorDAO
 from .usuario_dao import UsuarioDAO

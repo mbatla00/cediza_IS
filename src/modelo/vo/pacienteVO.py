@@ -1,6 +1,9 @@
-from .usuario import Usuario
+from .usuarioVO import Usuario
+from abc import ABC, abstractmethod
 
-class Paciente(Usuario):
+class Paciente(Usuario, ABC):
+    # Paciente del centro de dia (tipo de usuario)
+
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password='paciente',
     Tipo=None, email=None, fechaNacimiento=None, activo=None, diagnostico=None):
         super().__init__(
@@ -20,17 +23,9 @@ class Paciente(Usuario):
     def tipo(self):
         return self._tipo
     
-    @tipo.setter
-    def tipo(self, value):
-        self._tipo = value
-    
     @property
     def diagnostico(self):
         return self._diagnostico
-    
-    @diagnostico.setter
-    def diagnostico (self, value):
-        self._diagnostico = value
     
     def to_dict(self):
         d = super().to_dict()

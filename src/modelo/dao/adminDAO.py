@@ -1,5 +1,14 @@
-from .database import Database
+from src.modelo.conexion.Conexion import Conexion
 from mysql.connector import Error
+from src.modelo.vo import Admin
+
+# QUERIES
+GET_BY_USERNAME = """SELECT u.*, a.nombreUsuario as adminUser
+                   FROM Usuarios u
+                   JOIN Administrador a ON u.nombreUsuario = a.nombreUsuario
+                   WHERE u.nombreUsuario = ?"""
+CREATE = "INSERT INTO Administrador (nombreUsuario) VALUES (?)"
+DELETE = "DELETE FROM Administrador WHERE nombreUsuario = ?"
 
 
 class AdministradorDAO:
@@ -7,7 +16,7 @@ class AdministradorDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -15,15 +24,11 @@ class AdministradorDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                """SELECT u.*, a.nombreUsuario as adminUser
-                   FROM Usuarios u
-                   JOIN Administrador a ON u.nombreUsuario = a.nombreUsuario
-                   WHERE u.nombreUsuario = ?""",
+                GET_BY_USERNAME,
                 (nombreUsuario,)
             )
             row = Database.row_to_dict(cursor, cursor.fetchone())
-            from app.models.administrador import Administrador
-            return Administrador(**{k: v for k, v in row.items()
+            return Admin(**{k: v for k, v in row.items()
                                     if k != 'adminUser'}) if row else None
         except Error as e:
             print(f"Error en AdministradorDAO.get_by_nombreUsuario: {e}")
@@ -33,7 +38,7 @@ class AdministradorDAO:
 
     @staticmethod
     def create(admin):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -41,7 +46,7 @@ class AdministradorDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "INSERT INTO Administrador (nombreUsuario) VALUES (?)",
+                CREATE,
                 (admin.nombreUsuario,)
             )
             conn.commit()
@@ -55,7 +60,7 @@ class AdministradorDAO:
 
     @staticmethod
     def delete(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -63,7 +68,7 @@ class AdministradorDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Administrador WHERE nombreUsuario = ?",
+                DELETE,
                 (nombreUsuario,)
             )
             conn.commit()

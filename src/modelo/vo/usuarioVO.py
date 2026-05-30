@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from datetime import datetime
 
 class Usuario(ABC):
     #clase abstracta para todos los usuarios del sistema
@@ -25,59 +24,31 @@ class Usuario(ABC):
     @property
     def nombre(self):
         return self._nombre
-    
-    @nombre.setter
-    def nombre(self, value):
-        self._nombre = value
 
     @property
     def dni(self):
         return self._dni
-    
-    @dni.setter
-    def dni(self, value):
-        self._dni = value
-    
+
     @property
     def rol(self):
         return self._rol 
-    
-    @rol.setter
-    def rol(self, value):
-        self._rol = value
 
     @property
     def password(self):
         return self._password
-    
-    @password.setter
-    def password(self, value):
-        self._password = value
 
     @property
     def email(self): 
         return self._email
-    
-    @email.setter
-    def email(self, value): 
-        self._email = value
 
     @property
     def fechaNacimiento(self):
         return self._fechaNacimiento
-    
-    @fechaNacimiento.setter
-    def fechaNacimiento(self, value):
-        self._fechaNacimiento = value
 
     @property
     def activo (self):
         return self._activo
     
-    @activo.setter
-    def activo (self, value):
-        self._activo = value
-
     def to_dict(self):
         return {
             'nombreUsuario': self.nombreUsuario,

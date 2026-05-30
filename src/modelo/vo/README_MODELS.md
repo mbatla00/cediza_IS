@@ -13,17 +13,24 @@ Son clases simples: solo atributos, getters, setters y `to_dict()`.
 
 ```
 models/
-├── usuario.py          → Usuario (clase base)
-├── paciente.py         → Paciente (hereda de Usuario)
-├── paciente_tipos.py   → PacientePublico, PacientePrivado (heredan de Paciente)
-├── trabajador.py       → Trabajador (hereda de Usuario)
-├── trabajador_tipos.py → Auxiliar, Coordinador, Especialista (heredan de Trabajador)
-├── familiar.py         → Atributo multivalorado de paciente
-├── comentario.py       → Tiene auxiliar(FK), paciente(FK), dia y nota(mensaje)
-├── sesion.py           → Tiene especialista(FK), paciente(FK), fecha y comentarios
-├── cuestionario.py     → Cuestionario, Pregunta, Respuesta
-└── eval_inf_fac.py     → EvaluacionProfesional, Informe, Factura
-└──admin.py             → Admin
+├── usuarioVO.py          → Usuario (clase base)
+├── pacienteVO.py         → Paciente (hereda de Usuario)
+├── pacPriVO.py           → Paciente privado (hereda de paciente)
+├── pacPubVO.py           → Paciente publico (hereda de paciente)
+├── trabajadorVO.py       → Trabajador (hereda de Usuario)
+├── auxiliarVO.py         → Auxiliar (hereda de trabajador)
+├── coordinadorVO.py      → Coordinador (hereda de trabajador)
+├── especialistaVO.py     → Especialista (hereda de trabajador)
+├── familiarVO.py         → Atributo multivalorado de paciente
+├── comentarioVO.py       → Comentario de un auxiliar a un paciente
+├── sesionVO.py           → Sesion de un especialista con un paciente
+├── cuestionarioVO.py     → Cuestionario para los pacientes
+├── preguntaVO.py         → Preguntas de los cuestionarios
+├── respuestaVO.py        → Respuesta de un paciente a una pregunta
+├── evaluacionVO.py       → Evaluacion de un trabajador a un paciente
+├── informeVO.py          → Informe de un trabajador sobre un paciente
+├── facturaVO.py          → Factura de un paciente en una fecha
+└──adminVO.py             → Administrador (hereda de usuario)
 ```
 
 ## 🔗 JERARQUÍA DE HERENCIA
@@ -94,15 +101,5 @@ pac.dias_ingresado = 15
   ha estado ingresado en un **hospital externo**, dato necesario para la facturación
 - El campo `Auxiliar` en `Comentario` es una FK a `Trabajadores` — aunque el nombre
   diga "Auxiliar", cualquier tipo de trabajador puede escribir comentarios
-- Si no se inserta `nombreUsuario` al crear un `Usuario` se generará automáticamente
-  como `'NombreApellido1'` en minúsculas. ⚠️ Si ya existe ese nombreUsuario, el controlador deberá
-  añadir un sufijo numérico (`'mariagarcia1'`, `'mariagarcia2'`...)
 - `Administrador` hereda de `Usuario` y gestiona las facturas de los pacientes
 - `EvaluacionProfesional` e `Informe` los crea cualquier trabajador, no solo especialistas
-
-## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
-
-- `Usuario` ahora tiene  `email`, `activo` y usa `password` en vez de `contraseña`
-- `Paciente` ahora tiene `fechaNacimiento`, `foto` y `diagnostico` 
-- Añadido `Administrador` (hereda de `Usuario`)
-- Añadidos `EvaluacionProfesional`, `Informe` y `Factura` en `eval_inf_fac.py`

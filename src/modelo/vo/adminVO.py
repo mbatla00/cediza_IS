@@ -1,4 +1,4 @@
-from .usuario import Usuario
+from .usuarioVO import Usuario
 
 
 class Admin(Usuario):

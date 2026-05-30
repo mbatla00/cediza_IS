@@ -9,7 +9,7 @@
 import jaydebeapi
 from src.config import Config
 
-class Database:
+class Conexion:
     _instance = None
     _connection = None
 

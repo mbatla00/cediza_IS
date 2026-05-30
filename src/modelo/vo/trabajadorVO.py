@@ -1,6 +1,9 @@
-from .usuario import Usuario
+from abc import ABC, abstractmethod
+from .usuarioVO import Usuario
 
-class Trabajador(Usuario):
+class Trabajador(Usuario, ABC):
+    """VO para trabajadores del centro de dia (tipo de usuarios)"""
+
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Tipo=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
@@ -14,10 +17,6 @@ class Trabajador(Usuario):
     @property
     def tipo(self):
         return self._tipo
-    
-    @tipo.setter
-    def tipo(self, value):
-        self._tipo = value
 
     def to_dict(self):
         d = super().to_dict()

@@ -1,5 +1,5 @@
 from mysql.connector import Error
-from .database import Database
+from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Paciente, PacPri, PacPub
 
 
@@ -7,7 +7,7 @@ class PacienteDAO:
 
     @staticmethod
     def get_all():
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return []
@@ -51,7 +51,7 @@ class PacienteDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -92,7 +92,7 @@ class PacienteDAO:
 
     @staticmethod
     def create(paciente):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -112,7 +112,7 @@ class PacienteDAO:
 
     @staticmethod
     def delete(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -137,7 +137,7 @@ class PacPubDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -155,7 +155,7 @@ class PacPubDAO:
 
     @staticmethod
     def create(pac_pub):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -175,7 +175,7 @@ class PacPubDAO:
 
     @staticmethod
     def update_dias(nombreUsuario, dias_ingresado):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -200,7 +200,7 @@ class PacPriDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -221,7 +221,7 @@ class PacPriDAO:
 
     @staticmethod
     def create(pac_pri):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -247,7 +247,7 @@ class PacPriDAO:
 
     @staticmethod
     def update(pac_pri):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False

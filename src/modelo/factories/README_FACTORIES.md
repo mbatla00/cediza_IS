@@ -14,7 +14,9 @@ factoría devuelve el objeto correcto.
 
 ```
 factories/
-└── usuario_factory.py → UsuarioFactory, PacienteFactory, TrabajadorFactory
+└── usuario_factory.py           → UsuarioFactory
+└── trabajador_factory.py        → TrabajadorFactory
+└── paciente_factory.py          → PacienteFactory
 ```
 
 ---
@@ -145,10 +147,3 @@ UsuarioFactory.crear({'Rol': 'admin', 'nombreUsuario': 'admin', 'Nombre': 'Admin
 ```
 
 ---
-
-## 📝 CAMBIOS RESPECTO A LA VERSIÓN ANTERIOR
-
-- **Añadido rol `admin`**: se crea directamente como objeto `Administrador` sin pasar por subfactoría
-- **Formato de `nombreUsuario`**: ahora es `NombreApellido1` en minúsculas (ej: `mariagarcia`)
-- **Todas las factorías usan `password`** en lugar de `contraseña` para coincidir con la BD
-- **El método `generar_nombre_usuario`** en `UsuarioDAO` ya evita duplicados añadiendo sufijo numérico

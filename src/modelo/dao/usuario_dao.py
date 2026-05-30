@@ -1,5 +1,5 @@
 from mysql.connector import Error
-from .database import Database
+from src.modelo.conexion.Conexion import Conexion
 from src.modelo.factories import UsuarioFactory
 import unicodedata
 import re
@@ -9,7 +9,7 @@ class UsuarioDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -47,7 +47,7 @@ class UsuarioDAO:
 
     @staticmethod
     def get_by_email(email):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -74,7 +74,7 @@ class UsuarioDAO:
 
     @staticmethod
     def get_by_dni(dni):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -123,7 +123,7 @@ class UsuarioDAO:
 
     @staticmethod
     def create(usuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -155,7 +155,7 @@ class UsuarioDAO:
 
     @staticmethod
     def update(usuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -183,7 +183,7 @@ class UsuarioDAO:
 
     @staticmethod
     def delete(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -206,7 +206,7 @@ class UsuarioDAO:
     @staticmethod
     def get_all():
         """Devuelve una lista de todos los objetos Usuario válidos en el sistema."""
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return []

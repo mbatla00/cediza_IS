@@ -1,5 +1,5 @@
 from mysql.connector import Error
-from .database import Database
+from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Trabajador, Auxiliar, Coordinador, Especialista
 
 
@@ -8,7 +8,7 @@ class TrabajadorDAO:
 
     @staticmethod
     def get_all():
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return []
@@ -26,7 +26,7 @@ class TrabajadorDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -47,7 +47,7 @@ class TrabajadorDAO:
 
     @staticmethod
     def create(trabajador):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -67,7 +67,7 @@ class TrabajadorDAO:
 
     @staticmethod
     def delete(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -92,7 +92,7 @@ class AuxiliarDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -113,7 +113,7 @@ class AuxiliarDAO:
 
     @staticmethod
     def get_all():
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return []
@@ -131,7 +131,7 @@ class AuxiliarDAO:
 
     @staticmethod
     def create(auxiliar):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -151,7 +151,7 @@ class AuxiliarDAO:
 
     @staticmethod
     def update_horario(nombreUsuario, horario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -176,7 +176,7 @@ class CoordinadorDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -197,7 +197,7 @@ class CoordinadorDAO:
 
     @staticmethod
     def create(coordinador):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -217,7 +217,7 @@ class CoordinadorDAO:
 
     @staticmethod
     def update_infoInteres(nombreUsuario, infoInteres):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -242,7 +242,7 @@ class EspecialistaDAO:
 
     @staticmethod
     def get_by_nombreUsuario(nombreUsuario):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return None
@@ -263,7 +263,7 @@ class EspecialistaDAO:
 
     @staticmethod
     def get_all():
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return []
@@ -281,7 +281,7 @@ class EspecialistaDAO:
 
     @staticmethod
     def create(especialista):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
@@ -306,7 +306,7 @@ class EspecialistaDAO:
 
     @staticmethod
     def update(especialista):
-        db = Database()
+        db = Conexion()
         conn = db.get_connection()
         if conn is None:
             return False
