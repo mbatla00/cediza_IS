@@ -1,0 +1,3 @@
+from .usuario_factory import UsuarioFactory
+from .paciente_factory import PacienteFactory
+from .trabajador_factory import TrabajadorFactory

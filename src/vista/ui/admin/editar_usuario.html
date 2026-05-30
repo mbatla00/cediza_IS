@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Editar Usuario: {{ usuario.nombreUsuario }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin.editar_usuario', nombre_usuario=usuario.nombreUsuario) }}">
+                    
+                    {# DATOS COMUNES #}
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre Completo *</label>
+                            <input type="text" class="form-control" name="nombre" required value="{{ usuario.nombre }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ usuario.email or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">DNI</label>
+                            <input type="text" class="form-control" name="dni" value="{{ usuario.dni or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" name="fecha_nacimiento" value="{{ usuario.fechaNacimiento or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" value="{{ usuario.telefono or '' }}" pattern="[0-9]{9}" title="9 dígitos">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nueva Contraseña</label>
+                            <input type="password" class="form-control" name="password" placeholder="(Dejar vacío para no cambiar)">
+                        </div>
+                    </div>
+
+                    {# CAMPOS DE PACIENTE #}
+                    {% if usuario.rol == 'paciente' %}
+                    <hr class="my-4">
+                    <h5 class="mb-3"><i class="bi bi-person"></i> Datos de Paciente</h5>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipo</label>
+                            <select class="form-select" name="tipo">
+                                <option value="publico" {% if usuario.tipo == 'publico' %}selected{% endif %}>Público</option>
+                                <option value="privado" {% if usuario.tipo == 'privado' %}selected{% endif %}>Privado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {# ENFERMEDADES #}
+                    <h5 class="mb-3"><i class="bi bi-heart-pulse text-warning"></i> Enfermedades</h5>
+                    <div class="row g-2 mb-3">
+                        {% for enf in enfermedades %}
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="enfermedades" value="{{ enf.id }}" id="enf_{{ enf.id }}"
+                                    {% if enf.id in paciente_enfermedades %}checked{% endif %}>
+                                <label class="form-check-label" for="enf_{{ enf.id }}">{{ enf.nombre }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row g-3 mb-3 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">Otra enfermedad</label>
+                            <input type="text" class="form-control" id="otra_enfermedad_input" placeholder="(Ejemplo: Esclerosis)">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-warning" onclick="agregarEnfermedad()">
+                                <i class="bi bi-plus-lg"></i> AÑADIR
+                            </button>
+                        </div>
+                    </div>
+
+                    {# CONTACTOS DE EMERGENCIA #}
+                    <h5 class="mb-3"><i class="bi bi-telephone-fill text-danger"></i> Contactos de Emergencia</h5>
+                    <div id="contactosContainer">
+                        {% if contactos %}
+                            {% for c in contactos %}
+                            <div class="row g-3 mb-3 contacto-fila">
+                                <div class="col-md-4">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="contacto_nombre" value="{{ c.nombre }}" placeholder="(Ejemplo: María)">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Parentesco</label>
+                                    <input type="text" class="form-control" name="contacto_relacion" value="{{ c.relacion }}" placeholder="(Ejemplo: Hija)">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" name="contacto_telefono" value="{{ c.telefono }}" pattern="[0-9]{9}" title="9 dígitos" placeholder="(Ejemplo: 666777888)">
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.contacto-fila').remove()">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="row g-3 mb-3 contacto-fila">
+                                <div class="col-md-4">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Parentesco</label>
+                                    <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" name="contacto_telefono" pattern="[0-9]{9}" title="9 dígitos" placeholder="(Ejemplo: 666777888)">
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger mb-4" onclick="agregarContacto()">
+                        <i class="bi bi-plus-lg"></i> Añadir otro contacto
+                    </button>
+
+                    <script>
+                    function agregarEnfermedad() {
+                        var input = document.getElementById('otra_enfermedad_input');
+                        var nombre = input.value.trim();
+                        if (!nombre) return;
+
+                        var container = document.querySelector('.row.g-2.mb-3');
+                        var div = document.createElement('div');
+                        div.className = 'col-md-4';
+                        div.innerHTML = `
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="enfermedades" value="nueva_${nombre}" id="enf_nueva_${nombre}" checked>
+                                <label class="form-check-label" for="enf_nueva_${nombre}">${nombre}</label>
+                            </div>
+                        `;
+                        container.appendChild(div);
+
+                        var hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'otra_enfermedad';
+                        hidden.value = nombre;
+                        document.querySelector('form').appendChild(hidden);
+
+                        input.value = '';
+                    }
+
+                    function agregarContacto() {
+                        var container = document.getElementById('contactosContainer');
+                        var fila = document.createElement('div');
+                        fila.className = 'row g-3 mb-3 contacto-fila';
+                        fila.innerHTML = `
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="contacto_nombre" placeholder="(Ejemplo: María)">
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" name="contacto_relacion" placeholder="(Ejemplo: Hija)">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="tel" class="form-control" name="contacto_telefono" pattern="[0-9]{9}" title="9 dígitos" placeholder="(Ejemplo: 666777888)">
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.contacto-fila').remove()">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(fila);
+                    }
+                    </script>
+                    {% endif %}
+
+                    {# CAMPOS DE TRABAJADOR #}
+                    {% if usuario.rol == 'trabajador' %}
+                    <hr class="my-4">
+                    <h5 class="mb-3"><i class="bi bi-person-badge"></i> Datos de Trabajador</h5>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Tipo de Trabajador</label>
+                            <select class="form-select" name="tipo_trabajador" id="tipo_trabajador" onchange="mostrarCamposTrabajador()">
+                                <option value="auxiliar" {% if datos_trabajador.tipo == 'auxiliar' %}selected{% endif %}>Auxiliar</option>
+                                <option value="coordinador" {% if datos_trabajador.tipo == 'coordinador' %}selected{% endif %}>Coordinador</option>
+                                <option value="especialista" {% if datos_trabajador.tipo == 'especialista' %}selected{% endif %}>Especialista</option>
+                            </select>
+                        </div>
+                        
+                        {# Campos de Auxiliar #}
+                        <div id="campos_auxiliar" class="col-md-6" style="display: none;">
+                            <label class="form-label fw-bold">Horario</label>
+                            <select class="form-select" name="horario">
+                                <option value="">(Sin asignar)</option>
+                                <option value="Mañana" {% if datos_trabajador.horario == 'Mañana' %}selected{% endif %}>Mañana</option>
+                                <option value="Tarde" {% if datos_trabajador.horario == 'Tarde' %}selected{% endif %}>Tarde</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {# Campos de Especialista #}
+                    <div id="campos_especialista" class="row g-3 mb-3" style="display: none;">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Especialidad</label>
+                            <input type="text" class="form-control" name="especialidad" value="{{ datos_trabajador.especialidad or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Horario</label>
+                            <input type="text" class="form-control" name="horario_especialista" value="{{ datos_trabajador.horario or '' }}" placeholder="Ej: L-V 9:00-14:00">
+                        </div>
+                    </div>
+
+                    <script>
+                        function mostrarCamposTrabajador() {
+                            var tipo = document.getElementById('tipo_trabajador').value;
+                            
+                            // Mostrar/ocultar campo de auxiliar
+                            document.getElementById('campos_auxiliar').style.display = (tipo === 'auxiliar') ? 'block' : 'none';
+                            
+                            // Mostrar/ocultar campos de especialista
+                            document.getElementById('campos_especialista').style.display = (tipo === 'especialista') ? 'flex' : 'none';
+                        }
+                        
+                        // Ejecutar al cargar la página
+                        window.onload = function() {
+                            mostrarCamposTrabajador();
+                        };
+                    </script>
+                    {% endif %}
+
+                    {# CAMPOS DE ADMIN #}
+                    {% if usuario.rol == 'admin' %}
+                    <hr class="my-4">
+                    <h5 class="mb-3"><i class="bi bi-shield-lock"></i> Datos de Administrador</h5>
+                    <p class="text-muted">Los administradores solo tienen datos comunes.</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <a href="{{ url_for('admin.listar_usuarios') }}" class="btn btn-light">Cancelar</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-lg"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

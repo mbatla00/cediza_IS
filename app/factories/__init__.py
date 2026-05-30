@@ -1,1 +1,0 @@
-from app.factories.usuario_factory import UsuarioFactory, PacienteFactory, TrabajadorFactory

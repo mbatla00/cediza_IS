@@ -8,7 +8,7 @@ Este archivo es el interruptor de encendido del proyecto.
 - host='0.0.0.0' permite que tablets/móviles en la misma WiFi se conecten
 - debug=True muestra errores detallados y se reinicia al guardar cambios
 """
-from app import create_app
+from src import create_app
 
 app = create_app()
 

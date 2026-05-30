@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Expediente - {{ paciente.nombreUsuario }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-4">
+        <a href="{{ url_for('trabajador.dashboard') }}" class="btn btn-sm btn-light text-secondary mb-2">
+            <i class="bi bi-arrow-left"></i> Volver al listado
+        </a>
+        <h2 class="fw-bold text-dark">Ficha Clínica: <span class="text-primary">{{ paciente.nombreUsuario }}</span></h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-person-badge"></i> Información General</span>
+                    <div>
+                        <a href="{{ url_for('trabajador.evaluar_paciente', nombreUsuario=paciente.nombreUsuario) }}" class="btn btn-sm btn-warning me-1">
+                            <i class="bi bi-clipboard2-heart"></i> Evaluar
+                        </a>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="collapse" data-bs-target="#historialEvaluaciones">
+                            <i class="bi bi-clock-history"></i> Ver historial
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Usuario:</strong> {{ paciente.nombreUsuario }}</p>
+                    <p class="mb-2"><strong>Teléfono:</strong> {{ paciente.telefono or 'No registrado' }}</p>
+                    <p class="mb-0"><strong>Régimen:</strong> 
+                        {% if paciente.tipo == 'publico' %}
+                            <span class="badge bg-info text-dark">Público</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Privado</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-telephone-fill"></i> Contactos de Emergencia</span>
+                    <button class="btn btn-xs btn-light py-0 px-2 text-danger" data-bs-toggle="collapse" data-bs-target="#formContacto">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="collapse mb-3 border-bottom pb-3" id="formContacto">
+                        <form method="POST" action="{{ url_for('trabajador.nuevo_contacto', nombreUsuario=paciente.nombreUsuario) }}">
+                            <div class="mb-2">
+                                <input type="text" name="nombre_contacto" class="form-control form-control-sm" placeholder="Nombre completo" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" name="relacion_contacto" class="form-control form-control-sm" placeholder="Parentesco (Ej: Hijo/a)" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="tel" name="telefono_contacto" class="form-control form-control-sm" 
+                                    placeholder="Teléfono (9 dígitos)" required
+                                    pattern="[0-9]{9}" title="Introduce un número de 9 dígitos sin espacios">
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Guardar Contacto</button>
+                        </form>
+                    </div>
+
+                    {% if contactos %}
+                        <div class="list-group list-group-flush">
+                        {% for c in contactos %}
+                            <div class="list-group-item px-0 py-2">
+                                <h6 class="mb-0 fw-bold">{{ c.nombre }} <small class="text-muted">({{ c.relacion }})</small></h6>
+                                <p class="mb-0 text-danger fw-boldSmall"><i class="bi bi-phone"></i> {{ c.telefono }}</p>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0 small py-2">No hay contactos de emergencia registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# SECCIÓN DE SESIONES DEL PACIENTE #}
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-calendar3"></i> Sesiones
+                    <button class="btn btn-sm btn-light float-end" data-bs-toggle="collapse" data-bs-target="#sesionesCollapse">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="collapse" id="sesionesCollapse">
+                    <div class="card-body">
+                        {% if sesiones_proximas_paciente or sesiones_pasadas_paciente %}
+                            {# PRÓXIMAS SESIONES #}
+                            {% if sesiones_proximas_paciente %}
+                            <h6 class="fw-bold text-success mb-2"><i class="bi bi-calendar-check"></i> Próximas sesiones</h6>
+                            <div class="table-responsive mb-3">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr><th>Fecha</th><th>Hora</th><th>Especialista</th><th>Comentarios</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for s in sesiones_proximas_paciente %}
+                                        <tr>
+                                            <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                            <td>{{ s.hora.strftime('%H:%M') if s.hora else '-' }}</td>
+                                            <td>{{ s.especialista }}</td>
+                                            <td>{{ s.comentarios or '-' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endif %}
+                            
+                            {# SESIONES PASADAS #}
+                            {% if sesiones_pasadas_paciente %}
+                            <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-clock-history"></i> Sesiones pasadas</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr><th>Fecha</th><th>Hora</th><th>Especialista</th><th>Comentarios</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for s in sesiones_pasadas_paciente %}
+                                        <tr>
+                                            <td>{{ s.fecha.strftime('%d/%m/%Y') if s.fecha else '-' }}</td>
+                                            <td>{{ s.hora.strftime('%H:%M') if s.hora else '-' }}</td>
+                                            <td>{{ s.especialista }}</td>
+                                            <td>{{ s.comentarios or '-' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-muted mb-0">No hay sesiones registradas para este paciente.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de Evaluaciones (colapsable) -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="collapse" id="historialEvaluaciones">
+                    <div class="card-header bg-info text-white">
+                        <i class="bi bi-clock-history"></i> Historial de Evaluaciones
+                    </div>
+                    <div class="card-body">
+                        {% if evaluaciones %}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Trabajador</th>
+                                            <th>Emocional</th>
+                                            <th>Movilidad</th>
+                                            <th>Apetito</th>
+                                            <th>Observaciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for e in evaluaciones %}
+                                        <tr>
+                                            <td>{{ e.fecha }}</td>
+                                            <td>{{ e.Trabajador }}</td>
+                                            <td>{{ e.estadoEmocional }}/5</td>
+                                            <td>{{ e.movilidad }}/5</td>
+                                            <td>{{ e.apetito }}/5</td>
+                                            <td>{{ e.observaciones or '-' }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted text-center mb-0">No hay evaluaciones registradas.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="bi bi-pencil-square"></i> Nueva Anotación Diaria 
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('trabajador.nueva_nota', nombreUsuario=paciente.nombreUsuario) }}">
+                        <div class="mb-3">
+                            <textarea name="nota_texto" class="form-control" rows="3" placeholder="Escribe observaciones sobre la evolución, estado físico o incidencias del paciente..." required></textarea>
+                            <div class="form-text text-muted small"><i class="bi bi-info-circle"></i> Obligatorio: Mínimo 5 caracteres por seguridad clínica.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-file-earmark-plus"></i> Guardar Nota Clinica
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    <i class="bi bi-clock-history"></i> Historial de Evolución 
+                </div>
+                <div class="card-body">
+                    {% if notas %}
+                        <div class="position-relative ps-3 border-start border-2 border-light">
+                        {% for n in notas %}
+                            <div class="mb-4 position-relative">
+                                <div class="position-absolute bg-primary rounded-circle" style="width:12px; height:12px; left:-22px; top:5px;"></div>
+                                <div class="bg-light p-3 rounded shadow-xs">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-secondary">Por: {{ n.auxiliar }}</span>
+                                        <small class="text-muted fw-bold">
+                                            <i class="bi bi-calendar3"></i> {{ n.dia }} 
+                                            <i class="bi bi-clock"></i> {{ n.hora if n.hora else 'Hora no registrada' }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-0 text-dark" style="white-space: pre-line;">{{ n.nota }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4 my-0">El historial está vacío. Comienza añadiendo una anotación arriba.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
