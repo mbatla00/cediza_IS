@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Paciente
+from mysql.connector import Error
 
 
 class PacienteDAO:
@@ -23,7 +25,7 @@ class PacienteDAO:
             
             pacientes = []
             for raw_row in raw_rows:
-                row_raw = Database.row_to_dict(cursor, raw_row)
+                row_raw = Conexion.row_to_dict(cursor, raw_row)
                 if not row_raw:
                     continue
                 

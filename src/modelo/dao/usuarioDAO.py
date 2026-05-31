@@ -1,7 +1,9 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.factories import UsuarioFactory
 import unicodedata
 import re
+from mysql.connector import Error
 
 GET_BY_USER = """
                 SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
@@ -38,7 +40,7 @@ class UsuarioDAO:
         try:
             cursor.execute(GET_BY_USER, (nombreUsuario,))
 
-            row = Database.row_to_dict(cursor, cursor.fetchone())
+            row = Conexion.row_to_dict(cursor, cursor.fetchone())
 
             if row:
                 if row.get('TipoPaciente'):
@@ -47,8 +49,8 @@ class UsuarioDAO:
                     row['Tipo'] = row['TipoTrabajador']
                 
                 usuario_obj = UsuarioFactory.crear(row)
-                if usuario_obj and 'email' in row:
-                    usuario_obj.email = row.get('email')
+                #if usuario_obj and 'email' in row:
+                #    usuario_obj.email = row.get('email')
                 
                 return usuario_obj
             return None

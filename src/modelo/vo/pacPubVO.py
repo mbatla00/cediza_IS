@@ -1,7 +1,7 @@
 from .pacienteVO import Paciente
 
 class PacPub(Paciente):
-    #paciente publico, tipo de pacient
+    #paciente publico, tipo de paciente
     
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Dias_ingresado=None, email=None):
         super().__init__(

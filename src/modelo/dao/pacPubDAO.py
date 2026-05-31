@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import PacPub
+from mysql.connector import Error
 
 GET_BY_USER = "SELECT * FROM Pac_pub WHERE nombreUsuario = ?"
 CREATE = "INSERT INTO Pac_pub (nombreUsuario, Dias_ingresado) VALUES (?, ?)"

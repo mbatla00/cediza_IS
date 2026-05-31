@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Informe
+from mysql.connector import Error
 
 GET_BY_REF = "SELECT * FROM Informe WHERE referencia = ?"
 GET_BY_PACIENTE = """SELECT * FROM Informe

@@ -1,4 +1,5 @@
-from src.modelo.vo import pacPriVO, pacPubVO
+from src.modelo.vo import PacPri, PacPub
+from .base_factory import BaseFactory
 
 #===========================
 #Subfactoria de Pacientes
@@ -14,7 +15,7 @@ class PacienteFactory:
             - Tipo / tipo: 'publico' | 'privado'
         """
         if not datos.get('nombreUsuario'):
-            datos['nombreUsuario'] = UsuarioFactory._generar_nombreUsuario(datos.get('Nombre', ''))
+            datos['nombreUsuario'] = BaseFactory._generar_nombreUsuario(datos.get('Nombre', ''))
 
         # CLÁUSULA DE ULTRA-PROTECCIÓN: Buscamos todas las variantes posibles
         tipo_raw = datos.get('Tipo') or datos.get('tipo') or datos.get('tipoPaciente') or datos.get('TipoPaciente')

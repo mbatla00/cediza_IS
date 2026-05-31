@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Especialista
+from mysql.connector import Error
 
 GET_BY_USER = "SELECT * FROM Especialistas WHERE nombreUsuario = ?"
 GET_ALL = "SELECT * FROM Especialistas"
@@ -25,7 +27,7 @@ class EspecialistaDAO:
                 GET_BY_USER,
                 (nombreUsuario,)
             )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
+            row = Conexion.row_to_dict(cursor, cursor.fetchone())
             return Especialista(**row) if row else None
         except Error as e:
             print(f"Error en EspecialistaDAO.get_by_nombreUsuario: {e}")
@@ -43,7 +45,7 @@ class EspecialistaDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(GET_ALL)
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            rows = Conexion.rows_to_dict(cursor, cursor.fetchall())
             return [Especialista(**row) for row in rows]
         except Error as e:
             print(f"Error en EspecialistaDAO.get_all: {e}")
