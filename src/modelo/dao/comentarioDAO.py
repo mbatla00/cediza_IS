@@ -6,7 +6,7 @@ GET_BY_PACIENTE = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentari
 GET_BY_TRABAJADOR = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Auxiliar = ? ORDER BY dia DESC, hora DESC"
 CREATE = """INSERT INTO comentarios (Auxiliar, Paciente, dia, hora, nota)
                      VALUES (?, ?, ?, ?, ?)"""
-DELETE = "DELETE FROM comentarios WHERE Auxiliar = ? AND Paciente = ? AND dia = ?"
+DELETE = "DELETE FROM comentarios WHERE idComentrio = ?"
 
 class ComentarioDAO:
 
@@ -105,7 +105,7 @@ class ComentarioDAO:
             cursor.close()
 
     @staticmethod
-    def delete(auxiliar, paciente, dia):
+    def delete(idComentrio):
         db = Conexion()
         conn = db.get_connection()
         if conn is None:
@@ -115,7 +115,7 @@ class ComentarioDAO:
         try:
             cursor.execute(
                 DELETE,
-                (auxiliar, paciente, dia)
+                (idComentrio)
             )
             conn.commit()
             return True
