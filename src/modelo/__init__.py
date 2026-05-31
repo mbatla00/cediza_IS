@@ -1,16 +1,53 @@
-#Imports para fuera del modelo
-#TODO LO NECESARIO PARA FUERA DEL MODELO ESTA AQUI
-#Como importar: from src.model import ... (lo que se necesite)
+"""
+MODELO DEL SISTEMA
 
-#FACTORIA
+Contiene:
+- DAOs: Acceso a datos (cada DAO tiene sus queries arriba)
+- VOs: Value Objects (solo getters, sin setters)
+- Factories: Patrón factory para crear objetos
+- Servicios: Lógica de negocio (lo nuevo que añadimos)
+- Conexión: Conexión a BD con patrón Singleton
+"""
+
+# Factories
 from .factories import UsuarioFactory
 
+# DAOs
+from .dao import (
+    UsuarioDAO, PacienteDAO, TrabajadorDAO,
+    AdministradorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO,
+    PacPubDAO, PacPriDAO, ComentarioDAO, EvaluacionProfesionalDAO,
+    SesionDAO, FamiliarDAO, CuestionarioDAO, PreguntaDAO, RespuestaDAO
+)
 
-#DAOs
-from .dao import CoordinadorDAO, CuestionarioDAO, EvaluacionProfesionalDAO, FacturaDAO, FamiliarDAO, InformeDAO, PreguntaDAO, RespuestaDAO, SesionDAO  
-from .dao import AdministradorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO, PacienteDAO, PacPriDAO, PacPubDAO, TrabajadorDAO, UsuarioDAO
+# VOs
+from .vo import (
+    Usuario, Paciente, Trabajador, Admin, Auxiliar, Coordinador, Especialista,
+    PacPub, PacPri, Comentario, EvaluacionProfesional, Sesion, Familiar,
+    Cuestionario, Pregunta, Respuesta
+)
 
+# Servicios (nuevo)
+from .servicios import (
+    UsuarioService, PacienteService, TrabajadorService, AuthService,
+    EnfermedadService, FamiliarService, ComentarioService,
+    EvaluacionService, SesionService, CuestionarioService, RespuestaService
+)
 
-#VOs
-from .vo import Comentario, Cuestionario, EvaluacionProfesional
-from .vo import Factura, Familiar, Informe, Pregunta, Respuesta, Sesion
+__all__ = [
+    # Factories
+    'UsuarioFactory',
+    # DAOs
+    'UsuarioDAO', 'PacienteDAO', 'TrabajadorDAO',
+    'AdministradorDAO', 'AuxiliarDAO', 'CoordinadorDAO', 'EspecialistaDAO',
+    'PacPubDAO', 'PacPriDAO', 'ComentarioDAO', 'EvaluacionProfesionalDAO',
+    'SesionDAO', 'FamiliarDAO', 'CuestionarioDAO', 'PreguntaDAO', 'RespuestaDAO',
+    # VOs
+    'Usuario', 'Paciente', 'Trabajador', 'Admin', 'Auxiliar', 'Coordinador', 'Especialista',
+    'PacPub', 'PacPri', 'Comentario', 'EvaluacionProfesional', 'Sesion', 'Familiar',
+    'Cuestionario', 'Pregunta', 'Respuesta',
+    # Servicios
+    'UsuarioService', 'PacienteService', 'TrabajadorService', 'AuthService',
+    'EnfermedadService', 'FamiliarService', 'ComentarioService',
+    'EvaluacionService', 'SesionService', 'CuestionarioService', 'RespuestaService'
+]
