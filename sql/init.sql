@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`familiares` (
   `Nombre` VARCHAR(100) NOT NULL,
   `Paciente` VARCHAR(50) NOT NULL,
   `Relacion` VARCHAR(45) NULL DEFAULT 'Hij@',
-  `Telefono` VARCHAR(15) NULL,
+  `Telefono` INT(9) NULL,
   PRIMARY KEY (`idFamiliar`),
   INDEX `paciente_idx` (`Paciente` ASC),
   CONSTRAINT `fk_familiares_pacientes`
