@@ -6,7 +6,7 @@ from mysql.connector import Error
 GET_BY_PACIENTE = "SELECT * FROM Familiares WHERE Paciente = ?"
 CREATE = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
                      VALUES (?, ?, ?, ?)"""
-DELETE = "DELETE FROM Familiares WHERE Nombre = ? AND Paciente = ?"
+DELETE = "DELETE FROM Familiares WHERE idFamiliar = ?"
 
 class FamiliarDAO:
 
@@ -56,7 +56,7 @@ class FamiliarDAO:
             cursor.close()
 
     @staticmethod
-    def delete(nombre, nombreUsuario_paciente):
+    def delete(idFamiliar):
         db = Conexion()
         conn = db.get_connection()
         if conn is None:
@@ -66,7 +66,7 @@ class FamiliarDAO:
         try:
             cursor.execute(
                 DELETE,
-                (nombre, nombreUsuario_paciente)
+                (idFamiliar)
             )
             conn.commit()
             return True

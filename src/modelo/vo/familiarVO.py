@@ -1,12 +1,17 @@
 class Familiar:
     """VO para los familiares de un paciente"""
     
-    def __init__(self, Nombre=None, Paciente=None, Relacion='hij@', Telefono=None):
+    def __init__(self,id=None, Nombre=None, Paciente=None, Relacion='hij@', Telefono=None):
+        self._id = id
         self._nombre = Nombre
         self._paciente = Paciente      #FK -> Pacientes.nombreUsuario
         self._relacion = Relacion
         self._telefono = Telefono
     
+    @property
+    def id(self):
+        return self._id
+
     @property
     def nombre(self):
         return self._nombre
@@ -25,6 +30,7 @@ class Familiar:
 
     def to_dict(self):
         return {
+            'id': self.id,
             'nombre': self.nombre,
             'paciente': self.paciente,
             'relacion': self.relacion,
@@ -32,4 +38,4 @@ class Familiar:
         }
     
     def __repr__(self):
-        return f"<Familiar nombre={self.nombre} paciente={self.paciente}>"
+        return f"<Familiar id={self.id} nombre={self.nombre} paciente={self.paciente}>"
