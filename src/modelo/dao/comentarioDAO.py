@@ -1,5 +1,6 @@
 from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Comentario
+from mysql.connector import Error
 
 GET_BY_PACIENTE = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Paciente = ? ORDER BY dia DESC, hora DESC"
 GET_BY_TRABAJADOR = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Auxiliar = ? ORDER BY dia DESC, hora DESC"

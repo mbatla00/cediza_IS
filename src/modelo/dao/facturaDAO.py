@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Factura
+from mysql.connector import Error
 
 GET_BY_CODIGO = "SELECT * FROM Factura WHERE codigoFactura = ?"
 GET_BY_PACIENTE = """SELECT * FROM Factura
@@ -28,7 +30,7 @@ class FacturaDAO:
                 GET_BY_CODIGO,
                 (codigoFactura,)
             )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
+            row = Conexion.row_to_dict(cursor, cursor.fetchone())
             return Factura(**row) if row else None
         except Error as e:
             print(f"Error en FacturaDAO.get_by_codigo: {e}")
@@ -49,7 +51,7 @@ class FacturaDAO:
                 GET_BY_PACIENTE,
                 (nombreUsuario_paciente,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            rows = Conexion.rows_to_dict(cursor, cursor.fetchall())
             return [Factura(**row) for row in rows]
         except Error as e:
             print(f"Error en FacturaDAO.get_by_paciente: {e}")
@@ -70,7 +72,7 @@ class FacturaDAO:
                 GET_BY_ADMIN,
                 (nombreUsuario_admin,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            rows = Conexion.rows_to_dict(cursor, cursor.fetchall())
             return [Factura(**row) for row in rows]
         except Error as e:
             print(f"Error en FacturaDAO.get_by_administrador: {e}")

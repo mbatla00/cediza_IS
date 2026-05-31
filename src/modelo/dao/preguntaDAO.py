@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Pregunta
+from mysql.connector import Error
 
 GET_BY_CUESTIONARIO = "SELECT * FROM Preguntas WHERE idCuestionario = ?"
 GET_BY_ID = "SELECT * FROM Preguntas WHERE idPregunta = ?"

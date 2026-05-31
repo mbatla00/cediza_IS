@@ -1,4 +1,5 @@
 from src.modelo.vo import Auxiliar, Coordinador, Especialista
+from .base_factory import BaseFactory
 
 #============================
 #Subfactoria de Trabajadores
@@ -14,7 +15,7 @@ class TrabajadorFactory:
             -Tipo / tipo: auxiliar | coordinador | especialista
         """
         if not datos.get('nombreUsuario'):
-            datos['nombreUsuario'] = UsuarioFactory._generar_nombreUsuario(datos.get('Nombre', ''))
+            datos['nombreUsuario'] = BaseFactory._generar_nombreUsuario(datos.get('Nombre', ''))
 
         tipo_raw = datos.get('Tipo') or datos.get('tipo') or datos.get('tipoTrabajador') or datos.get('TipoTrabajador')
         

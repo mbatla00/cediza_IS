@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Familiar
+from mysql.connector import Error
 
 GET_BY_PACIENTE = "SELECT * FROM Familiares WHERE Paciente = ?"
 CREATE = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)

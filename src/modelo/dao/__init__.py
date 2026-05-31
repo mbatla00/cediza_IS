@@ -15,4 +15,4 @@ from .auxiliarDAO import AuxiliarDAO
 from .coordinadorDAO import CoordinadorDAO
 from .especialistaDAO import EspecialistaDAO
 from .trabajadorDAO import TrabajadorDAO
-from .UsuarioDAO import UsuarioDAO
+from .usuarioDAO import UsuarioDAO

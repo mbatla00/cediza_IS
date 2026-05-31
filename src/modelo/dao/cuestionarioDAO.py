@@ -1,5 +1,6 @@
 from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Cuestionario
+from mysql.connector import Error
 
 GET_ALL = "SELECT * FROM Cuestionarios"
 GET_BY_ID = "SELECT * FROM Cuestionarios WHERE idCuestionario = ?"

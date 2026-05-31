@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Respuesta
+from mysql.connector import Error
 
 GET_BY_PACIENTE = "SELECT * FROM Respuestas WHERE idPaciente = ? ORDER BY fechaHora DESC"
 GET_BY_PREGUNTA = "SELECT * FROM Respuestas WHERE idPregunta = ? ORDER BY fechaHora DESC"

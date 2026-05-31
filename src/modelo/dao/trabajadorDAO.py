@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import Trabajador
+from mysql.connector import Error
 
 GET_ALL = "SELECT * FROM Trabajadores"
 GET_BY_USER = "SELECT * FROM Trabajadores WHERE nombreUsuario = ?"

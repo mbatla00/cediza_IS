@@ -1,5 +1,7 @@
 from src.modelo.conexion.Conexion import Conexion
+Database = Conexion
 from src.modelo.vo import EvaluacionProfesional
+from mysql.connector import Error
 
 GET_BY_ID = "SELECT * FROM EvaluacionProfesional WHERE idEvaluacion = ?"
 GET_BY_PACIENTE = """SELECT * FROM EvaluacionProfesional
@@ -30,7 +32,7 @@ class EvaluacionProfesionalDAO:
                 GET_BY_ID,
                 (idEvaluacion,)
             )
-            row = Database.row_to_dict(cursor, cursor.fetchone())
+            row = Conexion.row_to_dict(cursor, cursor.fetchone())
             return EvaluacionProfesional(**row) if row else None
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_id: {e}")
@@ -51,7 +53,7 @@ class EvaluacionProfesionalDAO:
                 GET_BY_PACIENTE,
                 (nombreUsuario_paciente,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            rows = Conexion.rows_to_dict(cursor, cursor.fetchall())
             return [EvaluacionProfesional(**row) for row in rows]
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_paciente: {e}")
@@ -72,7 +74,7 @@ class EvaluacionProfesionalDAO:
                 GET_BY_TRABAJADOR,
                 (nombreUsuario_trabajador,)
             )
-            rows = Database.rows_to_dict(cursor, cursor.fetchall())
+            rows = Conexion.rows_to_dict(cursor, cursor.fetchall())
             return [EvaluacionProfesional(**row) for row in rows]
         except Error as e:
             print(f"Error en EvaluacionProfesionalDAO.get_by_trabajador: {e}")
