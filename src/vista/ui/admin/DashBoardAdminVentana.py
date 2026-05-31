@@ -1,18 +1,33 @@
 import os
-from PyQt6.QtWidgets import QMainWindow
-from PyQt6.uic import loadUi
+from PySide6.QtWidgets import QMainWindow
+from PySide6.QtUiTools import loadUiType
 
-class DashboardAdminVentana(QMainWindow):
+# 1. Localizar y cargar el archivo .ui de forma dinámica
+ui_path = os.path.join(os.path.dirname(__file__), "ui", "MainWindow.ui")
+Ui_MainWindow, _ = loadUiType(ui_path)
+
+class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         
-        # Construir la ruta relativa al archivo .ui
-        # Asumiendo que DashboardAdmin.ui está en la carpeta 'ui' al lado de este archivo
-        ruta_ui = os.path.join(os.path.dirname(__file__), "ui", "DashboardAdmin.ui")
+        # 2. Construir la interfaz reflejando el XML
+        self.setupUi(self)
         
-        #Cargar la interfaz del Administrador
-        loadUi(ruta_ui, self)
+        # 3. Ajustes de comportamiento estético para tus componentes
+        self.configurar_interfaz()
         
-        # Inicializaciones de cortesía (opcional)
-        # Forzar a que la tabla se ajuste al ancho de la ventana
+        # 4. Enlaces de navegación interna (Comportamiento visual puro)
+        self.btn_perfil_volver.clicked.connect(self.volver_a_pestaña_inicio)
+
+    def configurar_interfaz(self):
+        """Configuraciones iniciales de la vista al arrancar"""
+        # Forzar a que la última columna de la tabla ('acción') ocupe el espacio restante
         self.usuarios_lista.horizontalHeader().setStretchLastSection(True)
+        
+        # Opcional: Ocultar la contraseña por defecto en el campo de texto de perfil
+        self.txt_perfil_password.setEchoMode(self.txt_perfil_password.EchoMode.Password)
+
+    def volver_a_pestaña_inicio(self):
+        """Redirige al usuario a la primera pestaña de tu QTabWidget (Crear Perfiles)"""
+        # Como en tu XML el QTabWidget se llama 'dashboard', accedemos a él directamente
+        self.dashboard.setCurrentIndex(0)
