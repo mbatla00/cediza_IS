@@ -3,14 +3,16 @@ from .pacienteVO import Paciente
 class PacPri(Paciente):
     #Paciente privado, tipo de paciente
     
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, IVA=4, cuenta=None, horas=8, email=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, 
+                 IVA=4, cuenta=None, horas=8, email=None, activo=None):  # ← añadir activo
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             password=password,
             Tipo='privado',
-            email=email
+            email=email,
+            activo=activo  # ← pasar activo
         )
         self._iva = IVA
         self._cuenta = cuenta

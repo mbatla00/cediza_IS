@@ -11,10 +11,9 @@ class Usuario(ABC):
         self._dni = DNI
         self._rol = Rol 
         self._password = password
-
         self._email = email
         self._fechaNacimiento = fechaNacimiento
-        self._activo = activo 
+        self._activo = activo if activo is not None else 1
 
     
     @property
@@ -46,7 +45,7 @@ class Usuario(ABC):
         return self._fechaNacimiento
 
     @property
-    def activo (self):
+    def activo(self):
         return self._activo
     
     def to_dict(self):

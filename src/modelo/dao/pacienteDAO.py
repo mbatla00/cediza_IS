@@ -16,7 +16,7 @@ class PacienteDAO:
         cursor = conn.cursor()
         try:
             cursor.execute("""
-                SELECT p.*, u.Nombre, u.activo 
+                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
                 FROM Pacientes p
                 JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
                 WHERE u.activo = 1
@@ -33,7 +33,7 @@ class PacienteDAO:
                 
                 paciente_obj = Paciente(
                     nombreUsuario=row.get('nombreusuario'),
-                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
+                    Nombre=row.get('nombre'),
                     DNI=row.get('dni'),
                     fechaNacimiento=row.get('fechanacimiento'),
                     email=row.get('email'),
@@ -60,7 +60,7 @@ class PacienteDAO:
         cursor = conn.cursor()
         try:
             cursor.execute("""
-                SELECT p.*, u.Nombre, u.activo 
+                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
                 FROM Pacientes p
                 JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
                 WHERE p.nombreUsuario = ?
@@ -76,7 +76,7 @@ class PacienteDAO:
                 
                 return Paciente(
                     nombreUsuario=row.get('nombreusuario'),
-                    Nombre=row.get('nombre'),  # Esto trae el nombre de Usuarios
+                    Nombre=row.get('nombre'),
                     DNI=row.get('dni'),
                     fechaNacimiento=row.get('fechanacimiento'),
                     email=row.get('email'),

@@ -3,13 +3,15 @@ from .trabajadorVO import Trabajador
 class Auxiliar(Trabajador):
     #Auxiliar: tipo de trabajador
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Horario=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, 
+                 Horario=None, activo=None):  # ← añadir activo
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             password=password,
-            Tipo='auxiliar'
+            Tipo='auxiliar',
+            activo=activo  # ← pasar activo
         )
         self._horario = Horario
     

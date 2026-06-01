@@ -18,6 +18,8 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from PySide6.QtWidgets import QApplication
+from src.controlador import AuthController
+from src.vista import VentanaLogin
 
 # Los controladores los importamos de src.controlador
 from src.controlador import AuthController

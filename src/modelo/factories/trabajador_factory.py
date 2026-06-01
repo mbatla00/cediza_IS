@@ -1,25 +1,21 @@
 from src.modelo.vo import Auxiliar, Coordinador, Especialista
 from .base_factory import BaseFactory
 
-#============================
-#Subfactoria de Trabajadores
-#============================
 
 class TrabajadorFactory:
-    #crea un subtipo de trabajador a partir de un dict de datos
 
     @staticmethod
-    def crear(datos:dict):
-        """
-        Parámetros esperados en 'datos':
-            -Tipo / tipo: auxiliar | coordinador | especialista
-        """
+    def crear(datos: dict):
         if not datos.get('nombreUsuario'):
             datos['nombreUsuario'] = BaseFactory._generar_nombreUsuario(datos.get('Nombre', ''))
 
+        # Obtener activo
+        activo = datos.get('activo') or datos.get('Activo')
+        if activo is not None:
+            activo = 1 if activo in (1, True, '1', 'true', 'True') else 0
+
         tipo_raw = datos.get('Tipo') or datos.get('tipo') or datos.get('tipoTrabajador') or datos.get('TipoTrabajador')
         
-        # Deducción por campos exclusivos si es necesario
         if not tipo_raw:
             if 'Especialidad' in datos or 'especialidad' in datos:
                 tipo_raw = 'especialista'
@@ -38,7 +34,8 @@ class TrabajadorFactory:
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
                 password=datos.get('password'),
-                Horario=datos.get('Horario')
+                Horario=datos.get('Horario'),
+                activo=activo  # ← añadir activo
             )
         elif tipo == 'coordinador':
             return Coordinador(
@@ -46,7 +43,8 @@ class TrabajadorFactory:
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
                 password=datos.get('password'),
-                infoInteres=datos.get('infoInteres')
+                infoInteres=datos.get('infoInteres'),
+                activo=activo  # ← añadir activo
             )
         elif tipo == 'especialista':
             return Especialista(
@@ -55,13 +53,14 @@ class TrabajadorFactory:
                 DNI=datos.get('DNI'),
                 password=datos.get('password'),
                 Especialidad=datos.get('Especialidad'),
-                Horario=datos.get('Horario')
+                Horario=datos.get('Horario'),
+                activo=activo  # ← añadir activo
             )
         else:
-            # Evitamos el colapso devolviendo un subtipo por defecto si no se reconoce
             return Auxiliar(
                 nombreUsuario=datos.get('nombreUsuario'),
                 Nombre=datos.get('Nombre'),
                 DNI=datos.get('DNI'),
-                password=datos.get('password')
+                password=datos.get('password'),
+                activo=activo  # ← añadir activo
             )

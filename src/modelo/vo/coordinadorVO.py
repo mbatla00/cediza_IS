@@ -3,13 +3,15 @@ from .trabajadorVO import Trabajador
 class Coordinador(Trabajador):
     #coordinador: tipo de trabajador
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, infoInteres=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, 
+                 infoInteres=None, activo=None):  # ← añadir activo
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             password=password,
-            Tipo='coordinador'
+            Tipo='coordinador',
+            activo=activo  # ← pasar activo
         ) 
         self._infoInteres = infoInteres
 
