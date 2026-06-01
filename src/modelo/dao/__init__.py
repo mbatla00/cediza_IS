@@ -16,3 +16,5 @@ from .coordinadorDAO import CoordinadorDAO
 from .especialistaDAO import EspecialistaDAO
 from .trabajadorDAO import TrabajadorDAO
 from .usuarioDAO import UsuarioDAO
+from .EnfermedadDAO import EnfermedadDAO
+from .pacienteEnfermedadDAO import PacienteEnfermedadDAO
