@@ -237,10 +237,14 @@ class UsuarioDAO:
                     row[k] = v
                     row[k.lower()] = v
                 
-                if 'nombreusuario' in row: row['nombreUsuario'] = row['nombreusuario']
-                if 'tipopaciente' in row: row['TipoPaciente'] = row['tipopaciente']
-                if 'tipotrabajador' in row: row['TipoTrabajador'] = row['tipotrabajador']
-                if 'fechanacimiento' in row: row['fechaNacimiento'] = row['fechanacimiento']
+                if 'nombreusuario' in row: 
+                    row['nombreUsuario'] = row['nombreusuario']
+                if 'tipopaciente' in row: 
+                    row['TipoPaciente'] = row['tipopaciente']
+                if 'tipotrabajador' in row: 
+                    row['TipoTrabajador'] = row['tipotrabajador']
+                if 'fechanacimiento' in row: 
+                    row['fechaNacimiento'] = row['fechanacimiento']
 
                 val_activo = row.get('activo')
                 if val_activo is None:
@@ -251,6 +255,7 @@ class UsuarioDAO:
                 else:
                     estado_corregido = 0
                 
+                # ← El activo se añade a row ANTES de crear el objeto
                 row['activo'] = estado_corregido
                 row['Activo'] = estado_corregido
 
@@ -270,9 +275,10 @@ class UsuarioDAO:
                     row['tipo'] = ''
 
                 try:
+                    # Crear el objeto CON el activo ya incluido en row
                     usuario_objeto = UsuarioFactory.crear(row)
                     if usuario_objeto:
-                        usuario_objeto.activo = estado_corregido
+                        # ← NO hacer usuario_objeto.activo = estado_corregido
                         usuarios.append(usuario_objeto)
                 except Exception as e:
                     print(f"Alerta: Saltando usuario '{row.get('nombreUsuario') or row.get('nombreusuario')}'. Motivo: {e}")
@@ -285,3 +291,5 @@ class UsuarioDAO:
             return []
         finally:
             cursor.close()
+                
+            

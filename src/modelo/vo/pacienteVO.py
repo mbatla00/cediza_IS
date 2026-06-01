@@ -14,7 +14,7 @@ class Paciente(Usuario, ABC):
             password=password,
             email=email,
             fechaNacimiento=fechaNacimiento,
-            activo=activo
+            activo=activo  # ← pasar activo
         )
         self._tipo = Tipo #'publico' | 'privado'
         self._diagnostico = diagnostico
@@ -30,8 +30,9 @@ class Paciente(Usuario, ABC):
     def to_dict(self):
         d = super().to_dict()
         d['tipo'] = self.tipo
-        d['diagnostico']=self.diagnostico
+        d['diagnostico'] = self.diagnostico
         return d
     
     def __repr__(self):
         return f"<Paciente nombreUsuario={self.nombreUsuario} tipo={self.tipo}>"
+    

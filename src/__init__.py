@@ -1,48 +1,74 @@
 """
-Fábrica de la aplicación Flask.
+PUNTO DE ENTRADA DEL PAQUETE SRC
 
-Este archivo:
-- Crea la aplicación Flask con la función create_app()
-- Carga la configuración desde config.py
-- Registra los blueprints (controladores) de cada módulo
-- Es el punto central que conecta todas las piezas del proyecto
+Este archivo ya NO contiene código de Flask.
+Ahora solo expone los controladores y el modelo para que la vista los pueda usar.
 
-Un blueprint es un "mini-aplicación" que agrupa rutas relacionadas.
-Ejemplo: auth_bp agrupa login, logout y protección de rutas.
+La aplicación es de escritorio con PySide6.
 """
-from flask import Flask
-from .config import Config
-from pathlib import Path
 
+# Exponemos los controladores para que la vista pueda importarlos fácilmente
+from .controlador import (
+    AuthController,
+    AdminController,
+    PacienteController,
+    TrabajadorController
+)
 
-def create_app():
-    """Crea y configura la aplicación Flask"""
+# Exponemos el modelo para quien lo necesite
+from .modelo import (
+    # Factories
+    UsuarioFactory,
+    # DAOs
+    UsuarioDAO,
+    PacienteDAO,
+    TrabajadorDAO,
+    # VOs
+    Usuario,
+    Paciente,
+    Trabajador,
+    Admin,
+    Auxiliar,
+    Coordinador,
+    Especialista,
+    PacPub,
+    PacPri,
+    Comentario,
+    EvaluacionProfesional,
+    Sesion,
+    Familiar,
+    Cuestionario,
+    Pregunta,
+    Respuesta
+)
 
-    src_path = Path(__file__).parent.resolve()
-    vista_path = src_path / 'vista'
-
-    app = Flask(__name__,
-        template_folder=str(vista_path),
-        static_folder=str(vista_path / 'static'))
-
-    # Cargar configuración desde la clase Config
-    app.config.from_object(Config)
-
-    # Registrar el blueprint de autenticación (login, logout, seguridad)
-    from src.controlador.auth import auth_bp
-    app.register_blueprint(auth_bp)
-
-
-    from src.controlador.admin import admin_bp
-    app.register_blueprint(admin_bp)
-
-    from src.controlador.trabajador import trabajador_bp
-    app.register_blueprint(trabajador_bp)
-
-    # Los demás blueprints se registrarán cuando sus controladores existan
-    # Esto evita errores si alguien no ha creado aún su parte
-
-    from src.controlador.paciente import paciente_bp
-    app.register_blueprint(paciente_bp)
-
-    return app
+__all__ = [
+    # Controladores
+    'AuthController',
+    'AdminController', 
+    'PacienteController',
+    'TrabajadorController',
+    # DAOs
+    'UsuarioDAO',
+    'PacienteDAO',
+    'TrabajadorDAO',
+    # VOs
+    'Usuario',
+    'Paciente',
+    'Trabajador',
+    'Admin',
+    'Auxiliar',
+    'Coordinador',
+    'Especialista',
+    'PacPub',
+    'PacPri',
+    'Comentario',
+    'EvaluacionProfesional',
+    'Sesion',
+    'Familiar',
+    'Cuestionario',
+    'Pregunta',
+    'Respuesta',
+    # Factory
+    'UsuarioFactory'
+]

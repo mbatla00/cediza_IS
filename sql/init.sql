@@ -263,6 +263,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`sesion` (
   `Especialista` VARCHAR(50) NOT NULL,
   `comentarios` VARCHAR(200) NULL,
   `Fecha` DATE NULL,
+  `Hora` TIME NULL,
   PRIMARY KEY (`idSesion`),
   INDEX `especialista_idx` (`Especialista` ASC),
   INDEX `paciente_idx` (`Paciente` ASC),
