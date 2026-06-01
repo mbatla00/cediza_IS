@@ -17,15 +17,16 @@ from .dao import (
     UsuarioDAO, PacienteDAO, TrabajadorDAO,
     AdministradorDAO, AuxiliarDAO, CoordinadorDAO, EspecialistaDAO,
     PacPubDAO, PacPriDAO, ComentarioDAO, EvaluacionProfesionalDAO,
-    SesionDAO, FamiliarDAO, CuestionarioDAO, PreguntaDAO, RespuestaDAO
+    SesionDAO, FamiliarDAO, CuestionarioDAO, PreguntaDAO, RespuestaDAO, EnfermedadDAO, PacienteEnfermedadDAO
 )
 
 # VOs
 from .vo import (
     Usuario, Paciente, Trabajador, Admin, Auxiliar, Coordinador, Especialista,
     PacPub, PacPri, Comentario, EvaluacionProfesional, Sesion, Familiar,
-    Cuestionario, Pregunta, Respuesta
+    Cuestionario, Pregunta, Respuesta, Enfermedad, PacienteEnfermedad
 )
+
 
 # Servicios (nuevo)
 from .logica import (
@@ -33,6 +34,7 @@ from .logica import (
     EnfermedadService, FamiliarService, ComentarioService,
     EvaluacionService, SesionService, CuestionarioService, RespuestaService
 )
+
 
 __all__ = [
     # Factories
@@ -51,3 +53,4 @@ __all__ = [
     'EnfermedadService', 'FamiliarService', 'ComentarioService',
     'EvaluacionService', 'SesionService', 'CuestionarioService', 'RespuestaService'
 ]
+

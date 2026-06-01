@@ -16,3 +16,5 @@ from .informeVO import Informe
 from .preguntaVO import Pregunta
 from .respuestaVO import Respuesta
 from .sesionVO import Sesion
+from .enfermedadVO import Enfermedad
+from .pacienteEnfermedadVO import PacienteEnfermedad
