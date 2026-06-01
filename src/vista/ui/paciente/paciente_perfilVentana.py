@@ -67,4 +67,4 @@ class PacientePerfilVentana(QMainWindow, Ui_MainWindow):
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
-                child.widget().deleteLater()
+                child.widget().deleteLater()    
