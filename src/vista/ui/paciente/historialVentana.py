@@ -4,7 +4,7 @@ from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import Qt
 
 # Cargar el archivo .ui del historial
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "paciente_historial.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "ui", "historial.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):

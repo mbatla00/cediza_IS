@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtUiTools import loadUiType
 
 # 1. Localizar y cargar el archivo .ui de forma dinámica
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "MainWindow.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "ui", "DashboardAdmin.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
