@@ -4,15 +4,17 @@ from .usuarioVO import Usuario
 class Trabajador(Usuario, ABC):
     """VO para trabajadores del centro de dia (tipo de usuarios)"""
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Tipo=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, 
+                 Tipo=None, activo=None):  # ← añadir activo
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             Rol='trabajador',
-            password=password
+            password=password,
+            activo=activo  # ← pasar activo
         )
-        self._tipo = Tipo # 'auxiliar' | 'coordinador' | 'especialista'
+        self._tipo = Tipo
     
     @property
     def tipo(self):

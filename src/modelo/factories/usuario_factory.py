@@ -1,46 +1,42 @@
 from .paciente_factory import PacienteFactory
 from .trabajador_factory import TrabajadorFactory
+from src.modelo.vo import Admin
 
-#=====================================
-# Factoria raiz
-#=====================================
+
 class UsuarioFactory:
-    # Recibe un dict con un campo 'Rol' y delega en la subfactoria correspondiente
 
     @staticmethod
-    def crear(datos:dict):
-        """
-        parametros esperados en 'datos':
-            - Rol o Tipo: paciente | trabajador | admin
-        """
-        # 1. Buscamos primero en 'Rol' (que es donde viene el admin) y si no en 'Tipo'
+    def crear(datos: dict):
         tipo_raw = datos.get('Rol') or datos.get('Tipo') or datos.get('tipo') or datos.get('rol')
         
-        # 2. Si sigue sin encontrar nada, aplicamos los alias por si acaso
         if not tipo_raw:
-            if datos.get('TipoPaciente'): tipo_raw = 'paciente'
-            elif datos.get('TipoTrabajador'): tipo_raw = 'trabajador'
-            elif datos.get('nombreUsuario'): tipo_raw = 'admin'
+            if datos.get('TipoPaciente'):
+                tipo_raw = 'paciente'
+            elif datos.get('TipoTrabajador'):
+                tipo_raw = 'trabajador'
+            elif datos.get('nombreUsuario'):
+                tipo_raw = 'admin'
 
-        # 3. Lo pasamos a minúsculas de forma segura
         tipo = tipo_raw.lower() if tipo_raw else ''
 
-        # 4. Comprobamos los roles con la variable 'tipo'
+        # Obtener activo de los datos
+        activo = datos.get('activo') or datos.get('Activo')
+        if activo is not None:
+            activo = 1 if activo in (1, True, '1', 'true', 'True') else 0
+
         if tipo == 'paciente':
             return PacienteFactory.crear(datos)
         elif tipo == 'trabajador':
             return TrabajadorFactory.crear(datos)
-
         elif tipo == 'admin':
             datos_filtrados = {
                 'nombreUsuario': datos.get('nombreUsuario'),
                 'Nombre': datos.get('Nombre'),
                 'DNI': datos.get('DNI'),
-                'password': datos.get('password')
+                'password': datos.get('password'),
+                'activo': activo  # ← Esto pasa activo en el CONSTRUCTOR
             }
-            # Limpiamos valores nulos
             datos_filtrados = {k: v for k, v in datos_filtrados.items() if v is not None}
-            return Admin(**datos_filtrados)
-
+            return Admin(**datos_filtrados)  # ← Admin recibe activo en __init__
         else:
-            raise ValueError(f"Rol desconocido: '{tipo}'. Valores validos: paciente, trabajador, admin")
+            raise ValueError(f"Rol desconocido: '{tipo}'")

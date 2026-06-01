@@ -2,13 +2,15 @@ from .trabajadorVO import Trabajador
 
 class Especialista(Trabajador):
     #Especialista: tiene una especialidad y horario
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, Especialidad=None, Horario=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, 
+                 Especialidad=None, Horario=None, activo=None):  # ← añadir activo
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             password=password,
-            Tipo='especialista'
+            Tipo='especialista',
+            activo=activo  # ← pasar activo
         )
         self._especialidad = Especialidad
         self._horario = Horario

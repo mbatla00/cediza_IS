@@ -1,19 +1,29 @@
-from flask import Flask
-import os
+"""
+CONTROLADORES DEL SISTEMA
 
-def create_app():
-    # Creamos la aplicación
-    app = Flask(__name__, template_folder='templates', static_folder='static')
-    app.config['SECRET_KEY'] = 'clave_secreta_desarrollo_cediza'
+REGLAS IMPORTANTES (según la profesora):
+- Los controladores SOLO trabajan con Value Objects (VO)
+- Los controladores NO llaman a DAOs directamente
+- Los controladores NO tienen conexiones a la BD
+- Los controladores NO tienen SQL
+- Los controladores NO tienen lógica de negocio compleja
 
-    # Conectamos el trabajo de (auth) y (paciente)
-    from .auth import auth_bp
-    from .paciente import paciente_bp
+La lógica de negocio está en src/modelo/servicios/
+Los DAOs están en src/modelo/dao/
+Los VOs están en src/modelo/vo/
 
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(paciente_bp)
-    
-    return app
+Los controladores son solo un puente entre la VISTA (PySide6) y los SERVICIOS.
+"""
+from .auth_controller import AuthController
+from .admin_controller import AdminController
+from .paciente_controller import PacienteController
+from .trabajador_controller import TrabajadorController
 
-# Inicializamos
-app = create_app()
+
+# Lista de lo que se puede importar desde fuera
+__all__ = [
+    'AuthController',
+    'AdminController', 
+    'PacienteController',
+    'TrabajadorController'
+]
