@@ -7,7 +7,7 @@ Responsabilidad:
 - Responder cuestionarios diarios
 - Ver su historial médico
 """
-from src.modelo.servicios import (
+from src.modelo.logica import (
     PacienteService,
     CuestionarioService,
     RespuestaService,

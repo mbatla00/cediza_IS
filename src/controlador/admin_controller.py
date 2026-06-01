@@ -9,7 +9,7 @@ Responsabilidad:
 NO contiene:
 - DAOs, SQL, conexiones a BD
 """
-from src.modelo.servicios import (
+from src.modelo.logica import (
     UsuarioService,
     PacienteService,
     TrabajadorService,

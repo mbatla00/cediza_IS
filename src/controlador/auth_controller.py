@@ -14,7 +14,7 @@ NO contiene:
 
 La autenticación real la hace AuthService (en modelo/servicios/)
 """
-from src.modelo.servicios import AuthService
+from src.modelo.logica import AuthService
 from src.modelo.vo import Usuario
 
 

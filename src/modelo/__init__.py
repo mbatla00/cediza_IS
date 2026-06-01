@@ -28,7 +28,7 @@ from .vo import (
 )
 
 # Servicios (nuevo)
-from .servicios import (
+from .logica import (
     UsuarioService, PacienteService, TrabajadorService, AuthService,
     EnfermedadService, FamiliarService, ComentarioService,
     EvaluacionService, SesionService, CuestionarioService, RespuestaService

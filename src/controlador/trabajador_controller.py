@@ -8,7 +8,7 @@ Responsabilidad:
 - Realizar evaluaciones rápidas
 - Gestionar sesiones (si es especialista)
 """
-from src.modelo.servicios import (
+from src.modelo.logica import (
     PacienteService,
     ComentarioService,
     EvaluacionService,
