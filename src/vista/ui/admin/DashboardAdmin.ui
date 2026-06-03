@@ -24,7 +24,7 @@
        <enum>QTabWidget::TabShape::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <property name="font">
@@ -35,7 +35,7 @@
        <attribute name="title">
         <string>Crear Perfiles</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0" columnstretch="0" columnminimumwidth="0">
+       <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="0" columnminimumwidth="0">
         <property name="topMargin">
          <number>8</number>
         </property>
@@ -63,6 +63,13 @@
          <widget class="QPushButton" name="btn_nuevo_admin">
           <property name="text">
            <string>Nuevo Administrador</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Editar usuarios</string>
           </property>
          </widget>
         </item>
