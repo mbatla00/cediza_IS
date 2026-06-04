@@ -3,7 +3,6 @@ from PySide6.QtWidgets import QMainWindow, QTableWidgetItem, QHeaderView
 from PySide6.QtUiTools import loadUiType
 
 # Localizamos de forma segura el archivo .ui que acabas de guardar
-# Ajusta "ui" si tu carpeta de diseños se llama de otra forma
 UI_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui")
 ui_path = os.path.join(UI_DIR, "paciente_detalle.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
@@ -26,17 +25,18 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
         # Hace que al hacer clic se seleccione la fila entera y no celdas sueltas
         self.tabla_historial.setSelectionBehavior(self.tabla_historial.SelectionBehavior.SelectRows)
 
-    def cargar_datos_paciente(self, paciente: dict, historial: list):
+    def cargar_datos_paciente(self, paciente: dict, historial: list, contactos: list = None, sesiones: list = None):
         """
         Pinta los datos del paciente y su historial en la interfaz.
         Mapeado directamente con tu modelo de dominio.
         """
-        # 1. Rellenar los campos de texto estáticos (bloqueados en ReadOnly desde el .ui)
+        # 1. Rellenar los campos de texto estáticos 
         nombre_completo = f"{paciente.get('nombre', '')} {paciente.get('apellidos', '')}".strip()
         self.txt_nombre.setText(nombre_completo if nombre_completo else "No registrado")
         self.txt_dni.setText(paciente.get('dni', '---'))
+        self.txt_telefono.setText(paciente.get('telefono', 'No registrado'))
         self.txt_asistencia.setText(paciente.get('tipoAsistencia', 'No especificado'))
-        self.txt_diagnostico.setPlainText(paciente.get('diagnostico', 'Sin diagnóstico registrado.'))
+        self.txt_diagnostico.setText(paciente.get('diagnostico', 'Sin diagnóstico registrado.'))
 
         # 2. Vaciar y repoblar la tabla del historial clínico
         self.tabla_historial.setRowCount(0)
@@ -53,7 +53,7 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
                 # Es una Nota Libre
                 contenido_nota = elemento.get("contenido", "")
             else:
-                # Es una Evaluación Profesional (tiene estadoEmocional, movilidad, apetito)
+                # Es una Evaluación Profesional
                 emocional = elemento.get("estadoEmocional", "-")
                 movilidad = elemento.get("movilidad", "-")
                 apetito = elemento.get("apetito", "-")
@@ -70,3 +70,25 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
             self.tabla_historial.setItem(fila, 0, QTableWidgetItem(str(fecha)))
             self.tabla_historial.setItem(fila, 1, QTableWidgetItem(str(autor)))
             self.tabla_historial.setItem(fila, 2, QTableWidgetItem(str(contenido_nota)))
+
+        # 3. Bloque DINÁMICO: Contactos de Emergencia
+        self.lista_contactos.clear()
+        if contactos and len(contactos) > 0:
+            self.lbl_status_contactos.hide()
+            self.lista_contactos.show()
+            for c in contactos:
+                self.lista_contactos.addItem(f"👤 {c.get('nombre', '')} ({c.get('parentesco', '')}) - 📞 {c.get('telefono', '')}")
+        else:
+            self.lbl_status_contactos.show()
+            self.lista_contactos.hide()
+
+        # 4. Bloque DINÁMICO: Sesiones Programadas
+        self.lista_sesiones.clear()
+        if sesiones and len(sesiones) > 0:
+            self.lbl_status_sesiones.hide()
+            self.lista_sesiones.show()
+            for s in sesiones:
+                self.lista_sesiones.addItem(f"📅 {s.get('fecha', '')} {s.get('hora', '')} - {s.get('tipo', '')}")
+        else:
+            self.lbl_status_sesiones.show()
+            self.lista_sesiones.hide()
