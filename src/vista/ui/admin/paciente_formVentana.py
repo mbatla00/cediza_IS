@@ -1,21 +1,29 @@
 import os
-from PyQt6.QtWidgets import QDialog
-from PyQt6.uic import loadUi
+from PySide6.QtWidgets import QDialog
+from PySide6.QtUiTools import loadUiType
 
-class NuevoPacienteVentana(QDialog):
+# 1. Cargar el diseño
+ruta_ui = os.path.join(os.path.dirname(__file__), "ui", "trabajador_form.ui")
+Ui_Dialog, _ = loadUiType(ruta_ui)
+
+class NuevoTrabajadorVentana(QDialog, Ui_Dialog):
     def __init__(self):
         super().__init__()
+        self.setupUi(self)
         
-        # 1. Construir la ruta relativa al archivo .ui
-        ruta_ui = os.path.join(os.path.dirname(__file__), "ui", "paciente_form.ui")
+        # 2. Estado inicial: ocultar el campo de especialidad
+        self.lbl_especialidad.setVisible(False)
+        self.txt_especialidad.setVisible(False)
         
-        # 2. Cargar la interfaz del formulario
-        loadUi(ruta_ui, self)
-        
-        # 3. Configuraciones adicionales (opcionales pero útiles)
-        # Ajustar la tabla de contactos (Familiares) para que se vea bien
-        self.Familiares.horizontalHeader().setStretchLastSection(True)
-        
-        # Ocultar la cuenta bancaria por defecto si seleccionamos "Público" al inicio
-        self.text_Cuenta_Bancaria.setVisible(False)
-        self.label_9.setVisible(False) # Asumiendo que label_9 es "Cuenta bancaria"
+        # 3. Conectar la señal
+        self.cb_tipo.currentTextChanged.connect(self.verificar_especialidad)
+
+    def verificar_especialidad(self, texto_seleccionado):
+        """Muestra u oculta la especialidad dependiendo del tipo de trabajador"""
+        if texto_seleccionado.lower() == "especialista":
+            self.lbl_especialidad.setVisible(True)
+            self.txt_especialidad.setVisible(True)
+        else:
+            self.lbl_especialidad.setVisible(False)
+            self.txt_especialidad.setVisible(False)
+            self.txt_especialidad.clear()

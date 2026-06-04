@@ -5,7 +5,7 @@ from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import QDate
 
 # Cargar el archivo .ui del perfil del admin
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "admin", "perfil.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "ui", "admin_perfil.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class AdminPerfilVentana(QMainWindow, Ui_MainWindow):

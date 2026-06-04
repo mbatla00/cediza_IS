@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout, QPushButton,
 from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import QDate, QTime
 
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "dashboard_especialista.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "ui", "especialista_dashboard.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):

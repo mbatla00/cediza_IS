@@ -1,20 +1,21 @@
 import os
-from PyQt6.QtWidgets import QDialog
-from PyQt6.uic import loadUi
+from PySide6.QtWidgets import QDialog
+from PySide6.QtUiTools import loadUiType
 
-class NuevoTrabajadorVentana(QDialog):
+# 1. Cargar el diseño
+ruta_ui = os.path.join(os.path.dirname(__file__), "ui", "trabajador_form.ui")
+Ui_Dialog, _ = loadUiType(ruta_ui)
+
+class NuevoTrabajadorVentana(QDialog, Ui_Dialog):
     def __init__(self):
         super().__init__()
+        self.setupUi(self)
         
-        # 1. Cargar el diseño
-        ruta_ui = os.path.join(os.path.dirname(__file__), "ui", "trabajador_form.ui")
-        loadUi(ruta_ui, self)
-        
-        # 2. Estado inicial: ocultar el campo de especialidad por defecto
+        # 2. Estado inicial: ocultar el campo de especialidad
         self.lbl_especialidad.setVisible(False)
         self.txt_especialidad.setVisible(False)
         
-        # 3. Conectar la señal de cambio del combobox a nuestra función visual
+        # 3. Conectar la señal
         self.cb_tipo.currentTextChanged.connect(self.verificar_especialidad)
 
     def verificar_especialidad(self, texto_seleccionado):
@@ -25,4 +26,4 @@ class NuevoTrabajadorVentana(QDialog):
         else:
             self.lbl_especialidad.setVisible(False)
             self.txt_especialidad.setVisible(False)
-            self.txt_especialidad.clear()  # Limpiamos el texto por si habían escrito algo
+            self.txt_especialidad.clear()
