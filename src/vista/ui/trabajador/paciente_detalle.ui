@@ -6,128 +6,371 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>727</width>
-    <height>546</height>
+    <width>838</width>
+    <height>829</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Segoe UI</family>
+    <pointsize>7</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f4f6f8;
+}
+
+QGroupBox {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2c3e50;
+    top: 5px;
+}
+
+QLineEdit, QPlainTextEdit, QListWidget, QTableWidget {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px;
+    background-color: #ffffff;
+    selection-background-color: #0d6efd;
+}
+
+QLineEdit:focus, QPlainTextEdit:focus {
+    border: 1px solid #0d6efd;
+}
+
+QPushButton#btn_guardar_nota {
+    background-color: #198754;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+QPushButton#btn_guardar_nota:hover {
+    background-color: #157347;
+}
+
+QPushButton#btn_guardar_contacto {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 6px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+QPushButton#btn_guardar_contacto:hover {
+    background-color: #bb2d3b;
+}
+
+QPushButton {
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 4px;
+    padding: 6px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #0b5ed7;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="group_datos">
-      <property name="title">
-       <string>Datos del Paciente</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Nombre Completo:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>DNI:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLineEdit" name="txt_nombre">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="txt_dni">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Diagnóstico Médico:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Asistencia:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="txt_diagnostico">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="txt_asistencia">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QTableWidget" name="tabla_historial">
-         <column>
-          <property name="text">
-           <string>Fecha / Hora</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Registrado por</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Anotación / Nota</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="btn_volver">
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="2" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QGroupBox" name="group_datos">
+        <property name="title">
+         <string>Información General</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btn_tab_historial">
            <property name="text">
-            <string>← Volver al Panel</string>
+            <string>Ver historial</string>
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="btn_evaluar">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>+ Evaluar Paciente</string>
+            <string>Diagnóstico Médico:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLineEdit" name="txt_nombre">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLineEdit" name="txt_diagnostico">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLineEdit" name="txt_telefono">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btn_tab_evaluar">
+           <property name="text">
+            <string>Evaluar</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Nombre Completo:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="txt_asistencia">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="txt_dni">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="2">
+          <layout class="QHBoxLayout" name="horizontalLayout"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Asistencia:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Telefono:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>DNI:</string>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-      </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="group_contactos">
+        <property name="title">
+         <string>Contactos de Emergencia</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="txt_contacto_nombre">
+           <property name="placeholderText">
+            <string>Nombre completo</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_contacto_parentesco">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="placeholderText">
+            <string>Parentesco, ej: Hijo/a</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_contacto_telefono">
+           <property name="placeholderText">
+            <string>Teléfono de 9 dígitos</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_guardar_contacto">
+           <property name="text">
+            <string>Guardar Contacto</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="lista_contactos"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="lbl_status_contactos">
+           <property name="text">
+            <string>No hay contactos de emergencia registrados.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="group_sesiones">
+        <property name="title">
+         <string>Sesiones Programadas</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QListWidget" name="lista_sesiones"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>No hay sesiones programadas para este paciente.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="btn_volver_2">
+      <property name="text">
+       <string>Volver al listado</string>
+      </property>
      </widget>
     </item>
+    <item row="3" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="btn_volver">
+        <property name="text">
+         <string> Volver al Panel</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::GoPrevious"/>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_evaluar">
+        <property name="text">
+         <string> Evaluar Paciente</string>
+        </property>
+        <property name="icon">
+         <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Ficha Clínica: [Nombre Paciente]</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="3">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Nueva Anotación Diaria</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QPlainTextEdit" name="txt_nueva_nota"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="lbl_aviso_nota">
+           <property name="text">
+            <string>Obligatorio: Mínimo 5 caracteres por seguridad clínica.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_guardar_nota">
+           <property name="text">
+            <string>Guardar Nota Clínica</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Historial de Evolución</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QTableWidget" name="tabla_historial">
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>150</number>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
+            <number>40</number>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>Fecha / Hora</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Registrado por</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Anotación / Nota</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>727</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

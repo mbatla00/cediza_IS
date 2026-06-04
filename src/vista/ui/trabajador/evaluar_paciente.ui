@@ -6,20 +6,181 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>896</width>
+    <height>581</height>
    </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>11</pointsize>
+   </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f4f6f8;
+}
+
+/* El bloque azul superior sube a 17px */
+QLabel#lbl_paciente {
+    background-color: #0d6efd;
+    color: white;
+    font-size: 17px; 
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+/* Los títulos de las preguntas (Estado Emocional, Movilidad, Apetito) suben a 14px */
+QGroupBox {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 14px; 
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    color: #2c3e50;
+    top: 5px;
+}
+
+/* Los botones circulares con las opciones suben a 13px */
+QRadioButton {
+    padding: 5px;
+    font-weight: normal;
+    font-size: 13px; 
+}
+
+/* El cuadro de texto para escribir las observaciones sube a 13px */
+QPlainTextEdit {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #ffffff;
+    selection-background-color: #0d6efd;
+    font-size: 13px;
+}
+
+QPlainTextEdit:focus {
+    border: 1px solid #0d6efd;
+}
+
+/* El texto de aviso &quot;Los campos marcados con * son obligatorios&quot; sube a 13px */
+QLabel#lbl_aviso {
+    color: #6c757d;
+    font-style: italic;
+    padding: 5px;
+    font-size: 13px; 
+}
+
+/* Los botones de &quot;Cancelar / Volver&quot; y &quot;Guardar Evaluación&quot; suben a 14px */
+QPushButton {
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 4px;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 14px; 
+}
+
+QPushButton:hover {
+    background-color: #0b5ed7;
+}
+
+QPushButton#btn_volver {
+    background-color: #6c757d; 
+}
+
+QPushButton#btn_volver:hover {
+    background-color: #5a6268;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="7" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QPushButton" name="btn_volver">
+        <property name="text">
+         <string>Cancelar / Volver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_guardar">
+        <property name="text">
+         <string>Guardar Evaluación</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="5" column="0">
+     <widget class="QPlainTextEdit" name="txt_observaciones"/>
+    </item>
     <item row="0" column="0">
      <widget class="QLabel" name="lbl_paciente">
       <property name="text">
        <string>Evaluando a: [Nombre del Paciente]</string>
       </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Observaciones adicionales:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="title">
+       <string>2. Movilidad *</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QRadioButton" name="rad_movilidad_1">
+         <property name="text">
+          <string>1 - Inmovilizado</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="rad_movilidad_2">
+         <property name="text">
+          <string>2 - Con mucha dificultad</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="rad_movilidad_3">
+         <property name="text">
+          <string>3 - Con algo de dificultad</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="rad_movilidad_4">
+         <property name="text">
+          <string>4 - Con poca dificultad</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="rad_movilidad_5">
+         <property name="text">
+          <string>5 - Normal</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
     <item row="1" column="0">
@@ -66,50 +227,6 @@
       </layout>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="title">
-       <string>2. Movilidad *</string>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QRadioButton" name="radioButton">
-         <property name="text">
-          <string>1 - Inmovilizado</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_2">
-         <property name="text">
-          <string>2 - Con mucha dificultad</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_3">
-         <property name="text">
-          <string>3 - Con algo de dificultad</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_4">
-         <property name="text">
-          <string>4 - Con poca dificultad</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_5">
-         <property name="text">
-          <string>5 - Normal</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="3" column="0">
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
@@ -117,35 +234,35 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QRadioButton" name="radioButton_6">
+        <widget class="QRadioButton" name="rad_apetito_1">
          <property name="text">
           <string>1- No come nada (Muy mal)</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_7">
+        <widget class="QRadioButton" name="rad_apetito_2">
          <property name="text">
           <string>2 - Come muy poco (Mal)</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_8">
+        <widget class="QRadioButton" name="rad_apetito_3">
          <property name="text">
           <string>3 - Come regular</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_9">
+        <widget class="QRadioButton" name="rad_apetito_4">
          <property name="text">
           <string>4 - Come bien</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_10">
+        <widget class="QRadioButton" name="rad_apetito_5">
          <property name="text">
           <string>5 - Come muy bien</string>
          </property>
@@ -154,45 +271,14 @@
       </layout>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label">
+    <item row="6" column="0">
+     <widget class="QLabel" name="lbl_aviso">
       <property name="text">
-       <string>Observaciones adicionales:</string>
+       <string>ⓘ Los campos marcados con * son obligatorios.</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
-     <widget class="QPlainTextEdit" name="txt_observaciones"/>
-    </item>
-    <item row="6" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QPushButton" name="btn_volver">
-        <property name="text">
-         <string>Cancelar / Volver</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_guardar">
-        <property name="text">
-         <string>Guardar Evaluación</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
