@@ -94,7 +94,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Volver</string>
+       <string>Volver al panel</string>
       </property>
      </widget>
     </item>

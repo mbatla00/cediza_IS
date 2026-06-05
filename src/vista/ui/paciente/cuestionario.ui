@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>787</width>
-    <height>611</height>
+    <width>775</width>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="titulo">
       <property name="font">
        <font>
         <pointsize>16</pointsize>
@@ -38,8 +38,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>767</width>
-         <height>492</height>
+         <width>755</width>
+         <height>498</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -171,7 +171,7 @@
            <string/>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="2">
+           <item row="0" column="3">
             <widget class="QPushButton" name="btn_enviar">
              <property name="text">
               <string>Enviar Respuestas</string>
@@ -179,13 +179,6 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QPushButton" name="btn_cancelar">
-             <property name="text">
-              <string>Cancelar</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
             <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
@@ -197,6 +190,13 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_cancelar">
+             <property name="text">
+              <string>Cancelar</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -217,15 +217,15 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
+           <item row="1" column="1">
+            <widget class="QPlainTextEdit" name="txt_p3_detalle"/>
+           </item>
+           <item row="0" column="1">
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>¿Qué hiciste?</string>
              </property>
             </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPlainTextEdit" name="txt_p3_detalle"/>
            </item>
           </layout>
          </widget>
@@ -235,9 +235,9 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="subtitulo">
       <property name="text">
-       <string>Por favor, responde:</string>
+       <string>Por favor, respondea estas preguntas para ayudarnos a hacer un seguimiento:</string>
       </property>
      </widget>
     </item>
@@ -248,7 +248,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>787</width>
+     <width>775</width>
      <height>22</height>
     </rect>
    </property>
