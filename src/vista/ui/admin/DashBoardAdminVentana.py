@@ -24,7 +24,7 @@ class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
         """ Vincula los botones del .ui con el sistema de navegación """
         # Botones añadidos a la cabecera
         self.btn_salir.clicked.connect(lambda: self.gestionar_navegacion("salir"))
-        self.btn_editar_perfil.clicked.connect(lambda: self.gestionar_navegacion("editar_perfil"))
+        self.btn_visualizar_perfil.clicked.connect(lambda: self.gestionar_navegacion("Visualizar_perfil"))
         
         # Botones de las tarjetas principales
         self.btn_nuevo_registro.clicked.connect(lambda: self.gestionar_navegacion("pacientes"))

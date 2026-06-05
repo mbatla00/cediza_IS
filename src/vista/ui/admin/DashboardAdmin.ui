@@ -77,9 +77,9 @@
         </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QPushButton" name="btn_editar_perfil">
+        <widget class="QPushButton" name="btn_visualizar_perfil">
          <property name="text">
-          <string>Editar perfil</string>
+          <string>Visualizar perfil</string>
          </property>
         </widget>
        </item>
