@@ -2,33 +2,36 @@ import os
 from PySide6.QtWidgets import QMainWindow, QLineEdit
 from PySide6.QtUiTools import loadUiType
 
-# 1. Cargamos el archivo .ui de forma dinámica
-ui_path = os.path.join(os.path.dirname(__file__), "login.ui") 
-# (Nota: si tu login.ui está dentro de una carpeta "ui", cámbialo a: os.path.join(os.path.dirname(__file__), "ui", "login.ui"))
-
+# Cargamos de forma dinámica el archivo .ui que está en esta misma carpeta
+ui_path = os.path.join(os.path.dirname(__file__), "login.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
-# 2. IMPORTANTE: Ahora heredamos de QMainWindow, no de QWidget
 class LoginVentana(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         
-        # 3. Ocultamos la contraseña
+        # Asegura que la contraseña se oculte con asteriscos/puntos en la interfaz
         self.entradaContrasena.setEchoMode(QLineEdit.EchoMode.Password)
         
-        # Opcional: Permite iniciar sesión pulsando "Enter" desde la contraseña
-        # self.entradaContrasena.returnPressed.connect(self.TU_BOTON_LOGIN.click)
+        # Si el usuario pulsa 'Enter' al escribir la contraseña, se simula el clic en el botón azul
+        self.entradaContrasena.returnPressed.connect(self.btn_login.click)
 
     def obtener_credenciales(self) -> dict:
-        """Extrae los datos para enviarlos al Controlador Principal"""
+        """
+        Devuelve un diccionario con los datos introducidos.
+        El controlador usará este método para validar el acceso.
+        """
         return {
             "usuario": self.entradaUsuario.text().strip(),
             "password": self.entradaContrasena.text()
         }
 
     def limpiar_formulario(self):
-        """Limpia las casillas"""
+        """
+        Limpia las cajas de texto y pone el foco en el usuario.
+        Útil si hay un error de login o si se cierra sesión.
+        """
         self.entradaUsuario.clear()
         self.entradaContrasena.clear()
         self.entradaUsuario.setFocus()

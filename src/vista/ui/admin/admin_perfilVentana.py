@@ -4,8 +4,8 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import QDate
 
-# Cargar el archivo .ui del perfil del admin
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "admin_perfil.ui")
+# CORRECCIÓN 1: Quitamos "ui" de la ruta porque el .ui y el .py están en la misma carpeta
+ui_path = os.path.join(os.path.dirname(__file__), "admin_perfil.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
@@ -13,9 +13,14 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         
-        # Opcional: Poner placeholders como en el HTML
+        # Poner placeholders como en el HTML
         self.txt_telefono.setPlaceholderText("666777888")
         self.txt_password.setPlaceholderText("Dejar en blanco para no cambiar")
+        
+        # CORRECCIÓN 2: Bloqueamos el campo de usuario para que no se pueda escribir
+        self.txt_usuario.setReadOnly(True)
+        # (Opcional) Fondo gris para que el usuario note visualmente que está bloqueado
+        self.txt_usuario.setStyleSheet("background-color: #e9ecef; color: #6c757d;")
 
     def cargar_datos_perfil(self, usuario: dict):
         """

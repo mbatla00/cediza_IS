@@ -6,12 +6,97 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>655</width>
-    <height>653</height>
+    <width>748</width>
+    <height>707</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 1. Fondo de la ventana (Gris clarito) */
+QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+/* 2. Ocultar los bordes feos del ScrollArea para que parezca web */
+QScrollArea {
+    border: none;
+    background-color: transparent;
+}
+QWidget#scrollAreaWidgetContents {
+    background-color: transparent;
+}
+
+/* 3. El efecto &quot;Tarjeta Blanca&quot; para los bloques de datos */
+QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-top: 25px; /* Deja espacio para que el título respire */
+    padding: 20px;
+}
+
+/* 4. Título de los bloques (Ej: &quot;Datos Comunes&quot;) */
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 15px;
+    padding: 0 5px;
+    color: #0d6efd; /* Azul principal */
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 5. Cajas de texto, fechas y desplegables */
+QLineEdit, QDateEdit, QComboBox {
+    border: 1px solid #adb5bd;
+    border-radius: 6px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    font-size: 14px;
+    color: #2c3e50;
+    min-height: 20px;
+}
+
+/* Efecto al escribir o seleccionar */
+QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
+    border: 2px solid #0d6efd;
+    background-color: #ffffff;
+}
+
+/* 6. Botones Fijos de abajo */
+QPushButton#btn_guardar {
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_guardar:hover { background-color: #0b5ed7; }
+
+QPushButton#btn_cancelar {
+    background-color: #6c757d;
+    color: white;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_cancelar:hover { background-color: #5a6268; }
+
+/* 7. Botones pequeñitos de añadir (+) en el paciente */
+QPushButton#btn_anadir_contacto, QPushButton#btn_anadir_enfermedad {
+    background-color: #e9ecef;
+    color: #0d6efd;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px;
+    font-weight: bold;
+}
+QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
+    background-color: #dee2e6;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -24,16 +109,35 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>635</width>
-         <height>590</height>
+         <y>-177</y>
+         <width>713</width>
+         <height>936</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="1" column="1" colspan="2">
-         <widget class="QGroupBox" name="groupBox">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>70</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>16</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Editar usuario</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="box_datos_comunes">
           <property name="title">
-           <string>GroupBox</string>
+           <string>Datos Comunes</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="1" column="0">
@@ -103,27 +207,11 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_7">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>70</height>
-           </size>
+        <item>
+         <widget class="QGroupBox" name="box_rol_paciente">
+          <property name="title">
+           <string>Datos del Paciente</string>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>16</pointsize>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Editar usuario</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" rowspan="2" colspan="2">
-         <widget class="QWidget" name="widget_rol_paciente" native="true">
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="1" column="1" colspan="2">
             <widget class="QWidget" name="widget_enfermedades_layout" native="true">
@@ -165,12 +253,12 @@
             <widget class="QComboBox" name="cmb_tipo_paciente">
              <item>
               <property name="text">
-               <string>publico</string>
+               <string>Público</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>privado</string>
+               <string>Privado</string>
               </property>
              </item>
             </widget>
@@ -197,8 +285,11 @@
           </layout>
          </widget>
         </item>
-        <item row="8" column="1" colspan="2">
-         <widget class="QWidget" name="widget_rol_trabajador" native="true">
+        <item>
+         <widget class="QGroupBox" name="box_rol_trabajador">
+          <property name="title">
+           <string>Datos del Trabajador</string>
+          </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="1">
             <widget class="QComboBox" name="cmb_tipo_trabajador">
@@ -282,25 +373,79 @@
           </layout>
          </widget>
         </item>
-        <item row="9" column="1" colspan="2">
-         <widget class="QWidget" name="widget_rol_admin" native="true">
+        <item>
+         <widget class="QGroupBox" name="box_rol_admin">
+          <property name="title">
+           <string>Datos del Admin</string>
+          </property>
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="1" column="0">
-            <widget class="QWidget" name="widget_rol_admin_2" native="true"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>Los administradores solo tienen datos comunes.</string>
-             </property>
+            <widget class="QWidget" name="widget_rol_admin_2" native="true">
+             <widget class="QLabel" name="label_14">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>0</y>
+                <width>255</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Los administradores solo tienen datos comunes.</string>
+              </property>
+             </widget>
             </widget>
            </item>
           </layout>
          </widget>
         </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>44</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
      </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="btn_guardar">
+        <property name="text">
+         <string>Guardar Cambios</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_cancelar">
+        <property name="text">
+         <string>Cancelar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -309,7 +454,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>655</width>
+     <width>748</width>
      <height>22</height>
     </rect>
    </property>
