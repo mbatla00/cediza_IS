@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>609</height>
+    <width>791</width>
+    <height>545</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,205 +16,167 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
-     <widget class="QTabWidget" name="dashboard">
-      <property name="tabPosition">
-       <enum>QTabWidget::TabPosition::North</enum>
-      </property>
-      <property name="tabShape">
-       <enum>QTabWidget::TabShape::Rounded</enum>
-      </property>
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
-      <widget class="QWidget" name="tab">
-       <property name="font">
-        <font>
-         <kerning>true</kerning>
-        </font>
-       </property>
-       <attribute name="title">
-        <string>Crear Perfiles</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="0" columnminimumwidth="0">
-        <property name="topMargin">
-         <number>8</number>
-        </property>
-        <property name="bottomMargin">
-         <number>9</number>
-        </property>
-        <property name="verticalSpacing">
-         <number>4</number>
-        </property>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="btn_nuevo_trabajador">
-          <property name="text">
-           <string>Nuevo Trabajador</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="btn_nuevo_paciente">
-          <property name="text">
-           <string>Nuevo Paciente</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="btn_nuevo_admin">
-          <property name="text">
-           <string>Nuevo Administrador</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Editar usuarios</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Alta y baja de usuarios</string>
-       </attribute>
-       <widget class="QTableWidget" name="usuarios_lista">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>110</y>
-          <width>784</width>
-          <height>280</height>
-         </rect>
-        </property>
-        <column>
-         <property name="text">
-          <string>Nueva columna</string>
+     <widget class="QWidget" name="widget_tarjetas" native="true">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QFrame" name="frame_pacientes">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Nombre</string>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Rol</string>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Admisión</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>TARJETA DE PACIENTES</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Registrar nuevos pacientes.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="btn_nuevo_registro">
+            <property name="text">
+             <string>Nuevo registro</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QFrame" name="frame_usuarios">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Estado</string>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>accion</string>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Usuarios</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Gestionar trabajadores y bajas.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>TARJETA DE USUARIOS</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="btn_gestionar_usuarios">
+            <property name="text">
+             <string>Gestionar usuarios</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QFrame" name="frame_trabajadores">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
          </property>
-        </column>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tab_7">
-       <attribute name="title">
-        <string>Perfil</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="1">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>TNombre completo</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>DNI</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="txt_perfil_telefono"/>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="txt_perfil_dni">
-          <property name="maxLength">
-           <number>9</number>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="txt_perfil_email"/>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Nueva contraseña</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Teléfono</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QDateEdit" name="date_perfil_nacimiento"/>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Email</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Nombre de usuario</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLineEdit" name="txt_perfil_password"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLineEdit" name="txt_perfil_usuario"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="txt_perfil_nombre"/>
-        </item>
-        <item row="9" column="2">
-         <widget class="QPushButton" name="btn_perfil_volver">
-          <property name="text">
-           <string>volver</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Guardar cambios</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_8">
-       <attribute name="title">
-        <string>Página</string>
-       </attribute>
-      </widget>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>TARJETA DE TRABAJADORES</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Dar de alta a un nuevo trabajador.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Personal</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="btn_nuevo_trabajador">
+            <property name="text">
+             <string>Nuevo trabajador</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget_cabecera" native="true">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Bienvenido al centro de mando</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_titulo">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>80</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Panel de Gestión</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -224,7 +186,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>795</width>
+     <width>791</width>
      <height>22</height>
     </rect>
    </property>

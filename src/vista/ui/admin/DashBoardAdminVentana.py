@@ -1,33 +1,39 @@
 import os
 from PySide6.QtWidgets import QMainWindow
+from PySide6.QtCore import Signal
 from PySide6.QtUiTools import loadUiType
 
-# 1. Localizar y cargar el archivo .ui de forma dinámica
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "DashboardAdmin.ui")
+# Cargamos el archivo .ui de forma dinámica
+ui_path = os.path.join(os.path.dirname(__file__), "dashboard_admin.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    # Señal para avisar a la ventana principal que queremos cambiar de vista
+    cambiar_pantalla = Signal(str)
+
+    def __init__(self, controlador=None):
         super().__init__()
-        
-        # 2. Construir la interfaz reflejando el XML
         self.setupUi(self)
         
-        # 3. Ajustes de comportamiento estético para tus componentes
-        self.configurar_interfaz()
+        self.controlador = controlador
         
-        # 4. Enlaces de navegación interna (Comportamiento visual puro)
-        self.btn_perfil_volver.clicked.connect(self.volver_a_pestaña_inicio)
+        # Conectar los eventos de tus componentes
+        self.conectar_eventos()
 
-    def configurar_interfaz(self):
-        """Configuraciones iniciales de la vista al arrancar"""
-        # Forzar a que la última columna de la tabla ('acción') ocupe el espacio restante
-        self.usuarios_lista.horizontalHeader().setStretchLastSection(True)
-        
-        # Opcional: Ocultar la contraseña por defecto en el campo de texto de perfil
-        self.txt_perfil_password.setEchoMode(self.txt_perfil_password.EchoMode.Password)
+    def conectar_eventos(self):
+        """ Vincula los botones del .ui con el sistema de navegación """
+        self.btn_nuevo_registro.clicked.connect(lambda: self.gestionar_navegacion("pacientes"))
+        self.btn_nuevo_trabajador.clicked.connect(lambda: self.gestionar_navegacion("trabajadores"))
+        self.btn_gestionar_usuarios.clicked.connect(lambda: self.gestionar_navegacion("usuarios"))
 
-    def volver_a_pestaña_inicio(self):
-        """Redirige al usuario a la primera pestaña de tu QTabWidget (Crear Perfiles)"""
-        # Como en tu XML el QTabWidget se llama 'dashboard', accedemos a él directamente
-        self.dashboard.setCurrentIndex(0)
+    def set_nombre_administrador(self, nombre_admin: str):
+        """ Cambia el texto del label_3 para mostrar el nombre del admin logueado """
+        if nombre_admin:
+            self.label_3.setText(f"Bienvenido al centro de mando, {nombre_admin}.")
+        else:
+            self.label_3.setText("Bienvenido al centro de mando.")
+
+    def gestionar_navegacion(self, destino: str):
+        """ Emite la señal con el destino para que tu QStackedWidget haga el cambio """
+        print(f"[Dashboard Admin] Click detectado. Redirigiendo a: {destino}")
+        self.cambiar_pantalla.emit(destino)
