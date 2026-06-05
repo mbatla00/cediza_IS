@@ -109,9 +109,9 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-177</y>
+         <y>0</y>
          <width>713</width>
-         <height>936</height>
+         <height>958</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -380,20 +380,13 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
           </property>
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="1" column="0">
-            <widget class="QWidget" name="widget_rol_admin_2" native="true">
-             <widget class="QLabel" name="label_14">
-              <property name="geometry">
-               <rect>
-                <x>20</x>
-                <y>0</y>
-                <width>255</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Los administradores solo tienen datos comunes.</string>
-              </property>
-             </widget>
+            <widget class="QWidget" name="widget_rol_admin_2" native="true"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Los administradores solo tienen datos comunes.</string>
+             </property>
             </widget>
            </item>
           </layout>

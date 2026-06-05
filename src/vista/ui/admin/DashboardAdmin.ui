@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>791</width>
-    <height>545</height>
+    <width>781</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,49 +15,80 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget_cabecera" native="true">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>150</height>
+       </size>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="btn_salir">
+         <property name="text">
+          <string>Salir</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Bienvenido al centro de mando</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_titulo">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>80</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Panel de Gestión</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="btn_editar_perfil">
+         <property name="text">
+          <string>Editar perfil</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QWidget" name="widget_tarjetas" native="true">
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QFrame" name="frame_pacientes">
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Shadow::Raised</enum>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Admisión</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>TARJETA DE PACIENTES</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Registrar nuevos pacientes.</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="btn_nuevo_registro">
-            <property name="text">
-             <string>Nuevo registro</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="2">
         <widget class="QFrame" name="frame_usuarios">
          <property name="frameShape">
@@ -92,6 +123,46 @@
            <widget class="QPushButton" name="btn_gestionar_usuarios">
             <property name="text">
              <string>Gestionar usuarios</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QFrame" name="frame_pacientes">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Admisión</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>TARJETA DE PACIENTES</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Registrar nuevos pacientes.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="btn_nuevo_registro">
+            <property name="text">
+             <string>Nuevo registro de paciente</string>
             </property>
            </widget>
           </item>
@@ -138,42 +209,48 @@
          </layout>
         </widget>
        </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QWidget" name="widget_cabecera" native="true">
-      <layout class="QGridLayout" name="gridLayout_2">
        <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>70</height>
-          </size>
+        <widget class="QFrame" name="frame_crear_admin">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
          </property>
-         <property name="text">
-          <string>Bienvenido al centro de mando</string>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
          </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="2" column="0">
+           <widget class="QPushButton" name="btn_crear_admin">
+            <property name="text">
+             <string>Crear administrador</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Crear Administrador</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Crear nuevo administrador</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lbl_titulo">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>80</height>
-          </size>
+       <item row="1" column="1">
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-           <bold>true</bold>
-          </font>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <property name="text">
-          <string>Panel de Gestión</string>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_8"/>
         </widget>
        </item>
       </layout>
@@ -186,7 +263,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>791</width>
+     <width>781</width>
      <height>22</height>
     </rect>
    </property>
