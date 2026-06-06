@@ -19,11 +19,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from PySide6.QtWidgets import QApplication
 from src.controlador import AuthController
-from src.vista import VentanaLogin
+from src.vista import LoginVentana
 
 # Los controladores los importamos de src.controlador
 from src.controlador import AuthController
-from src.vista import VentanaLogin  # La vista la hace tu compañero
+from src.vista import LoginVentana # La vista la hace tu compañero
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
     
     # 3. Crear la ventana de login (la vista)
     #    La ventana recibe el controlador para poder llamar a login()
-    ventana_login = VentanaLogin(auth_controller)
+    ventana_login = LoginVentana(auth_controller)
     ventana_login.show()
     
     print("Aplicación iniciada correctamente")
