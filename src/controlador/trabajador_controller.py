@@ -153,3 +153,28 @@ class TrabajadorController:
             return False, "Solo los especialistas pueden eliminar sesiones"
         
         return self._sesion_service.eliminar(id_sesion, self._nombre_usuario)
+    
+
+    def obtener_trabajador_dict(self) -> dict | None:
+        trabajador = self._trabajador_service.obtener_por_nombre(self._nombre_usuario)
+        if not trabajador:
+            return None
+        return {
+            "nombre": getattr(trabajador, 'nombre', ''),
+            "nombreUsuario": getattr(trabajador, 'nombreUsuario', ''),
+            "dni": getattr(trabajador, 'dni', ''),
+            "email": getattr(trabajador, 'email', ''),
+            "telefono": getattr(trabajador, 'telefono', ''),
+            "fechaNacimiento": getattr(trabajador, 'fechaNacimiento', None)
+        }
+
+    def actualizar_trabajador(self, trabajador, datos: dict) -> tuple[bool, str]:
+        return self._trabajador_service.actualizar(trabajador, datos)
+
+    def listar_familiares_de_paciente(self, paciente: str):
+        from src.modelo.logica.familiar_service import FamiliarService
+        return FamiliarService().listar_por_paciente(paciente)
+    
+    def obtener_trabajador_vo(self):
+        """Retorna el objeto VO del trabajador actual"""
+        return self._trabajador_service.obtener_por_nombre(self._nombre_usuario)

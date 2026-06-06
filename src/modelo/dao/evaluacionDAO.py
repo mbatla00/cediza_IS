@@ -1,3 +1,5 @@
+from datetime import date
+import jpype
 from src.modelo.conexion.Conexion import Conexion
 Database = Conexion
 from src.modelo.vo import EvaluacionProfesional

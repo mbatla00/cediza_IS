@@ -214,7 +214,7 @@ QPushButton#btn_volver:hover {
         </widget>
        </item>
        <item row="5" column="0" colspan="3">
-        <widget class="QLineEdit" name="lineEdit_2"/>
+        <widget class="QLineEdit" name="txt_dni"/>
        </item>
        <item row="5" column="3">
         <widget class="QDateEdit" name="date_nacimiento"/>

@@ -87,3 +87,26 @@ class TrabajadorService:
             
         except Exception as e:
             return False, f"Error crítico: {str(e)}", None
+
+    @staticmethod
+    def actualizar(trabajador, datos: dict) -> tuple[bool, str]:
+        try:
+            if 'nombre' in datos:
+                trabajador._nombre = datos['nombre']
+            if 'email' in datos:
+                trabajador._email = datos['email']
+            if 'dni' in datos:
+                if not UsuarioService.validar_dni(datos['dni']):
+                    return False, "DNI no válido"
+                trabajador._dni = datos['dni']
+            if 'fechaNacimiento' in datos:
+                trabajador._fechaNacimiento = datos['fechaNacimiento']
+            if 'password' in datos and datos['password']:
+                trabajador._password = datos['password']
+                
+            exito = UsuarioDAO.update(trabajador)
+            if exito:
+                return True, "Trabajador actualizado correctamente"
+            return False, "Error al actualizar"
+        except Exception as e:
+            return False, f"Error: {str(e)}"

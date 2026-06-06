@@ -19,6 +19,11 @@ QDialog {
     background-color: #f4f6f8;
 }
 
+/* NUEVO: Color oscuro para todas las etiquetas de texto del formulario (Nombre, Usuario, etc.) */
+QLabel {
+    color: #2c3e50;
+}
+
 /* 2. El efecto &quot;Tarjeta Blanca&quot; para el QGroupBox */
 QGroupBox {
     background-color: #ffffff;
@@ -46,6 +51,8 @@ QLineEdit, QComboBox {
     background-color: #f8f9fa;
     font-size: 14px;
     color: #2c3e50;
+    selection-background-color: #0d6efd;
+    selection-color: #ffffff;
 }
 QLineEdit:focus, QComboBox:focus {
     border: 2px solid #0d6efd;

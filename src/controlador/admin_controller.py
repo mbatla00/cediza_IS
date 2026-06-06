@@ -132,3 +132,62 @@ class AdminController:
     def eliminar_familiar(self, nombre: str, paciente: str) -> bool:
         """Elimina un familiar de un paciente"""
         return self._familiar_service.eliminar(nombre, paciente)
+
+    # ============================================================
+    # MÉTODOS PUENTE PARA LAS VISTAS (MVC ESTRICTO)
+    # ============================================================
+    
+    def agregar_paciente(self, datos: dict) -> tuple[bool, str, object | None]:
+        tipo_raw = datos.get('tipoPaciente', '').lower()
+        tipo = 'publico' if 'pub' in tipo_raw else 'privado'
+        
+        datos_servicio = {
+            'nombre_completo': datos.get('nombre'),
+            'nombre_usuario': datos.get('nombreUsuario') or None,
+            'dni': datos.get('dni'),
+            'fecha_nacimiento': datos.get('fechaNacimiento'),
+            'telefono': datos.get('telefono'),
+            'email': datos.get('email'),
+            'password': datos.get('password') or datos.get('dni'),
+            'tipo_paciente': tipo,
+            'cuenta': datos.get('cuentaBancaria')
+        }
+        if tipo == "publico":
+            datos_servicio["seguridad_social"] = datos.get('cuentaBancaria')
+        else:
+            datos_servicio["tarjeta_credito"] = datos.get('cuentaBancaria')
+            
+        return self._paciente_service.crear(datos_servicio)
+
+    def agregar_trabajador(self, datos: dict) -> tuple[bool, str, object | None]:
+        tipo_baja = datos.get('tipo', '').lower()
+        datos_servicio = {
+            'nombre_completo': datos.get('nombre'),
+            'nombre_usuario': datos.get('usuario'),
+            'dni': datos.get('dni'),
+            'telefono': datos.get('telefono') or None,
+            'email': datos.get('email') or None,
+            'password': datos.get('password') or datos.get('dni'),
+            'tipo_trabajador': tipo_baja,
+            'especialidad': datos.get('especialidad', '') if tipo_baja == 'especialista' else '',
+            'horario': 'Mañana/Tarde',
+            'info_interes': ''
+        }
+        return self._trabajador_service.crear(datos_servicio)
+
+    def agregar_administrador(self, datos: dict) -> tuple[bool, str, None]:
+        exito, msg = self._usuario_service.crear_administrador(datos)
+        return exito, msg, None
+
+    def obtener_usuario_dict(self, nombre_usuario: str) -> dict | None:
+        usuario = self._usuario_service.obtener_por_nombre(nombre_usuario)
+        if not usuario:
+            return None
+        return {
+            "nombre": getattr(usuario, 'nombre', ''),
+            "nombreUsuario": getattr(usuario, 'nombreUsuario', ''),
+            "dni": getattr(usuario, 'dni', ''),
+            "email": getattr(usuario, 'email', ''),
+            "telefono": getattr(usuario, 'telefono', ''),
+            "fechaNacimiento": getattr(usuario, 'fechaNacimiento', None)
+        }

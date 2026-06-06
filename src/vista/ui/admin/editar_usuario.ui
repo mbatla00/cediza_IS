@@ -19,6 +19,11 @@ QWidget#centralwidget {
     background-color: #f4f6f8;
 }
 
+/* NUEVO: Color oscuro para todas las etiquetas de texto (Nombre, Teléfono, etc.) */
+QLabel {
+    color: #2c3e50;
+}
+
 /* 2. Ocultar los bordes feos del ScrollArea para que parezca web */
 QScrollArea {
     border: none;
@@ -56,12 +61,24 @@ QLineEdit, QDateEdit, QComboBox {
     font-size: 14px;
     color: #2c3e50;
     min-height: 20px;
+    selection-background-color: #0d6efd; /* Color azul al seleccionar texto */
+    selection-color: #ffffff;            /* Letra blanca al seleccionar texto */
 }
 
 /* Efecto al escribir o seleccionar */
 QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
     border: 2px solid #0d6efd;
     background-color: #ffffff;
+}
+
+/* 🌟 SOLUCIÓN AL DESPLEGABLE OSCURO DEL COMBOBOX 🌟 */
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    background: #ffffff;
+    color: #2c3e50;
+    border: 1px solid #dee2e6;
+    selection-background-color: #0d6efd; /* Azul al pasar el ratón por los ítems */
+    selection-color: #ffffff;
 }
 
 /* 6. Botones Fijos de abajo */
@@ -163,7 +180,7 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
            <item row="0" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>nombre</string>
+              <string>Nombre</string>
              </property>
             </widget>
            </item>
@@ -380,7 +397,7 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
           </property>
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="1" column="0">
-            <widget class="QWidget" name="widget_rol_admin_2" native="true"/>
+            <widget class="QWidget" name="widget_rol_admin" native="true"/>
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_14">

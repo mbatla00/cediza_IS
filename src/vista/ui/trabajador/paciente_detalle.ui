@@ -24,6 +24,11 @@
     background-color: #f4f6f8;
 }
 
+/* Color oscuro para todos los textos fijos (Labels) */
+QLabel {
+    color: #2c3e50;
+}
+
 QGroupBox {
     background-color: white;
     border: 1px solid #e0e0e0;
@@ -40,18 +45,22 @@ QGroupBox::title {
     top: 5px;
 }
 
+/* Cajas de texto, listas y tablas con fondo blanco, texto oscuro y selección azul con letras blancas */
 QLineEdit, QPlainTextEdit, QListWidget, QTableWidget {
     border: 1px solid #ced4da;
     border-radius: 4px;
     padding: 5px;
     background-color: #ffffff;
+    color: #2c3e50;
     selection-background-color: #0d6efd;
+    selection-color: #ffffff;
 }
 
 QLineEdit:focus, QPlainTextEdit:focus {
     border: 1px solid #0d6efd;
 }
 
+/* Botón Guardar Nota (Verde) */
 QPushButton#btn_guardar_nota {
     background-color: #198754;
     color: white;
@@ -64,6 +73,7 @@ QPushButton#btn_guardar_nota:hover {
     background-color: #157347;
 }
 
+/* Botón Guardar Contacto (Rojo) */
 QPushButton#btn_guardar_contacto {
     background-color: #dc3545;
     color: white;
@@ -76,6 +86,7 @@ QPushButton#btn_guardar_contacto:hover {
     background-color: #bb2d3b;
 }
 
+/* Botones por defecto (Azul) */
 QPushButton {
     background-color: #0d6efd;
     color: white;

@@ -2,15 +2,13 @@ class Sesion:
     """VO para una sesion entre un paciente y un especialista en un dia especifico"""
     
     def __init__(self, idSesion=None, Paciente=None, Especialista=None,
-                 comentarios=None, Fecha=None, Hora=None):
+                comentarios=None, Fecha=None, Hora=None):
         self._idSesion = idSesion
         self._paciente = Paciente
         self._especialista = Especialista
         self._comentarios = comentarios
-        self._fecha = None
+        self._fecha = Fecha
         self._hora = Hora
-        if Fecha:
-            self.fecha = Fecha
 
     @property
     def idSesion(self):

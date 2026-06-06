@@ -1,44 +1,35 @@
 import os
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtUiTools import loadUiType
 
-# CORRECCIÓN: El .ui y el .py están juntos en la misma carpeta
 ui_file = os.path.join(os.path.dirname(__file__), "crear_admin.ui")
 ui_formulario, _ = loadUiType(ui_file)
 
 class CrearAdminVentana(QDialog, ui_formulario):
-    def __init__(self):
+    # AÑADIDO: Recibe el controlador
+    def __init__(self, controlador):
         super().__init__()
-        
-        # Inicializa y dibuja la interfaz en 'self'
         self.setupUi(self)
+        self.controlador = controlador
         
-        # 🌟 NUEVO: Conectar los botones de tu archivo .ui para que la ventana responda
-        self.btn_crear.clicked.connect(self.accept)     # Cierra devolviendo Código 1 (Aceptar)
-        self.btn_cancelar.clicked.connect(self.reject)  # Cierra devolviendo Código 0 (Cancelar)
+        # Conexiones internas de la vista
+        self.btn_crear.clicked.connect(self.procesar_guardado)
+        self.btn_cancelar.clicked.connect(self.reject)
         
-        # Restricciones visuales (Validadores en la Vista)
         self.configurar_restricciones()
 
     def configurar_restricciones(self):
-        """Aplica filtros para que el usuario no escriba datos incorrectos"""
-        # El teléfono solo puede tener números (9 dígitos máximo)
         regex_tel = QRegularExpression(r"^\d{0,9}$")
         validador_tel = QRegularExpressionValidator(regex_tel, self)
         self.txt_telefono.setValidator(validador_tel)
         
-        # El DNI obliga a meter 8 números y una letra
         regex_dni = QRegularExpression(r"^\d{0,8}[a-zA-Z]?$")
         validador_dni = QRegularExpressionValidator(regex_dni, self)
         self.txt_dni.setValidator(validador_dni)
 
     def obtener_datos_formulario(self) -> dict:
-        """
-        Recolecta los datos de los campos mapeados correctamente con el .ui.
-        La vista sigue siendo ciega y respeta el MVC puro.
-        """
         return {
             "nombre": self.txt_nombre.text().strip(),   
             "nombreUsuario": self.txt_usuario.text().strip(),
@@ -49,12 +40,28 @@ class CrearAdminVentana(QDialog, ui_formulario):
         }
 
     def limpiar_formulario(self):
-        """Vacía las cajas de texto tras crear el usuario o al cancelar."""
         self.txt_nombre.clear()     
         self.txt_usuario.clear()  
         self.txt_dni.clear()
         self.txt_telefono.clear()
         self.txt_email.clear()
         self.txt_password.clear()
-        # Ponemos el cursor (foco) en la primera caja para mayor comodidad
-        self.txt_nombre.setFocus()  
+
+    # AÑADIDO: Lógica de guardado interna
+    def procesar_guardado(self):
+        datos = self.obtener_datos_formulario()
+        
+        # Validaciones visuales rápidas
+        if not datos["nombre"] or not datos["nombreUsuario"] or not datos["dni"]:
+            QMessageBox.warning(self, "Campos vacíos", "Por favor, rellena los campos obligatorios.")
+            return
+
+        # Llamamos al controlador de tus compañeros (Asegúrate de que este método exista en admin_controller.py
+        # puede llamarse 'agregar_administrador', 'agregar_admin' o similar)
+        exito, msg, _ = self.controlador.agregar_administrador(datos)
+        
+        if exito:
+            QMessageBox.information(self, "Éxito", f"Administrador '{datos['nombre']}' registrado correctamente.")
+            self.accept() # Cierra la ventana y devuelve éxito
+        else:
+            QMessageBox.warning(self, "Error al crear", f"No se pudo registrar: {msg}")

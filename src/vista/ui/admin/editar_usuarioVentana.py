@@ -4,25 +4,36 @@ from PySide6.QtWidgets import QMainWindow, QCheckBox, QWidget, QHBoxLayout, QLin
 from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import QDate
 
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "editar_usuario.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "editar_usuario.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    # AÑADIDO: Recibe el controlador
+    def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
+        self.controlador = controlador
         
         # Almacenes para elementos dinámicos
         self.checkboxes_enfermedades = {}
         self.rol_actual = ""
+        self.usuario_editado = None # AÑADIDO: Para recordar a quién editamos
         
         # Conectar eventos dinámicos estilo JS
         self.btn_anadir_enfermedad.clicked.connect(self.agregar_enfermedad_dinamica)
         self.btn_anadir_contacto.clicked.connect(lambda: self.crear_fila_contacto("", "", ""))
         self.cmb_tipo_trabajador.currentTextChanged.connect(self.mostrar_subcampos_trabajador)
 
-    def cargar_usuario(self, usuario: dict, todas_enfermedades: list, paciente_enfermedades: list, contactos: list):
+        # Conectar botones principales de guardar y cancelar
+        if hasattr(self, 'btn_guardar'):
+            self.btn_guardar.clicked.connect(self.procesar_guardado)
+            
+        if hasattr(self, 'btn_cancelar'):
+            self.btn_cancelar.clicked.connect(self.close)
 
+    # AÑADIDO: Recibe usuario_vo
+    def cargar_usuario(self, usuario_vo, usuario: dict, todas_enfermedades: list, paciente_enfermedades: list, contactos: list):
+        self.usuario_editado = usuario_vo # Guardamos el objeto
         self.rol_actual = usuario.get("rol", "admin")
         
         # 1. Rellenar datos comunes
@@ -166,7 +177,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
                     contactos.append({
                         "nombre": fila.txt_nombre.text().strip(),
                         "relacion": fila.txt_relacion.text().strip(),
-                        "telefono": fila.txt_telefono.text().strip()
+                        "telefono": self.txt_telefono.text().strip()
                     })
             payload["contactos"] = contactos
             
@@ -180,3 +191,19 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
                 payload["horario_especialista"] = self.txt_horario_especialista.text().strip()
                 
         return payload
+
+    # AÑADIDO: Lógica de guardado interna que llama al controlador
+    def procesar_guardado(self):
+        if not self.usuario_editado:
+            QMessageBox.warning(self, "Aviso", "No hay ningún usuario seleccionado para editar.")
+            return
+            
+        payload = self.obtener_datos_formulario()
+        
+        exito, msg = self.controlador.actualizar_usuario(self.usuario_editado, payload)
+        
+        if exito:
+            QMessageBox.information(self, "Éxito", "Usuario actualizado correctamente.")
+            self.close() 
+        else:
+            QMessageBox.warning(self, "Error", f"No se pudo guardar: {msg}")

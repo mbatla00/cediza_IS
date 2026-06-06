@@ -13,9 +13,112 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* --- FONDO DE LA VENTANA --- */
+QMainWindow {
+    background-color: #f8f9fa; 
+}
+
+/* --- EL CONTENEDOR (La Tarjeta Blanca) --- */
+QFrame, QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+/* Limpieza de bordes heredados */
+QLabel, QLineEdit, QDateEdit, QTimeEdit, QPlainTextEdit, QPushButton {
+    border: none;
+}
+
+/* --- LA CABECERA AZUL --- */
+QLabel#label {
+    background-color: #0d6efd; /* Azul primario */
+    color: white; /* Texto blanco para contrastar */
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px 15px;
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+/* --- ETIQUETAS DE TEXTO (Labels) --- */
+QLabel {
+    color: #212529;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* --- CAMPOS DE TEXTO, FECHA, HORA Y COMENTARIOS --- */
+QLineEdit, QDateEdit, QTimeEdit, QPlainTextEdit {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 8px 10px;
+    background-color: #ffffff;
+    color: #212529;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+/* Efecto focus simulando Bootstrap (borde azul claro) */
+QLineEdit:focus, QDateEdit:focus, QTimeEdit:focus, QPlainTextEdit:focus {
+    border: 1px solid #86b7fe;
+}
+
+/* Campo deshabilitado / Solo lectura (txt_paciente) */
+QLineEdit:read-only {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+/* Ajustes específicos para QDateEdit y QTimeEdit (la flechita de selección) */
+QDateEdit::drop-down, QTimeEdit::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left-width: 1px;
+    border-left-color: #ced4da;
+    border-left-style: solid;
+}
+
+/* --- BOTONES --- */
+QPushButton {
+    border-radius: 5px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* Botón Guardar (Tema Azul) */
+QPushButton#btn_guardar {
+    background-color: #0d6efd;
+    color: white;
+    border: 1px solid #0d6efd;
+}
+
+QPushButton#btn_guardar:hover {
+    background-color: #0b5ed7;
+    border: 1px solid #0a58ca;
+}
+
+/* Botón Cancelar (Tema Gris - Estilo btn-secondary) */
+QPushButton#btn_cancelar {
+    background-color: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+    font-weight: bold;
+}
+
+QPushButton#btn_cancelar:hover {
+    background-color: #5c636a;
+    border: 1px solid #565e64;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="3">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="maximumSize">
        <size>
@@ -25,7 +128,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>16</pointsize>
+        <pointsize>-1</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -34,108 +137,134 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
+    <item row="1" column="0">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
-     </spacer>
-    </item>
-    <item row="3" column="2">
-     <widget class="QPushButton" name="btn_guardar">
-      <property name="text">
-       <string>Guardar</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="3">
-     <widget class="QGroupBox" name="box_formulario">
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="0">
-        <widget class="QLineEdit" name="txt_paciente">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QTimeEdit" name="time_sesion">
-         <property name="displayFormat">
-          <string>HH:mm</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QDateEdit" name="date_sesion"/>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Paciente</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_paciente">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="0" column="1">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Fechade sesion</string>
-         </property>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Fecha de sesión</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="date_sesion"/>
+         </item>
+        </layout>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Paciente</string>
-         </property>
-        </widget>
+       <item row="1" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Hora de sesion</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTimeEdit" name="time_sesion">
+           <property name="displayFormat">
+            <string>HH:mm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Hora de sesion</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Comentarios</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QPlainTextEdit" name="txt_comentarios">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>200</height>
-          </size>
-         </property>
-        </widget>
+       <item row="1" column="1">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Comentarios</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPlainTextEdit" name="txt_comentarios">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QPushButton" name="btn_cancelar">
-      <property name="text">
-       <string>Cancelar</string>
-      </property>
-     </widget>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_cancelar">
+        <property name="text">
+         <string>Cancelar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_guardar">
+        <property name="text">
+         <string>Guardar Cambios</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>37</width>
+          <height>17</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>792</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

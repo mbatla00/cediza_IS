@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>786</width>
-    <height>952</height>
+    <height>976</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,6 +17,11 @@
    <string notr="true">/* 1. Fondo de la ventana (Gris clarito web) */
 QDialog {
     background-color: #f4f6f8;
+}
+
+/* NUEVO: Color oscuro para todas las etiquetas de texto del formulario (Nombre, DNI, etc.) */
+QLabel {
+    color: #2c3e50;
 }
 
 /* 2. El efecto &quot;Tarjeta Blanca&quot; para los QGroupBox */
@@ -46,6 +51,8 @@ QLineEdit, QDateEdit, QComboBox {
     background-color: #f8f9fa;
     font-size: 14px;
     color: #2c3e50;
+    selection-background-color: #0d6efd;
+    selection-color: #ffffff;
 }
 QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
     border: 2px solid #0d6efd;
