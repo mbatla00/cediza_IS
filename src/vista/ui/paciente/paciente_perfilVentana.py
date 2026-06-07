@@ -14,6 +14,7 @@ class PacientePerfilVentana(QMainWindow, Ui_MainWindow):
         self.btn_volver.clicked.connect(self.close)
         self._configurar_tabla()
         self._cargar_datos()
+        self.showMaximized()
 
     def _configurar_tabla(self):
         header = self.tableWidget.horizontalHeader()

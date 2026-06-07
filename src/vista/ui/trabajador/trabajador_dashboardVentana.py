@@ -14,6 +14,7 @@ class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
         self._configurar_tabla()
         self._conectar_botones()
         self._cargar_datos()
+        self.showMaximized()
 
     def _configurar_tabla(self):
         header = self.tabla_pacientes.horizontalHeader()

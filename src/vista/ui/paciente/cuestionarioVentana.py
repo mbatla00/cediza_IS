@@ -11,6 +11,7 @@ class PacienteCuestionarioVentana(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self._controller = controlador
+        self.showMaximized()
         
         # 1. Configurar las opciones del ComboBox (Pregunta 2)
         # Usamos cmb_p2_horas (que es como seguramente se llama en tu UI)

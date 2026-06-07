@@ -12,6 +12,7 @@ class PacienteDashboardVentana(QMainWindow, Ui_MainWindow):
         self._controller = controlador
         self._cargar_datos()
         self._conectar_botones()
+        self.showMaximized()
 
     def _conectar_botones(self):
         self.btn_cuestionario_diario.clicked.connect(self._abrir_cuestionario)

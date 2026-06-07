@@ -15,6 +15,7 @@ class EvaluarPacienteVentana(QMainWindow, Ui_MainWindow):
         self.lbl_paciente.setText(f"Evaluación Clínica para: {nombre_paciente}")
         self.btn_volver.clicked.connect(self.close)
         self.btn_guardar.clicked.connect(self._procesar_guardado)
+        self.showMaximized()
 
     def _obtener_datos_evaluacion(self):
         emocional = movilidad = apetito = None
