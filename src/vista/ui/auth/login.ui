@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>622</width>
-    <height>608</height>
+    <height>591</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
+   <string notr="true">
+QMainWindow {
     background-color: #f4f6f8;
 }
 
@@ -82,10 +83,17 @@ QPushButton#btn_login:pressed {
     background-color: #0a58ca;
 }</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="QFrame" name="frame">
+      <property name="styleSheet">
+       <string notr="true">#centralWidget {
+    background-image: url(&quot;src/vista/imagenes/logo.png&quot;);
+    background-position: center;
+    background-repeat: no-repeat;
+}</string>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Shape::StyledPanel</enum>
       </property>
@@ -93,23 +101,6 @@ QPushButton#btn_login:pressed {
        <enum>QFrame::Shadow::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="Titulo">
-         <property name="font">
-          <font>
-           <pointsize>-1</pointsize>
-           <bold>true</bold>
-           <kerning>true</kerning>
-          </font>
-         </property>
-         <property name="text">
-          <string>Cediza</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="textoUsuario">
          <property name="font">
@@ -127,8 +118,12 @@ QPushButton#btn_login:pressed {
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLineEdit" name="entradaUsuario"/>
+       <item row="4" column="0">
+        <widget class="QLineEdit" name="entradaContrasena">
+         <property name="echoMode">
+          <enum>QLineEdit::EchoMode::Password</enum>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="textoContrasena">
@@ -147,17 +142,49 @@ QPushButton#btn_login:pressed {
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLineEdit" name="entradaContrasena">
-         <property name="echoMode">
-          <enum>QLineEdit::EchoMode::Password</enum>
-         </property>
-        </widget>
-       </item>
        <item row="5" column="0">
         <widget class="QPushButton" name="btn_login">
          <property name="text">
           <string>Iniciar Sesión</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="entradaUsuario"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="Titulo">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+           <kerning>true</kerning>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">#Titulo {
+    background-image: url(&quot;src/vista/imagenes/logo.png&quot;);
+    background-position: center;
+    background-repeat: no-repeat;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>

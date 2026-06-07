@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `cediza`.`usuarios` (
   `Rol` VARCHAR(45) NULL,
   `password` VARCHAR(60) NULL,
   `activo` TINYINT(1) NOT NULL DEFAULT 1,
+  `telefono` INT(9),
   PRIMARY KEY (`nombreUsuario`),
   UNIQUE INDEX `DNI_UNIQUE` (`DNI` ASC))
 ENGINE = InnoDB;

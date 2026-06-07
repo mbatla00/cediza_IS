@@ -80,6 +80,16 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
 
     def procesar_guardado(self):
         datos_formulario = self.obtener_datos_formulario()
+
+        fecha_nacimiento_str = datos_formulario.get("fechaNacimiento")
+        if fecha_nacimiento_str:
+            # Convertimos el string "yyyy-MM-dd" a un objeto date para poder comparar
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, "%Y-%m-%d").date()
+            fecha_actual = datetime.now().date()
+            
+            if fecha_nacimiento > fecha_actual:
+                QMessageBox.warning(self, "Error de validación", "La fecha de nacimiento no puede ser una fecha futura.")
+                return # 🛑 Detiene la ejecución aquí y no guarda nada
         
         # Enviamos al controlador solo el nombre de usuario (str) y los datos
         exito, msg = self.controlador.actualizar_usuario(self.nombre_usuario_actual, datos_formulario)

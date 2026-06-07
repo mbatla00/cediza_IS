@@ -3,8 +3,9 @@ from abc import ABC
 class Usuario(ABC):
     #clase abstracta para todos los usuarios del sistema
 
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None,
-                 password=None, email=None, fechaNacimiento=None, telefono=None, activo=None):
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, 
+    password=None, email=None, fechaNacimiento=None, activo=None, telefono=None):
+
 
         self._nombreUsuario = nombreUsuario
         self._nombre = Nombre
@@ -15,6 +16,7 @@ class Usuario(ABC):
         self._fechaNacimiento = fechaNacimiento
         self._telefono = telefono
         self._activo = activo if activo is not None else 1
+        self._telefono
 
     @property
     def nombreUsuario(self):
@@ -52,6 +54,11 @@ class Usuario(ABC):
     def activo(self):
         return self._activo
 
+
+    @property
+    def telefono(self):
+        return self._telefono
+    
     def to_dict(self):
         return {
             'nombreUsuario': self.nombreUsuario,
@@ -60,8 +67,8 @@ class Usuario(ABC):
             'rol': self.rol,
             'email': self.email,
             'fechaNacimiento': self.fechaNacimiento,
-            'telefono': self.telefono,
-            'activo': self.activo
+            'activo': self.activo,
+            'telefono': self.telefono
         }
 
     def __repr__(self):

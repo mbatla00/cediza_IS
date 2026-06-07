@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QApplication
 from src.controlador.auth_controller import AuthController
 from src.vista.ui.auth.loginVentana import LoginVentana
 
+
 def main():
     app = QApplication(sys.argv)
     app.setStyle('Fusion')

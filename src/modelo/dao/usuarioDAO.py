@@ -26,6 +26,8 @@ GET_ALL = """
                 LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
                 LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
             """
+ACTIVAR = "UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = ?"
+UPDATE_TELF = "UPDATE Usuarios SET telefono = ? WHERE nombreUsuario = ?"
 
 class UsuarioDAO:
 
@@ -284,7 +286,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = ?",
+                ACTIVAR,
                 (nombreUsuario,)
             )
             conn.commit()
@@ -305,7 +307,7 @@ class UsuarioDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "UPDATE Usuarios SET telefono = ? WHERE nombreUsuario = ?",
+                UPDATE_TELF,
                 (telefono, nombreUsuario)
             )
             conn.commit()
