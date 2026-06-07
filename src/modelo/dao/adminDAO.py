@@ -2,6 +2,11 @@ from src.modelo.conexion.Conexion import Conexion
 from mysql.connector import Error
 from src.modelo.vo import Admin
 
+"""
+Tabla de administrador:
+Tipo de usuario con todos los permisos
+"""
+
 # QUERIES
 GET_BY_USERNAME = """SELECT u.*, a.nombreUsuario as adminUser
                    FROM Usuarios u

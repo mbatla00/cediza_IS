@@ -1,6 +1,7 @@
 from .usuarioVO import Usuario
 
 class Admin(Usuario):
+    # Tipo de usuario con todos los permisos
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None,
                  email=None, fechaNacimiento=None, telefono=None, activo=None):
         super().__init__(

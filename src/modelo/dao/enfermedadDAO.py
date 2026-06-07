@@ -2,6 +2,11 @@ from src.modelo.conexion.Conexion import Conexion
 Database = Conexion
 from src.modelo.vo.enfermedadVO import Enfermedad
 
+"""
+Tabla de enfermedades:
+lista de enfermedades comunes entre los pacientes
+"""
+
 GET_ALL = "SELECT * FROM enfermedades"
 GET_BY_ID = "SELECT * FROM enfermedades WHERE id = ?"
 GET_BY_PACIENTE = """SELECT e.* FROM enfermedades e
