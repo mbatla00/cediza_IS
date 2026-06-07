@@ -2,34 +2,66 @@ import os
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtUiTools import loadUiType
 
-# Cargar el archivo .ui del paciente
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "paciente_dashboard.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "paciente_dashboard.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class PacienteDashboardVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
-        
-    def inicializar_dashboard(self, nombre_usuario: str, ya_respondio_hoy: bool):
-        """
-        Configura los datos dinámicos del panel del paciente.
-        Simula las variables que inyectabas mediante Jinja en el HTML.
-        """
-        # 1. Personalizar el saludo
-        self.lbl_saludo.setText(f"¡Hola, {nombre_usuario}! ¿Qué te gustaría hacer hoy?")
-        
-        # 2. Replicar el {% if ya_respondio_hoy %} del HTML
-        if ya_respondio_hoy:
-            self.lbl_ejercicio_desc.setText("¡Ya has completado el cuestionario de hoy!")
-            # Le podemos dar un color verde al texto usando hojas de estilo (CSS)
-            self.lbl_ejercicio_desc.setStyleSheet("color: green; font-weight: bold;")
-            
-            self.btn_comenzar_cuestionario.setText("Completado por hoy")
-            self.btn_comenzar_cuestionario.setEnabled(False) # Deshabilitar botón
+        self._controller = controlador
+        self._cargar_datos()
+        self._conectar_botones()
+        self.showMaximized()
+
+    def _conectar_botones(self):
+        self.btn_cuestionario_diario.clicked.connect(self._abrir_cuestionario)
+        self.btn_ver_historial.clicked.connect(self._abrir_historial)
+        self.btn_informacion_personal.clicked.connect(self._abrir_perfil)
+        self.btn_sesiones.clicked.connect(self._abrir_sesiones)
+        self.btn_volver.clicked.connect(self._cerrar_sesion)
+
+    def _cargar_datos(self):
+        datos = self._controller.obtener_perfil_dict()
+        if datos:
+            nombre = datos.get("nombre") or datos.get("nombreUsuario", "")
+            self.label_3.setText(f"¡Hola, {nombre}! ¿Qué te gustaría hacer hoy?")
+
+        ya_respondio = self._controller.ya_respondio_hoy()
+        if ya_respondio:
+            self.label_7.setText("¡Ya has completado el cuestionario de hoy!")
+            self.label_7.setStyleSheet("color: #198754; font-weight: bold;")
+            self.btn_cuestionario_diario.setText("Completado por hoy")
+            self.btn_cuestionario_diario.setEnabled(False)
         else:
-            self.lbl_ejercicio_desc.setText("Ayúdanos a saber cómo te encuentras hoy.")
-            self.lbl_ejercicio_desc.setStyleSheet("color: gray;")
-            
-            self.btn_comenzar_cuestionario.setText("Comenzar Cuestionario")
-            self.btn_comenzar_cuestionario.setEnabled(True) # Habilitar botón
+            self.label_7.setText("Ayúdanos a saber cómo te encuentras hoy.")
+            self.label_7.setStyleSheet("color: #6c757d; font-weight: bold;")
+            self.btn_cuestionario_diario.setText("Empezar cuestionario")
+            self.btn_cuestionario_diario.setEnabled(True)
+
+    def _abrir_cuestionario(self):
+        from src.vista.ui.paciente.cuestionarioVentana import PacienteCuestionarioVentana
+        self._cuestionario = PacienteCuestionarioVentana(self._controller)
+        self._cuestionario.show()
+
+    def _abrir_historial(self):
+        from src.vista.ui.paciente.historialVentana import PacienteHistorialVentana
+        self._historial = PacienteHistorialVentana(self._controller)
+        self._historial.show()
+
+    def _abrir_perfil(self):
+        from src.vista.ui.paciente.paciente_perfilVentana import PacientePerfilVentana
+        self._perfil = PacientePerfilVentana(self._controller)
+        self._perfil.show()
+
+    def _abrir_sesiones(self):
+        from src.vista.ui.paciente.sesionesVentana import PacienteSesionesVentana
+        self._sesiones = PacienteSesionesVentana(self._controller)
+        self._sesiones.show()
+
+    def _cerrar_sesion(self):
+        from src.vista.ui.auth.loginVentana import LoginVentana
+        from src.controlador.auth_controller import AuthController
+        self._login_window = LoginVentana(AuthController())
+        self._login_window.show()
+        self.close()

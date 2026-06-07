@@ -110,3 +110,14 @@ class AuthController:
     def esta_logueado(self) -> bool:
         """Verifica si hay un usuario logueado"""
         return self._usuario_actual is not None
+    
+
+    def get_usuario_actual_dict(self) -> dict | None:
+        """Retorna los datos del usuario actual como dict, sin exponer el VO"""
+        if not self._usuario_actual:
+            return None
+        return {
+            "nombreUsuario": self._usuario_actual.nombreUsuario,
+            "nombre": self._usuario_actual.nombre,
+            "rol": self._usuario_actual.rol
+        }

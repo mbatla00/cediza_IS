@@ -5,9 +5,7 @@ class Cuestionario:
         self._idCuestionario = idCuestionario
         self._titulo = titulo
         self._tipo = tipo
-        self._fechaAsignacion = None
-        if fechaAsignacion:
-            self.fechaAsignacion = fechaAsignacion
+        self._fechaAsignacion = fechaAsignacion
 
     @property
     def idCuestionario(self):

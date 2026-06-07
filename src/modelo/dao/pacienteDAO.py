@@ -3,6 +3,20 @@ Database = Conexion
 from src.modelo.vo import Paciente
 from mysql.connector import Error
 
+GET_ALL = """
+                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
+                FROM Pacientes p
+                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
+                WHERE u.activo = 1
+            """
+GET_BY_USER = """
+                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
+                FROM Pacientes p
+                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
+                WHERE p.nombreUsuario = ?
+            """
+CREATE = "INSERT INTO Pacientes (nombreUsuario, Tipo) VALUES (?, ?)"
+DELETE = "DELETE FROM Pacientes WHERE nombreUsuario = ?"
 
 class PacienteDAO:
 
@@ -15,12 +29,7 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("""
-                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
-                FROM Pacientes p
-                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
-                WHERE u.activo = 1
-            """) 
+            cursor.execute(GET_ALL) 
             raw_rows = cursor.fetchall()
             
             pacientes = []
@@ -59,12 +68,7 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute("""
-                SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
-                FROM Pacientes p
-                JOIN Usuarios u ON p.nombreUsuario = u.nombreUsuario
-                WHERE p.nombreUsuario = ?
-            """, (nombreUsuario,))
+            cursor.execute(GET_BY_USER, (nombreUsuario,))
             raw_row = cursor.fetchone()
             
             if raw_row:
@@ -100,8 +104,7 @@ class PacienteDAO:
 
         cursor = conn.cursor()
         try:
-            sql = "INSERT INTO Pacientes (nombreUsuario, Tipo) VALUES (?, ?)"
-            cursor.execute(sql, (paciente.nombreUsuario, paciente.tipo))
+            cursor.execute(CREATE, (paciente.nombreUsuario, paciente.tipo))
             conn.commit()
             return True
         except Error as e:
@@ -121,7 +124,7 @@ class PacienteDAO:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "DELETE FROM Pacientes WHERE nombreUsuario = ?",
+                DELETE,
                 (nombreUsuario,)
             )
             conn.commit()

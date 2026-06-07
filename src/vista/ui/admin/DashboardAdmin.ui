@@ -6,228 +6,369 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>609</height>
+    <width>781</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================
+   1. FONDO Y TEXTOS GENERALES
+========================================= */
+QMainWindow, QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+QLabel {
+    color: #2c3e50;
+    background: transparent;
+}
+
+/* =========================================
+   2. TÍTULOS PRINCIPALES
+========================================= */
+QLabel#lbl_titulo {
+    color: #0d6efd; /* Azul principal */
+    font-size: 26px;
+}
+
+QLabel#lbl_bienvenida {
+    color: #6c757d;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   3. LAS TARJETAS (QFrame)
+========================================= */
+QFrame#frame_pacientes, QFrame#frame_trabajadores, QFrame#frame_usuarios, QFrame#frame_crear_admin {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+/* =========================================
+   4. CABECERAS DE LAS TARJETAS (ESTILO OSCURO / AZUL NOCHE)
+========================================= */
+QLabel#label, QLabel#label_2, QLabel#label_4, QLabel#label_11 {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #1e293b; /* Azul marino muy oscuro, estilo &quot;Slate&quot; */
+    color: #ffffff;            /* Texto blanco brillante */
+}
+
+/* Títulos internos de las tarjetas (Admisión, Personal, etc.) */
+QLabel#label_5, QLabel#label_7, QLabel#label_9, QLabel#label_12 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #2c3e50;
+}
+
+/* =========================================
+   5. BOTONES DE LAS TARJETAS (AZUL ELÉCTRICO)
+========================================= */
+QPushButton {
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 6px;
+    padding: 10px 15px;
+}
+
+/* Agrupamos los 4 botones centrales en el azul de acción */
+QPushButton#btn_nuevo_registro, 
+QPushButton#btn_nuevo_trabajador, 
+QPushButton#btn_gestionar_usuarios, 
+QPushButton#btn_crear_admin {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Efecto al pasar el ratón por encima (se oscurece el botón) */
+QPushButton#btn_nuevo_registro:hover, 
+QPushButton#btn_nuevo_trabajador:hover, 
+QPushButton#btn_gestionar_usuarios:hover, 
+QPushButton#btn_crear_admin:hover { 
+    background-color: #0b5ed7; 
+}
+
+/* =========================================
+   6. BOTONES INFERIORES (Salir y Perfil)
+========================================= */
+/* Botón Salir (Gris) */
+QPushButton#btn_salir {
+    background-color: #6c757d; 
+    color: white;
+    padding: 8px 20px;
+}
+QPushButton#btn_salir:hover { 
+    background-color: #5a6268; 
+}
+
+/* Botón Visualizar Perfil (Verde Oscuro) */
+QPushButton#btn_visualizar_perfil {
+    background-color: #157347; 
+    color: white;
+    padding: 8px 20px;
+}
+QPushButton#btn_visualizar_perfil:hover { 
+    background-color: #146c43; 
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QTabWidget" name="dashboard">
-      <property name="tabPosition">
-       <enum>QTabWidget::TabPosition::North</enum>
-      </property>
-      <property name="tabShape">
-       <enum>QTabWidget::TabShape::Rounded</enum>
-      </property>
-      <property name="currentIndex">
-       <number>1</number>
-      </property>
-      <widget class="QWidget" name="tab">
-       <property name="font">
-        <font>
-         <kerning>true</kerning>
-        </font>
-       </property>
-       <attribute name="title">
-        <string>Crear Perfiles</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,0" columnstretch="0" columnminimumwidth="0">
-        <property name="topMargin">
-         <number>8</number>
+    <item row="3" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_salir">
+        <property name="text">
+         <string>Salir</string>
         </property>
-        <property name="bottomMargin">
-         <number>9</number>
-        </property>
-        <property name="verticalSpacing">
-         <number>4</number>
-        </property>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="btn_nuevo_trabajador">
-          <property name="text">
-           <string>Nuevo Trabajador</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="btn_nuevo_paciente">
-          <property name="text">
-           <string>Nuevo Paciente</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="btn_nuevo_admin">
-          <property name="text">
-           <string>Nuevo Administrador</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Editar usuarios</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Alta y baja de usuarios</string>
-       </attribute>
-       <widget class="QTableWidget" name="usuarios_lista">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>110</y>
-          <width>784</width>
-          <height>280</height>
-         </rect>
-        </property>
-        <column>
-         <property name="text">
-          <string>Nueva columna</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Nombre</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Rol</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Estado</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>accion</string>
-         </property>
-        </column>
        </widget>
-      </widget>
-      <widget class="QWidget" name="tab_7">
-       <attribute name="title">
-        <string>Perfil</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="1">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>TNombre completo</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>DNI</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLineEdit" name="txt_perfil_telefono"/>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="txt_perfil_dni">
-          <property name="maxLength">
-           <number>9</number>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="txt_perfil_email"/>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>Nueva contraseña</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Teléfono</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QDateEdit" name="date_perfil_nacimiento"/>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Email</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Nombre de usuario</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLineEdit" name="txt_perfil_password"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLineEdit" name="txt_perfil_usuario"/>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>TextLabel</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="txt_perfil_nombre"/>
-        </item>
-        <item row="9" column="2">
-         <widget class="QPushButton" name="btn_perfil_volver">
-          <property name="text">
-           <string>volver</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Guardar cambios</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_8">
-       <attribute name="title">
-        <string>Página</string>
-       </attribute>
-      </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_visualizar_perfil">
+        <property name="text">
+         <string>Visualizar perfil</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>72</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget_cabecera" native="true">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>150</height>
+       </size>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="0">
+        <widget class="QLabel" name="lbl_bienvenida">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Bienvenido al centro de mando</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lbl_titulo">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>80</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Panel de Gestión</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QFrame" name="frame_pacientes">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>TARJETA DE PACIENTES</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Admisión</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Registrar nuevos pacientes.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_nuevo_registro">
+           <property name="text">
+            <string>Nuevo registro de paciente</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QFrame" name="frame_trabajadores">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>TARJETA DE TRABAJADORES</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Personal</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Dar de alta a un nuevo trabajador.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_nuevo_trabajador">
+           <property name="text">
+            <string>Nuevo trabajador</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QFrame" name="frame_usuarios">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>TARJETA DE USUARIOS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Usuarios</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Gestionar trabajadores y bajas.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_gestionar_usuarios">
+           <property name="text">
+            <string>Gestionar usuarios</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QFrame" name="frame_crear_admin">
+        <property name="frameShape">
+         <enum>QFrame::Shape::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>CREAR ADMINISTRADOR</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Crear nuevo administrador</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_crear_admin">
+           <property name="text">
+            <string>Crear administrador</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>795</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -3,7 +3,7 @@ Database = Conexion
 from src.modelo.factories import UsuarioFactory
 import unicodedata
 import re
-from mysql.connector import Error
+
 
 GET_BY_USER = """
                 SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador
@@ -26,6 +26,8 @@ GET_ALL = """
                 LEFT JOIN Pacientes p ON u.nombreUsuario = p.nombreUsuario
                 LEFT JOIN Trabajadores t ON u.nombreUsuario = t.nombreUsuario
             """
+ACTIVAR = "UPDATE Usuarios SET activo = 1 WHERE nombreUsuario = ?"
+UPDATE_TELF = "UPDATE Usuarios SET telefono = ? WHERE nombreUsuario = ?"
 
 class UsuarioDAO:
 
@@ -49,13 +51,11 @@ class UsuarioDAO:
                     row['Tipo'] = row['TipoTrabajador']
                 
                 usuario_obj = UsuarioFactory.crear(row)
-                #if usuario_obj and 'email' in row:
-                #    usuario_obj.email = row.get('email')
                 
                 return usuario_obj
             return None
             
-        except Error as e:
+        except Exception as e:
             print(f"Error en get_by_nombreUsuario: {e}")
             return None
         finally:
@@ -77,12 +77,10 @@ class UsuarioDAO:
             row = Database.row_to_dict(cursor, cursor.fetchone())
             if row:
                 usuario_obj = UsuarioFactory.crear(row)
-                if usuario_obj and ('email' in row or 'Email' in row):
-                    usuario_obj.email = row.get('email') or row.get('Email')
                 return usuario_obj
                 
             return None
-        except Error as e:
+        except Exception as e:
             print(f"Error en get_by_email: {e}")
             return None
         finally:
@@ -104,12 +102,10 @@ class UsuarioDAO:
             row = Database.row_to_dict(cursor, cursor.fetchone())
             if row:
                 usuario_obj = UsuarioFactory.crear(row)
-                if usuario_obj and ('email' in row or 'Email' in row):
-                    usuario_obj.email = row.get('email') or row.get('Email')
                 return usuario_obj
                 
             return None
-        except Error as e:
+        except Exception as e:
             print(f"Error en get_by_dni: {e}")
             return None
         finally:
@@ -159,7 +155,7 @@ class UsuarioDAO:
             ))
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f'Error en create usuario: {e}')
             conn.rollback()
             return False
@@ -184,7 +180,7 @@ class UsuarioDAO:
             ))
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en update usuario: {e}")
             conn.rollback()
             return False
@@ -206,7 +202,7 @@ class UsuarioDAO:
             )
             conn.commit()
             return True
-        except Error as e:
+        except Exception as e:
             print(f"Error en delete usuario: {e}")
             conn.rollback()
             return False
@@ -255,7 +251,7 @@ class UsuarioDAO:
                 else:
                     estado_corregido = 0
                 
-                # ← El activo se añade a row ANTES de crear el objeto
+                # El activo se añade a row ANTES de crear el objeto
                 row['activo'] = estado_corregido
                 row['Activo'] = estado_corregido
 
@@ -278,7 +274,6 @@ class UsuarioDAO:
                     # Crear el objeto CON el activo ya incluido en row
                     usuario_objeto = UsuarioFactory.crear(row)
                     if usuario_objeto:
-                        # ← NO hacer usuario_objeto.activo = estado_corregido
                         usuarios.append(usuario_objeto)
                 except Exception as e:
                     print(f"Alerta: Saltando usuario '{row.get('nombreUsuario') or row.get('nombreusuario')}'. Motivo: {e}")
@@ -291,5 +286,45 @@ class UsuarioDAO:
             return []
         finally:
             cursor.close()
-                
-            
+    
+    @staticmethod
+    def activar(nombreUsuario):
+        db = Conexion()
+        conn = db.get_connection()
+        if conn is None:
+            return False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                ACTIVAR,
+                (nombreUsuario,)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error en activar usuario: {e}")
+            conn.rollback()
+            return False
+        finally:
+            cursor.close()
+
+    @staticmethod
+    def update_telefono(nombreUsuario, telefono):
+        db = Conexion()
+        conn = db.get_connection()
+        if conn is None:
+            return False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                UPDATE_TELF,
+                (telefono, nombreUsuario)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error en update_telefono: {e}")
+            conn.rollback()
+            return False
+        finally:
+            cursor.close()

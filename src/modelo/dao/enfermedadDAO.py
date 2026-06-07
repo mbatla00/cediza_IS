@@ -101,3 +101,5 @@ class EnfermedadDAO:
             return False
         finally:
             cursor.close()
+
+  

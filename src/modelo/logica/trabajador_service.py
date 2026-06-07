@@ -8,47 +8,46 @@ from .usuario_service import UsuarioService
 
 class TrabajadorService:
     """Servicio para operaciones CRUD de trabajadores"""
-    
+
     @staticmethod
     def listar_todos() -> list:
         return TrabajadorDAO.get_all()
-    
+
     @staticmethod
     def obtener_por_nombre(nombre_usuario: str):
         return TrabajadorDAO.get_by_nombreUsuario(nombre_usuario)
-    
+
     @staticmethod
     def crear(datos: dict) -> tuple[bool, str, Trabajador | None]:
         if not datos.get('nombre_completo') or not datos.get('nombre_usuario') or not datos.get('dni'):
             return False, "Nombre completo, usuario y DNI son obligatorios", None
-        
+
         if not UsuarioService.validar_dni(datos['dni']):
             return False, "DNI no válido", None
-        
+
         if UsuarioDAO.get_by_nombreUsuario(datos['nombre_usuario']):
             return False, f"El nombre de usuario {datos['nombre_usuario']} ya existe", None
-        
+
         if UsuarioDAO.get_by_dni(datos['dni']):
             return False, f"Ya existe un usuario con DNI {datos['dni']}", None
-        
+
         try:
             nuevo_usuario = Trabajador(
                 nombreUsuario=datos['nombre_usuario'],
                 Nombre=datos['nombre_completo'],
                 DNI=datos['dni'],
-                Rol='trabajador',
                 password=datos.get('password', datos['dni']),
                 Tipo=datos.get('tipo')
             )
-            
+
             if not UsuarioDAO.create(nuevo_usuario):
                 return False, "Error al crear la cuenta de usuario", None
-            
+
             if not TrabajadorDAO.create(nuevo_usuario):
                 return False, "Error al registrar el trabajador", None
-            
+
             tipo = datos.get('tipo')
-            
+
             if tipo == 'auxiliar':
                 auxiliar = Auxiliar(
                     nombreUsuario=datos['nombre_usuario'],
@@ -59,7 +58,7 @@ class TrabajadorService:
                 )
                 if not AuxiliarDAO.create(auxiliar):
                     return False, "Error al registrar el auxiliar", None
-                    
+
             elif tipo == 'coordinador':
                 coordinador = Coordinador(
                     nombreUsuario=datos['nombre_usuario'],
@@ -70,7 +69,7 @@ class TrabajadorService:
                 )
                 if not CoordinadorDAO.create(coordinador):
                     return False, "Error al registrar el coordinador", None
-                    
+
             elif tipo == 'especialista':
                 especialista = Especialista(
                     nombreUsuario=datos['nombre_usuario'],
@@ -82,8 +81,35 @@ class TrabajadorService:
                 )
                 if not EspecialistaDAO.create(especialista):
                     return False, "Error al registrar el especialista", None
-            
+
             return True, f"Trabajador {datos['nombre_completo']} creado correctamente", nuevo_usuario
-            
+
         except Exception as e:
             return False, f"Error crítico: {str(e)}", None
+
+    @staticmethod
+    def actualizar(trabajador, datos: dict) -> tuple[bool, str]:
+        if 'dni' in datos and not UsuarioService.validar_dni(datos['dni']):
+            return False, "DNI no válido"
+
+        try:
+            # Se crea un nuevo VO con los datos actualizados en lugar de mutar el existente
+            trabajador_actualizado = Trabajador(
+                nombreUsuario=trabajador.nombreUsuario,
+                Nombre=datos.get('nombre', trabajador.nombre),
+                DNI=datos.get('dni', trabajador.dni),
+                password=datos.get('password', trabajador.password) if datos.get('password') else trabajador.password,
+                Tipo=getattr(trabajador, 'tipo', None)
+            )
+            # Actualizar email si viene en datos (atributo heredado de Usuario)
+            if 'email' in datos:
+                trabajador_actualizado._email = datos['email']
+            if 'fechaNacimiento' in datos:
+                trabajador_actualizado._fechaNacimiento = datos['fechaNacimiento']
+
+            exito = UsuarioDAO.update(trabajador_actualizado)
+            if exito:
+                return True, "Trabajador actualizado correctamente"
+            return False, "Error al actualizar"
+        except Exception as e:
+            return False, f"Error: {str(e)}"

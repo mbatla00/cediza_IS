@@ -7,13 +7,11 @@ class EvaluacionProfesional:
         self._idEvaluacion = idEvaluacion
         self._paciente = Paciente
         self._trabajador = Trabajador
-        self._fecha = None
+        self._fecha = fecha
         self._movilidad = movilidad
         self._estadoEmocional = estadoEmocional
         self._apetito = apetito
         self._observaciones = observaciones
-        if fecha:
-            self.fecha = fecha
 
     @property
     def idEvaluacion(self):
@@ -58,6 +56,3 @@ class EvaluacionProfesional:
             'apetito': self.apetito,
             'observaciones': self.observaciones
         }
-
-    def __repr__(self):
-        return f"<EvaluacionProfesional id={self.idEvaluacion} paciente={self.paciente}>"
