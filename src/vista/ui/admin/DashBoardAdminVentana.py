@@ -6,12 +6,12 @@ ui_path = os.path.join(os.path.dirname(__file__), "dashboardAdmin.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
-    # AÑADIDO: Recibimos el usuario_actual (el username) en el constructor
-    def __init__(self, admin_controller, usuario_actual):
+    def __init__(self, admin_controller, auth_controller, usuario_actual):
         super().__init__()
         self.setupUi(self)
         self._controller = admin_controller
-        self._usuario_actual = usuario_actual  # Lo guardamos para cuando abra el perfil
+        self._auth_controller = auth_controller
+        self._usuario_actual = usuario_actual
         self._conectar_botones()
 
     def _conectar_botones(self):
@@ -23,26 +23,24 @@ class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
         self.btn_crear_admin.clicked.connect(self._abrir_crear_admin)
 
     def set_nombre_administrador(self, nombre):
-        self.lbl_bienvenida.setText(f"Bienvenido al centro de mando, {nombre}.")
+        self.lbl_bienvenida.setText(f"Bienvenid@, {nombre}")
 
     def _abrir_perfil(self):
         from src.vista.ui.admin.admin_perfilVentana import AdminPerfilVentana
-        # Le pasamos el controlador Y el usuario actual
         self._perfil = AdminPerfilVentana(self._controller, self._usuario_actual)
         self._perfil.show()
 
     def _abrir_form_paciente(self):
         from src.vista.ui.admin.paciente_formVentana import CrearPacienteVentana
         self._form_pac = CrearPacienteVentana(self._controller)
-        self._form_pac.exec()  # Usamos exec() para que sea una ventana modal
+        self._form_pac.exec()
 
     def _abrir_form_trabajador(self):
         from src.vista.ui.admin.trabajador_formVentana import NuevoTrabajadorVentana
         self._form_trab = NuevoTrabajadorVentana(self._controller)
-        self._form_trab.exec() # Usamos exec() para que sea una ventana modal
+        self._form_trab.exec()
 
     def _abrir_usuarios(self):
-        # Añadimos "Admin" al nombre de la clase para que coincida exactamente
         from src.vista.ui.admin.editar_usuarioVentana import AdminEditarUsuarioVentana
         self._usuarios = AdminEditarUsuarioVentana(self._controller)
         self._usuarios.show()
@@ -53,8 +51,8 @@ class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
         self._crear_admin.show()
 
     def _cerrar_sesion(self):
+        self._auth_controller.logout()
         from src.vista.ui.auth.loginVentana import LoginVentana
-        from src.controlador.auth_controller import AuthController
-        self._login = LoginVentana(AuthController())
+        self._login = LoginVentana(self._auth_controller)
         self._login.show()
         self.close()

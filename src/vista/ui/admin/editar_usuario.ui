@@ -6,25 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>748</width>
-    <height>707</height>
+    <width>856</width>
+    <height>1608</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* 1. Fondo de la ventana (Gris clarito) */
-QWidget#centralwidget {
+   <string notr="true">/* =========================================
+   1. FONDO DE LA VENTANA (Gris clarito web)
+========================================= */
+QMainWindow, QWidget#centralwidget {
     background-color: #f4f6f8;
 }
 
-/* NUEVO: Color oscuro para todas las etiquetas de texto (Nombre, Teléfono, etc.) */
-QLabel {
-    color: #2c3e50;
-}
-
-/* 2. Ocultar los bordes feos del ScrollArea para que parezca web */
+/* Ocultar los bordes del ScrollArea y hacerlo transparente */
 QScrollArea {
     border: none;
     background-color: transparent;
@@ -33,60 +30,140 @@ QWidget#scrollAreaWidgetContents {
     background-color: transparent;
 }
 
-/* 3. El efecto &quot;Tarjeta Blanca&quot; para los bloques de datos */
+/* TÍTULO PRINCIPAL DE LA VENTANA (Editar Usuario) */
+QLabel#label_7 {
+    color: #2c3e50;
+    font-size: 24px;       
+    font-weight: bold;     
+    padding-bottom: 5px;
+    background-color: transparent;
+}
+
+/* ETIQUETAS DE LOS CAMPOS (Nombre, Teléfono, etc.) */
+QLabel {
+    color: #2c3e50;
+    font-size: 14px;       
+    font-weight: bold;     /* Texto de los campos en negrita limpia */
+    background-color: transparent;
+}
+
+/* =========================================
+   2. EL EFECTO &quot;TARJETA BLANCA&quot; (QGroupBox)
+========================================= */
 QGroupBox {
     background-color: #ffffff;
     border: 1px solid #dee2e6;
     border-radius: 8px;
     margin-top: 25px; /* Deja espacio para que el título respire */
-    padding: 20px;
+    padding-top: 35px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
 }
 
-/* 4. Título de los bloques (Ej: &quot;Datos Comunes&quot;) */
+/* TÍTULO NORMAL DE LOS BLOQUES (Sin recuadro azul) */
 QGroupBox::title {
     subcontrol-origin: margin;
+    subcontrol-position: top left;
     left: 15px;
+    top: 5px;
     padding: 0 5px;
-    color: #0d6efd; /* Azul principal */
+    color: #0d6efd; /* Tu azul principal para las letras */
     font-size: 16px;
     font-weight: bold;
+    background-color: #ffffff; /* Fondo blanco para cortar la línea del borde */
 }
 
-/* 5. Cajas de texto, fechas y desplegables */
+/* =========================================
+   3. CAJAS DE TEXTO, FECHAS Y DESPLEGABLES
+========================================= */
 QLineEdit, QDateEdit, QComboBox {
     border: 1px solid #adb5bd;
     border-radius: 6px;
-    padding: 10px;
+    padding: 8px 10px;
     background-color: #f8f9fa;
-    font-size: 14px;
+    font-size: 13px;
     color: #2c3e50;
-    min-height: 20px;
-    selection-background-color: #0d6efd; /* Color azul al seleccionar texto */
-    selection-color: #ffffff;            /* Letra blanca al seleccionar texto */
+    min-height: 22px;
+    selection-background-color: #0d6efd; 
+    selection-color: #ffffff;            
 }
 
-/* Efecto al escribir o seleccionar */
+/* Efecto Focus al hacer click o escribir */
 QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
     border: 2px solid #0d6efd;
     background-color: #ffffff;
 }
 
-/* 🌟 SOLUCIÓN AL DESPLEGABLE OSCURO DEL COMBOBOX 🌟 */
+/* Campo deshabilitado / Solo lectura (Nombre de Usuario) */
+QLineEdit:read-only {
+    background-color: #e9ecef;
+    color: #6c757d;
+    border: 1px solid #ced4da;
+}
+
+/* Solución al desplegable oscuro del ComboBox */
 QComboBox QAbstractItemView {
     background-color: #ffffff;
-    background: #ffffff;
     color: #2c3e50;
     border: 1px solid #dee2e6;
-    selection-background-color: #0d6efd; /* Azul al pasar el ratón por los ítems */
+    selection-background-color: #0d6efd; 
     selection-color: #ffffff;
 }
 
-/* 6. Botones Fijos de abajo */
+/* =========================================
+   4. 🌟 SOLUCIÓN AL FONDO OSCURO EN TABLAS Y LISTAS 🌟
+========================================= */
+QListWidget, QTableWidget, QListView, QTableView {
+    background-color: #ffffff !important;
+    alternate-background-color: #ffffff !important; 
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #2c3e50;
+    min-height: 140px; 
+}
+
+/* Esta regla quita el fondo gris oscuro de la zona vacía de la tabla/lista */
+QAbstractScrollArea::viewport, 
+QListWidget::viewport, 
+QTableWidget::viewport {
+    background-color: #ffffff !important;
+}
+
+/* Forzar que las celdas internas de la tabla tengan fondo blanco puro */
+QTableWidget::item {
+    background-color: #ffffff !important;
+    color: #2c3e50;
+}
+
+/* Cabeceras de la tabla (Nombre, Parentesco, Teléfono) */
+QHeaderView::section {
+    background-color: #ffffff !important; 
+    color: #2c3e50;
+    font-size: 13px;       
+    font-weight: bold;     
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid #dee2e6; 
+    border-right: 1px solid #e9ecef;
+}
+
+QTableCornerButton::section {
+    background-color: #ffffff !important;
+    border: none;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* =========================================
+   5. BOTONES DE ACCIÓN PRINCIPALES (Abajo)
+========================================= */
 QPushButton#btn_guardar {
     background-color: #0d6efd;
     color: white;
+    border: none;
     border-radius: 6px;
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-weight: bold;
     font-size: 14px;
 }
@@ -95,29 +172,35 @@ QPushButton#btn_guardar:hover { background-color: #0b5ed7; }
 QPushButton#btn_cancelar {
     background-color: #6c757d;
     color: white;
+    border: none;
     border-radius: 6px;
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-weight: bold;
     font-size: 14px;
 }
 QPushButton#btn_cancelar:hover { background-color: #5a6268; }
 
-/* 7. Botones pequeñitos de añadir (+) en el paciente */
-QPushButton#btn_anadir_contacto, QPushButton#btn_anadir_enfermedad {
+/* =========================================
+   6. BOTONES SECUNDARIOS (+ Añadir)
+========================================= */
+QPushButton#btn_anadir_contacto, 
+QPushButton#btn_anadir_enfermedad {
     background-color: #e9ecef;
     color: #0d6efd;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    padding: 8px;
+    padding: 8px 16px;
     font-weight: bold;
+    font-size: 13px;
 }
-QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
+QPushButton#btn_anadir_contacto:hover, 
+QPushButton#btn_anadir_enfermedad:hover {
     background-color: #dee2e6;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -127,12 +210,12 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>713</width>
-         <height>958</height>
+         <width>838</width>
+         <height>1569</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
          <widget class="QLabel" name="label_7">
           <property name="maximumSize">
            <size>
@@ -142,7 +225,7 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
           </property>
           <property name="font">
            <font>
-            <pointsize>16</pointsize>
+            <pointsize>-1</pointsize>
             <bold>true</bold>
            </font>
           </property>
@@ -151,323 +234,423 @@ QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QGroupBox" name="box_datos_comunes">
-          <property name="title">
-           <string>Datos Comunes</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="1" column="0">
-            <widget class="QLineEdit" name="txt_nombre"/>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Número de teléfono</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Contraseña</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="txt_email"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Nombre</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Email</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLineEdit" name="txt_telefono"/>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="txt_password"/>
-           </item>
-           <item row="3" column="2">
-            <widget class="QDateEdit" name="date_nacimiento"/>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Fehca de naciemiento</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>DNI</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="txt_dni">
-             <property name="maxLength">
-              <number>9</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+        <item row="3" column="0">
+         <widget class="QComboBox" name="cmb_buscador_usuario"/>
         </item>
-        <item>
-         <widget class="QGroupBox" name="box_rol_paciente">
-          <property name="title">
-           <string>Datos del Paciente</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="1" column="1" colspan="2">
-            <widget class="QWidget" name="widget_enfermedades_layout" native="true">
-             <layout class="QGridLayout" name="gridLayout_5"/>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Enfermedades</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QPushButton" name="btn_anadir_enfermedad">
-             <property name="text">
-              <string>Añadir</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Tipo</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="enferjadad">
-             <property name="text">
-              <string>Añadir enfermedad</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="txt_otra_enfermedad"/>
-           </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QComboBox" name="cmb_tipo_paciente">
+        <item row="4" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QGroupBox" name="box_datos_comunes">
+            <property name="title">
+             <string>Datos Comunes</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_5">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>Nombre</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Email</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>DNI</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLineEdit" name="txt_nombre"/>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="txt_email"/>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="txt_dni">
+                   <property name="maxLength">
+                    <number>9</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_4">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Número de teléfono</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Contraseña</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>Fehca de naciemiento</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLineEdit" name="txt_telefono"/>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="txt_password"/>
+                 </item>
+                 <item>
+                  <widget class="QDateEdit" name="date_nacimiento"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item row="2" column="0">
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Nombre de Usuario</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="text_Usuario">
+                 <property name="readOnly">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="box_rol_paciente">
+            <property name="title">
+             <string>Datos del Paciente</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <property name="text">
-               <string>Público</string>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>Tipo</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="cmb_tipo_paciente">
+                 <item>
+                  <property name="text">
+                   <string>Público</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Privado</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <property name="text">
-               <string>Privado</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>Contactos de emergencia</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QWidget" name="widget_contactos_container" native="true">
-             <layout class="QVBoxLayout" name="verticalLayout_2"/>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QPushButton" name="btn_anadir_contacto">
-             <property name="text">
-              <string>Añadir contacto</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="box_rol_trabajador">
-          <property name="title">
-           <string>Datos del Trabajador</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="1">
-            <widget class="QComboBox" name="cmb_tipo_trabajador">
-             <item>
-              <property name="text">
-               <string>Auxiliar</string>
-              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Enfermedades</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QListWidget" name="lista_enfermedades"/>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QLabel" name="enferjadad">
+                   <property name="text">
+                    <string>Añadir enfermedad</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="txt_otra_enfermedad"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_anadir_enfermedad">
+                   <property name="text">
+                    <string>Añadir enfermedad</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
              <item>
-              <property name="text">
-               <string>Coordinador</string>
-              </property>
+              <widget class="QWidget" name="widget_enfermedades_layout" native="true"/>
              </item>
              <item>
-              <property name="text">
-               <string>Especialista</string>
-              </property>
+              <layout class="QVBoxLayout" name="verticalLayout">
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Contactos de emergencia</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="enferjadad_2">
+                   <property name="text">
+                    <string>Nuevo Contacto</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QTableWidget" name="tableWidget">
+                   <column>
+                    <property name="text">
+                     <string>Nombre</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Parentesco</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Teléfono</string>
+                    </property>
+                   </column>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btn_anadir_contacto">
+                   <property name="text">
+                    <string>Añadir contacto</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_11">
-             <property name="text">
-              <string>Tipo de trabajador</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QWidget" name="widget_campos_auxiliar" native="true">
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
+             <item>
+              <widget class="QWidget" name="widget_contactos_container" native="true"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="box_rol_trabajador">
+            <property name="title">
+             <string>Datos del Trabajador</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="1" column="0">
+              <widget class="QComboBox" name="cmb_tipo_trabajador">
+               <item>
+                <property name="text">
+                 <string>Auxiliar</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Coordinador</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Especialista</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="2" column="0" rowspan="2">
+              <widget class="QWidget" name="widget_campos_auxiliar" native="true">
                <widget class="QLabel" name="label_12">
+                <property name="geometry">
+                 <rect>
+                  <x>60</x>
+                  <y>40</y>
+                  <width>40</width>
+                  <height>16</height>
+                 </rect>
+                </property>
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>Horario</string>
                 </property>
                </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="cmb_horario_auxiliar">
-                <item>
-                 <property name="text">
-                  <string>Mañana</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Tarde</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
-            <widget class="QWidget" name="widget" native="true">
-             <layout class="QGridLayout" name="gridLayout_7">
-              <item row="0" column="0">
-               <widget class="QLabel" name="widget_campos_especialista">
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="txt_horario_especialista"/>
+             </item>
+             <item row="4" column="0">
+              <widget class="QComboBox" name="cmb_horario_auxiliar">
+               <item>
                 <property name="text">
-                 <string>Especialidad</string>
+                 <string>Mañana</string>
                 </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="txt_especialidad"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_13">
+               </item>
+               <item>
                 <property name="text">
-                 <string>Horario especialista</string>
+                 <string>Tarde</string>
                 </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="txt_horario_especialista"/>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="box_rol_admin">
-          <property name="title">
-           <string>Datos del Admin</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="1" column="0">
-            <widget class="QWidget" name="widget_rol_admin" native="true"/>
-           </item>
-           <item row="0" column="0">
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="1" rowspan="2">
+              <widget class="QLineEdit" name="txt_especialidad"/>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="widget_campos_especialista">
+               <property name="text">
+                <string>Especialidad</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Horario especialista</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Tipo de trabajador</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="box_rol_admin">
+            <property name="title">
+             <string>Datos del Admin</string>
+            </property>
             <widget class="QLabel" name="label_14">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>55</y>
+               <width>421</width>
+               <height>16</height>
+              </rect>
+             </property>
              <property name="text">
               <string>Los administradores solo tienen datos comunes.</string>
              </property>
             </widget>
-           </item>
-          </layout>
-         </widget>
+            <widget class="QWidget" name="widget_rol_admin" native="true">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>77</y>
+               <width>703</width>
+               <height>16</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>48</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="btn_guardar">
+              <property name="text">
+               <string>Guardar Cambios</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_cancelar">
+              <property name="text">
+               <string>Cancelar</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>Seleccionar usuario a editar:</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>44</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
-    <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="btn_guardar">
-        <property name="text">
-         <string>Guardar Cambios</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_cancelar">
-        <property name="text">
-         <string>Cancelar</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>748</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

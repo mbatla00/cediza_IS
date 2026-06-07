@@ -25,11 +25,14 @@ class CrearPacienteVentana(QDialog, Ui_Dialog):
             self.text_Enfermedad.clear()
 
     def anadir_contacto(self):
-        columna_actual = self.Familiares.columnCount()
-        self.Familiares.insertColumn(columna_actual)
-        self.Familiares.setItem(0, columna_actual, QTableWidgetItem(""))
-        self.Familiares.setItem(1, columna_actual, QTableWidgetItem(""))
-        self.Familiares.setItem(2, columna_actual, QTableWidgetItem(""))
+        # AHORA AÑADE UNA FILA HACIA ABAJO
+        fila_actual = self.Familiares.rowCount()
+        self.Familiares.insertRow(fila_actual)
+        
+        # Rellena la fila nueva con casillas en blanco para que puedas escribir
+        self.Familiares.setItem(fila_actual, 0, QTableWidgetItem(""))
+        self.Familiares.setItem(fila_actual, 1, QTableWidgetItem(""))
+        self.Familiares.setItem(fila_actual, 2, QTableWidgetItem(""))
 
     def obtener_datos_formulario(self) -> dict:
         datos = {
@@ -38,10 +41,10 @@ class CrearPacienteVentana(QDialog, Ui_Dialog):
             "dni": self.text_DNI.text().strip(),
             "fechaNacimiento": self.date_Nacimiento.date().toString("yyyy-MM-dd"),
             "telefono": self.text_Telefono.text().strip(),
-            "email": self.text_Email.text().strip(),
+            "email": self.text_email.text().strip(),
             "password": self.text_password.text().strip(),
-            "tipoPaciente": self.combo_tipo.currentText().strip(),
-            "cuentaBancaria": self.text_Cuenta_Bancaria.text().strip()
+            "tipoPaciente": self.tipo.currentText().strip(),
+            "cuentaBancaria": self.text_Cuenta_Bancaria.text().strip() if hasattr(self, 'text_Cuenta_Bancaria') else ""
         }
         
         enfermedades = []
@@ -50,11 +53,13 @@ class CrearPacienteVentana(QDialog, Ui_Dialog):
         datos["enfermedades"] = enfermedades
 
         familiares = []
-        for col in range(self.Familiares.columnCount()):
-            nombre_fam = self.Familiares.item(0, col).text().strip() if self.Familiares.item(0, col) else ""
-            parentesco = self.Familiares.item(1, col).text().strip() if self.Familiares.item(1, col) else ""
-            tlf_fam = self.Familiares.item(2, col).text().strip() if self.Familiares.item(2, col) else ""
-            if nombre_fam:
+        # AHORA LEE LOS DATOS RECORRIENDO LAS FILAS HACIA ABAJO
+        for fila in range(self.Familiares.rowCount()):
+            nombre_fam = self.Familiares.item(fila, 0).text().strip() if self.Familiares.item(fila, 0) else ""
+            parentesco = self.Familiares.item(fila, 1).text().strip() if self.Familiares.item(fila, 1) else ""
+            tlf_fam = self.Familiares.item(fila, 2).text().strip() if self.Familiares.item(fila, 2) else ""
+            
+            if nombre_fam: # Solo lo añade si has escrito un nombre
                 familiares.append({"nombre": nombre_fam, "parentesco": parentesco, "telefono": tlf_fam})
         datos["familiares"] = familiares
         
@@ -63,12 +68,11 @@ class CrearPacienteVentana(QDialog, Ui_Dialog):
     def procesar_guardado(self):
         raw_datos = self.obtener_datos_formulario()
         
-        # El controlador mapea el tipo de paciente y la cuenta bancaria
-        exito_p, msg_p, nuevo_paciente = self.controlador.agregar_paciente(raw_datos)
+        # El controlador ahora nos devuelve directamente el string de username_creado
+        exito_p, msg_p, username_creado = self.controlador.agregar_paciente(raw_datos)
         
-        if exito_p and nuevo_paciente:
-            username_creado = nuevo_paciente.nombreUsuario
-            
+        if exito_p and username_creado:
+            # Usamos la string devuelta sin tener que acceder a propiedades de un objeto
             for enf in raw_datos["enfermedades"]:
                 _, _, enf_id = self.controlador.agregar_enfermedad(enf)
                 if enf_id:

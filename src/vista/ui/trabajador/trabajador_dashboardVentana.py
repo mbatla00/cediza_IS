@@ -1,6 +1,7 @@
 import os
 from PySide6.QtWidgets import QMainWindow, QHeaderView, QTableWidgetItem, QAbstractItemView, QMessageBox
 from PySide6.QtUiTools import loadUiType
+from PySide6.QtCore import Qt
 
 ui_path = os.path.join(os.path.dirname(__file__), "trabajador_dashboard.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
@@ -17,6 +18,7 @@ class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
     def _configurar_tabla(self):
         header = self.tabla_pacientes.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        header.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
         self.tabla_pacientes.verticalHeader().setVisible(False)
         self.tabla_pacientes.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tabla_pacientes.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -28,29 +30,37 @@ class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
         self.btn_evaluar.clicked.connect(self._abrir_evaluacion)
         self.btn_anadir_nota.clicked.connect(self._abrir_nota)
 
-        # Mostrar u ocultar tarjeta especialista
+        # Se normaliza a minúsculas para evitar fallos de mayúsculas/minúsculas desde la BD
         tipo = self._controller.obtener_tipo_trabajador()
-        self.especialista.setVisible(tipo == 'especialista')
-        if tipo == 'especialista':
+        self.especialista.setVisible(tipo.lower() == 'especialista' if tipo else False)
+        if tipo and tipo.lower() == 'especialista':
             self.btn_especialista.clicked.connect(self._abrir_dashboard_especialista)
 
     def _cargar_datos(self):
-        pacientes = self._controller.listar_pacientes()
+        # AHORA utilizamos el método dict del controlador
+        pacientes = self._controller.listar_pacientes_dict()
         self.tabla_pacientes.setRowCount(0)
         self.cmb_evaluar_paciente.clear()
         self.cmb_nota_paciente.clear()
 
-        for i, p in enumerate(pacientes):
-            # Tabla
+        for i, p in enumerate(pacientes or []):
             self.tabla_pacientes.insertRow(i)
-            self.tabla_pacientes.setItem(i, 0, QTableWidgetItem(getattr(p, 'nombreUsuario', '')))
-            self.tabla_pacientes.setItem(i, 1, QTableWidgetItem(getattr(p, 'nombre', '')))
-            self.tabla_pacientes.setItem(i, 2, QTableWidgetItem(getattr(p, 'dni', '')))
-            self.tabla_pacientes.setItem(i, 3, QTableWidgetItem(getattr(p, 'tipo', '')))
 
-            # ComboBoxes
-            nombre = getattr(p, 'nombre', '')
-            usuario = getattr(p, 'nombreUsuario', '')
+            # Reemplazamos getattr por el método seguro .get() de los diccionarios
+            datos = [
+                p.get('nombreUsuario', ''),
+                p.get('nombre', ''),
+                p.get('tipo', ''),
+                p.get('dni', ''),
+            ]
+            for col, valor in enumerate(datos):
+                item = QTableWidgetItem(str(valor))
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.tabla_pacientes.setItem(i, col, item)
+
+            # Rellenamos los ComboBoxes de las tarjetas superiores
+            nombre = p.get('nombre', '')
+            usuario = p.get('nombreUsuario', '')
             self.cmb_evaluar_paciente.addItem(nombre, usuario)
             self.cmb_nota_paciente.addItem(nombre, usuario)
 

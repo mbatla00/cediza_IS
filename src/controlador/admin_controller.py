@@ -46,8 +46,11 @@ class AdminController:
         """Obtiene un usuario por su nombre"""
         return self._usuario_service.obtener_por_nombre(nombre_usuario)
     
-    def actualizar_usuario(self, usuario: Usuario, nuevos_datos: dict) -> tuple[bool, str]:
-        """Actualiza los datos de un usuario"""
+    def actualizar_usuario(self, nombre_usuario: str, nuevos_datos: dict) -> tuple[bool, str]:
+        """Actualiza los datos de un usuario buscándolo por su nombre"""
+        usuario = self._usuario_service.obtener_por_nombre(nombre_usuario)
+        if not usuario:
+            return False, "Usuario no encontrado"
         return self._usuario_service.actualizar(usuario, nuevos_datos)
     
     def cambiar_estado_usuario(self, nombre_usuario: str, desactivar: bool) -> tuple[bool, str]:
@@ -137,7 +140,7 @@ class AdminController:
     # MÉTODOS PUENTE PARA LAS VISTAS (MVC ESTRICTO)
     # ============================================================
     
-    def agregar_paciente(self, datos: dict) -> tuple[bool, str, object | None]:
+    def agregar_paciente(self, datos: dict) -> tuple[bool, str, str | None]:
         tipo_raw = datos.get('tipoPaciente', '').lower()
         tipo = 'publico' if 'pub' in tipo_raw else 'privado'
         
@@ -149,15 +152,12 @@ class AdminController:
             'telefono': datos.get('telefono'),
             'email': datos.get('email'),
             'password': datos.get('password') or datos.get('dni'),
-            'tipo_paciente': tipo,
+            'tipo': tipo,
             'cuenta': datos.get('cuentaBancaria')
         }
-        if tipo == "publico":
-            datos_servicio["seguridad_social"] = datos.get('cuentaBancaria')
-        else:
-            datos_servicio["tarjeta_credito"] = datos.get('cuentaBancaria')
             
-        return self._paciente_service.crear(datos_servicio)
+        exito, msg, paciente = self._paciente_service.crear(datos_servicio)
+        return exito, msg, paciente.nombreUsuario if paciente else None
 
     def agregar_trabajador(self, datos: dict) -> tuple[bool, str, object | None]:
         tipo_baja = datos.get('tipo', '').lower()
@@ -168,7 +168,7 @@ class AdminController:
             'telefono': datos.get('telefono') or None,
             'email': datos.get('email') or None,
             'password': datos.get('password') or datos.get('dni'),
-            'tipo_trabajador': tipo_baja,
+            'tipo': tipo_baja, 
             'especialidad': datos.get('especialidad', '') if tipo_baja == 'especialista' else '',
             'horario': 'Mañana/Tarde',
             'info_interes': ''

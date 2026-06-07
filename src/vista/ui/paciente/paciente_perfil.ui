@@ -6,206 +6,475 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>823</width>
-    <height>576</height>
+    <width>752</width>
+    <height>802</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================
+   1. FONDO GENERAL DE LA VENTANA
+========================================= */
+QMainWindow, QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+/* =========================================
+   2. TÍTULOS PRINCIPALES (Encabezado superior)
+========================================= */
+QLabel#label {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #084298 !important; 
+    font-size: 28px;
+    font-weight: bold;
+    background-color: transparent;
+}
+
+QLabel#label_2 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #344767 !important;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: transparent;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   3. ESTILO DE LAS TARJETAS (QFrame)
+========================================= */
+QFrame {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+QFrame#frame_emergencia {
+    padding: 0px;
+    border-radius: 4px;
+}
+
+QFrame#frame_emergencia QTableWidget {
+    margin: 0px;
+    padding: 0px;
+    border-radius: 4px;
+}
+
+/* =========================================
+   4. LABELS (Cajas Azules y Letras Blancas)
+========================================= */
+QLabel {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #084298;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+}
+
+QLabel[objectName^=&quot;lbl_titulo_&quot;] { 
+    color: #495057;
+    background-color: transparent;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* =========================================
+   5. CAMPOS DE TEXTO (QLineEdit)
+========================================= */
+QLineEdit {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #e9ecef;
+    border: 1px solid #adb5bd;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #495057;
+}
+
+QLineEdit:focus {
+    border: 1px solid #86b7fe; 
+    background-color: #ffffff; 
+}
+
+/* =========================================
+   6. TABLA DE CONTACTOS DE EMERGENCIA
+========================================= */
+QTableWidget {
+    background-color: #f8f9fa; 
+    border: 1px solid #adb5bd; 
+    border-radius: 4px;
+    gridline-color: #ced4da;   
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #495057;
+    min-height: 180px;
+}
+
+QHeaderView {
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+QHeaderView::section {
+    background-color: #e9ecef; 
+    color: #495057;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-bottom: 2px solid #adb5bd;
+    min-height: 35px;
+}
+
+QTableWidget::item {
+    padding: 8px;
+    border-bottom: 1px solid #dee2e6;
+    color: #495057;
+    background-color: transparent;
+}
+
+QTableWidget::item:selected {
+    background-color: #e8f0fe;
+    color: #084298;
+}
+
+/* =========================================
+   7. MENSAJE DE AVISO
+========================================= */
+QLabel#lbl_aviso_modificar {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #055160;             
+    background-color: #cff4fc;
+    border: 1px solid #b6effb;  
+    border-radius: 6px;
+    padding: 10px 15px;
+}
+
+/* =========================================
+   8. BOTÓN VOLVER
+========================================= */
+QPushButton#btn_volver {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 8px 18px;
+    background-color: #6c757d;
+    color: #ffffff;
+    border: none;
+}
+
+QPushButton#btn_volver:hover {
+    background-color: #5a6268;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>50</height>
-       </size>
+     <widget class="QFrame" name="frame_cuenta">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>19</pointsize>
-        <bold>true</bold>
-       </font>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <property name="text">
-       <string>Mi perfil</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Mi perfil</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>-1</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Informacion personal del centro</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Usuario</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Correo</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>Teléfono</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLineEdit" name="txt_usuario">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="txt_email">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="txt_telefono">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QLabel" name="label_2">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>70</height>
-       </size>
+     <widget class="QFrame" name="frame_personales">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>11</pointsize>
-       </font>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
-      <property name="text">
-       <string>Informacion personal del centro</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Nombre</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>DNI</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Fecha de nacimiento</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="txt_nombre">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_dni">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_fecha_naciemiento">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string/>
+     <widget class="QFrame" name="frame_emergencia">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_4">
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>Email</string>
+          <string>Contcactos de emergéncia</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Usuario</string>
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>182</height>
+          </size>
          </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Emergencia</string>
+         <property name="editTriggers">
+          <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLineEdit" name="lineEdit_2">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit_3">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLineEdit" name="lineEdit_4">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLineEdit" name="txt_fecha_naciemiento">
-         <property name="readOnly">
-          <bool>true</bool>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
          </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Fecha de nacimiento</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLineEdit" name="txt_usuario">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="txt_nombre">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>DNI</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="txt_email">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="txt_dni">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Nombre</string>
-         </property>
+         <column>
+          <property name="text">
+           <string>Nombre</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Parentesco</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Teléfono</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btn_volver">
+     <widget class="QLabel" name="lbl_aviso_modificar">
       <property name="maximumSize">
        <size>
-        <width>200</width>
-        <height>16777215</height>
+        <width>16777215</width>
+        <height>50</height>
        </size>
       </property>
       <property name="text">
-       <string>Volver</string>
+       <string>ℹ Para modificar tus datos, contacta con tu trabajador o administrador.</string>
       </property>
      </widget>
     </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>9</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QPushButton" name="btn_volver">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Volver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>823</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

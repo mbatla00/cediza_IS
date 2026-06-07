@@ -18,42 +18,37 @@ class LoginVentana(QMainWindow, Ui_MainWindow):
     def _on_login(self):
         usuario = self.entradaUsuario.text().strip()
         password = self.entradaContrasena.text()
-        
-        # Aquí obtenemos el usuario_vo de la base de datos
-        exito, mensaje, usuario_vo = self._controller.login(usuario, password)
+
+        exito, mensaje, _ = self._controller.login(usuario, password)
 
         if exito:
-            # Le pasamos el usuario_vo a la función que abre el dashboard
-            self._abrir_dashboard(usuario_vo)
+            self._abrir_dashboard()
         else:
             QMessageBox.warning(self, "Error de acceso", mensaje)
             self.limpiar_formulario()
 
-    def _abrir_dashboard(self, usuario_vo):
-        # CORREGIDO: Llamada al método sin parámetros
+    def _abrir_dashboard(self):
         destino = self._controller.redirigir_segun_rol()
-        
+        datos = self._controller.get_usuario_actual_dict()
+
         if destino == 'admin_dashboard':
             from src.controlador.admin_controller import AdminController
             from src.vista.ui.admin.DashBoardAdminVentana import DashboardAdminVentana
-            
-            # Pasamos el controlador y el username (nombreUsuario) al constructor
-            self._next = DashboardAdminVentana(AdminController(), usuario_vo.nombreUsuario)
-            
-            # Usamos el nombre real para configurar el cartel de "Bienvenido, Alejandro"
-            self._next.set_nombre_administrador(getattr(usuario_vo, 'nombre', usuario_vo.nombreUsuario))
+
+            self._next = DashboardAdminVentana(AdminController(), self._controller, datos["nombreUsuario"])
+            self._next.set_nombre_administrador(datos["nombre"])
 
         elif destino == 'trabajador_dashboard':
             from src.controlador.trabajador_controller import TrabajadorController
             from src.vista.ui.trabajador.trabajador_dashboardVentana import TrabajadorDashboardVentana
-            
-            # Se le pasa el usuario al TrabajadorController
-            self._next = TrabajadorDashboardVentana(TrabajadorController(usuario_vo.nombreUsuario))
+
+            self._next = TrabajadorDashboardVentana(TrabajadorController(datos["nombreUsuario"]))
 
         elif destino == 'paciente_dashboard':
             from src.controlador.paciente_controller import PacienteController
             from src.vista.ui.paciente.paciente_dashboardVentana import PacienteDashboardVentana
-            self._next = PacienteDashboardVentana(PacienteController())
+
+            self._next = PacienteDashboardVentana(PacienteController(datos["nombreUsuario"]))
 
         else:
             QMessageBox.critical(self, "Error", "Rol no reconocido")

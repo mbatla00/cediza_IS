@@ -6,222 +6,395 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>493</height>
+    <width>764</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================
+   1. FONDO Y TEXTOS GENERALES
+========================================= */
+QMainWindow, QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+QLabel {
+    color: #2c3e50;
+    background: transparent;
+}
+
+/* =========================================
+   2. TÍTULOS PRINCIPALES (Bienvenida en Azul Oscuro)
+========================================= */
+QLabel#label_2 {
+    color: #084298; /* Azul oscuro intenso */
+    font-size: 26px;
+    font-weight: bold; /* NEGRITA */
+}
+
+QLabel#label_3 {
+    color: #084298; /* Azul oscuro intenso */
+    font-size: 15px;
+    font-weight: bold; /* NEGRITA */
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   3. LAS 4 TARJETAS (QGroupBox)
+========================================= */
+QGroupBox#box_ejercicio, 
+QGroupBox#box_historial, 
+QGroupBox#box_datos, 
+QGroupBox#box_sesiones {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding-top: 40px; 
+}
+
+/* =========================================
+   4. CABECERAS DE LAS TARJETAS (AZUL OSCURO)
+========================================= */
+QGroupBox::title {
+    background-color: #084298; /* Azul oscuro intenso */
+    color: #ffffff;            
+    font-size: 15px;
+    font-weight: bold;         /* NEGRITA */
+    padding: 10px 12px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    width: 2000px; 
+}
+
+/* Títulos internos de las tarjetas */
+QLabel#label, 
+QLabel#label_5, 
+QLabel#label_4, 
+QLabel#label_6 {
+    font-size: 16px;
+    font-weight: bold;         /* NEGRITA */
+    margin-top: 10px;
+    color: #2c3e50;
+}
+
+/* Textos descriptivos pequeños dentro de la tarjeta */
+QLabel#label_7, 
+QLabel#label_8, 
+QLabel#label_10, 
+QLabel#label_9 {
+    color: #6c757d;
+    font-size: 13px;
+    font-weight: bold;         /* NEGRITA */
+}
+
+/* =========================================
+   5. BOTONES DE LAS TARJETAS (AZULES)
+========================================= */
+QPushButton {
+    font-weight: bold;         /* NEGRITA PARA TODOS LOS BOTONES */
+    font-size: 14px;
+    border-radius: 6px;
+    padding: 10px 15px;
+}
+
+/* Los 4 botones centrales en azul normal */
+QPushButton#btn_cuestionario_diario, 
+QPushButton#btn_ver_historial, 
+QPushButton#btn_informacion_personal, 
+QPushButton#btn_sesiones {
+    background-color: #0d6efd; 
+    color: white;
+    border: none;
+}
+
+QPushButton#btn_cuestionario_diario:hover, 
+QPushButton#btn_ver_historial:hover, 
+QPushButton#btn_informacion_personal:hover, 
+QPushButton#btn_sesiones:hover { 
+    background-color: #0b5ed7; 
+}
+
+/* =========================================
+   6. BOTÓN INFERIOR (Volver / Gris)
+========================================= */
+QPushButton#btn_volver {
+    background-color: #6c757d; /* GRIS BOOTSTRAP */
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    font-weight: bold;         /* NEGRITA */
+}
+
+QPushButton#btn_volver:hover { 
+    background-color: #5a6268; 
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="box_ejercicio">
-      <property name="title">
-       <string>Ejercicio diario</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Ejercicio diario (cuestionarios)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Realiza el cuestionario de ejercicio diario.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_cuestionario_diario">
-         <property name="text">
-          <string>empezar cuestionario</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_7">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_6">
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="1" column="0">
+         <widget class="QGroupBox" name="box_ejercicio">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Ejercicio diario</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ejercicio diario (cuestionarios)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Realiza el cuestionario de ejercicio diario.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_cuestionario_diario">
+             <property name="text">
+              <string>Empezar cuestionario</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QGroupBox" name="box_datos">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Mis datos</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Informacion personal</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Consulta tu información personal y contactos de emergencia.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_informacion_personal">
+             <property name="text">
+              <string>Mis datos personales</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QGroupBox" name="box_historial">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Mi historial</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Historial</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="maximumSize">
+              <size>
+               <width>100000</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Consulta tus respuestas a cuestionarios de días anteriores.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_ver_historial">
+             <property name="text">
+              <string>Ver Historial</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QGroupBox" name="box_sesiones">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="title">
+           <string>Sesiones</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Mis sesiones</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Consulta tus próximas sesiones con especialistas.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_sesiones">
+             <property name="text">
+              <string>Mis sesiones</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>-1</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Mi panel de paciente</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>¡Bienvenido paciente!</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </item>
-    <item row="1" column="1">
-     <widget class="QGroupBox" name="box_historial">
-      <property name="title">
-       <string>Mi historial</string>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Historial</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_8">
-         <property name="maximumSize">
-          <size>
-           <width>100000</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Consulta tus respuestas a cuestionarios de días anteriores.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_ver_historial">
-         <property name="text">
-          <string>Ver Historial</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QGroupBox" name="box_datos">
-      <property name="title">
-       <string>Mis datos</string>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>87</height>
+       </size>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Informacion personal</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>Consulta tu información personal y contactos de emergencia.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_informacion_personal">
-         <property name="text">
-          <string>Mis datos personales</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+     </spacer>
     </item>
-    <item row="1" column="2">
-     <widget class="QGroupBox" name="box_sesiones">
-      <property name="title">
-       <string>Sesiones</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Mis sesiones</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>Consulta tus próximas sesiones con especialistas.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_sesiones">
-         <property name="text">
-          <string>Mis sesiones</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QWidget" name="widget" native="true">
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>¡Bienvenido paciente!</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Mi panel de paciente</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_volver">
+        <property name="text">
+         <string>Volver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>830</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

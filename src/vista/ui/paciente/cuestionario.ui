@@ -6,29 +6,190 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>775</width>
-    <height>617</height>
+    <width>860</width>
+    <height>770</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================
+   1. FONDO GENERAL Y CONTENEDOR
+========================================= */
+QMainWindow, QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+QScrollArea {
+    border: none;
+    background-color: transparent;
+}
+
+QWidget#scrollAreaWidgetContents {
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+/* Títulos generales */
+QLabel#titulo {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #084298;
+    font-size: 24px;
+    font-weight: bold;
+    background: transparent;
+}
+
+QLabel#subtitulo {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #6c757d;
+    font-size: 13px;
+    font-weight: bold;
+    background: transparent;
+}
+
+/* =========================================
+   2. TEXTO DE LAS PREGUNTAS (lbl_p1, p2, p3, p4)
+========================================= */
+QLabel#lbl_p1, 
+QLabel#lbl_p2, 
+QLabel#lbl_p3, 
+QLabel#lbl_p4 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #2c3e50;
+    background: transparent;
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+/* =========================================
+   3. CAJAS DE TEXTO (QPlainTextEdit)
+========================================= */
+QPlainTextEdit {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #ffffff;
+    border: 2px solid #ced4da;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    color: #212529;
+}
+
+QPlainTextEdit:focus {
+    border: 2px solid #86b7fe;
+    background-color: #f8fbff;
+}
+
+/* =========================================
+   4. DESPLEGABLES (QComboBox - FORZADO A BLANCO)
+========================================= */
+QComboBox {
+    background-color: #ffffff;
+    border: 2px solid #ced4da;
+    border-radius: 6px;
+    padding: 8px;
+    color: #212529;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Lista desplegada (donde estaba el color oscuro) */
+QComboBox QAbstractItemView {
+    background-color: #ffffff; /* Fondo blanco */
+    color: #212529;           /* Texto negro */
+    selection-background-color: #0d6efd; /* Azul al seleccionar */
+    selection-color: #ffffff;
+    border: 1px solid #ced4da;
+    outline: none;
+}
+
+/* =========================================
+   5. BOTONES DE RADIO (QRadioButton)
+========================================= */
+QRadioButton {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #495057;
+    spacing: 8px;
+    background: transparent;
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 9px;
+    border: 2px solid #ced4da;
+    background-color: #ffffff;
+}
+
+QRadioButton::indicator:checked {
+    border-color: #0b5ed7;
+    background-color: #0d6efd;
+}
+
+/* =========================================
+   6. BOTONES DE ACCIÓN (Enviar/Cancelar)
+========================================= */
+QPushButton {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 6px;
+    padding: 10px 22px;
+}
+
+QPushButton#btn_enviar {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+}
+QPushButton#btn_enviar:hover {
+    background-color: #0b5ed7;
+}
+
+QPushButton#btn_cancelar {
+    background-color: transparent;
+    color: #6c757d;
+    border: 2px solid #6c757d;
+}
+QPushButton#btn_cancelar:hover {
+    background-color: #6c757d;
+    color: white;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QLabel" name="titulo">
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Cuestionario diario</string>
-      </property>
-     </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_12">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="titulo">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Cuestionario diario</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="subtitulo">
+        <property name="text">
+         <string>Por favor, responda estas preguntas para ayudarnos a hacer un seguimiento:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item row="2" column="0">
+    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -38,220 +199,193 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>755</width>
-         <height>498</height>
+         <width>842</width>
+         <height>616</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QRadioButton" name="rad_p1_bien">
-             <property name="text">
-              <string>Bien</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rad_p1_regular">
-             <property name="text">
-              <string>Regular</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rad_p1_mal">
-             <property name="text">
-              <string>Mal</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QWidget" name="widget" native="true">
-          <layout class="QGridLayout" name="gridLayout_3">
-           <item row="0" column="0">
-            <widget class="QRadioButton" name="rad_p3_si">
-             <property name="text">
-              <string>Si</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QRadioButton" name="rad_p3_no">
-             <property name="text">
-              <string>No</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
          <widget class="QLabel" name="lbl_p1">
           <property name="text">
            <string>1. ¿Cómo te encuentras hoy?</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>15</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Selecciona la opcion correcta:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="lbl_p3">
-          <property name="text">
-           <string>3. ¿Recuerdas qué hiciste ayer por la tarde?</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="QPlainTextEdit" name="txt_p4_desayuno"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QComboBox" name="cmb_p2_horas">
-          <property name="placeholderText">
-           <string>escoger</string>
-          </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <property name="text">
-            <string>Menos de 5 horas</string>
-           </property>
+           <widget class="QRadioButton" name="rad_p1_bien">
+            <property name="text">
+             <string>Bien</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <property name="text">
-            <string>De 5 a 6 horas</string>
-           </property>
+           <widget class="QRadioButton" name="rad_p1_regular">
+            <property name="text">
+             <string>Regular</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <property name="text">
-            <string>De 6 a 7 horas</string>
-           </property>
+           <widget class="QRadioButton" name="rad_p1_mal">
+            <property name="text">
+             <string>Mal</string>
+            </property>
+           </widget>
           </item>
-          <item>
-           <property name="text">
-            <string>De 7 a 9 horas</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Más de 9 horas</string>
-           </property>
-          </item>
-         </widget>
+         </layout>
         </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="lbl_p4">
-          <property name="text">
-           <string>4. ¿Qué has desayunado hoy?</string>
-          </property>
-         </widget>
+        <item>
+         <widget class="QWidget" name="widget" native="true"/>
         </item>
-        <item row="10" column="0">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string/>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="3">
-            <widget class="QPushButton" name="btn_enviar">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="lbl_p2">
+            <property name="text">
+             <string>2. ¿Cuántas horas has dormido?</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Selecciona la opcion correcta:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cmb_p2">
+            <property name="placeholderText">
+             <string>Escoger</string>
+            </property>
+            <item>
              <property name="text">
-              <string>Enviar Respuestas</string>
+              <string>Menos de 5 horas</string>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="btn_cancelar">
+            </item>
+            <item>
              <property name="text">
-              <string>Cancelar</string>
+              <string>De 5 a 6 horas</string>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="lbl_p2">
-          <property name="text">
-           <string>2. ¿Cuántas horas has dormido?</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QWidget" name="widget_p3_detalle" native="true">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>70</height>
-           </size>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="1" column="1">
-            <widget class="QPlainTextEdit" name="txt_p3_detalle"/>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_4">
+            </item>
+            <item>
              <property name="text">
-              <string>¿Qué hiciste?</string>
+              <string>De 6 a 7 horas</string>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+            </item>
+            <item>
+             <property name="text">
+              <string>De 7 a 9 horas</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Más de 9 horas</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QLabel" name="lbl_p3">
+              <property name="text">
+               <string>3. ¿Recuerdas qué hiciste ayer por la tarde?</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QRadioButton" name="rad_p3_si">
+                <property name="text">
+                 <string>Si</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rad_p3_no">
+                <property name="text">
+                 <string>No</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>¿Qué hiciste?</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="txt_p3_detalle"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QLabel" name="lbl_p4">
+            <property name="text">
+             <string>4. ¿Qué has desayunado hoy?</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPlainTextEdit" name="txt_p4_desayuno"/>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="subtitulo">
-      <property name="text">
-       <string>Por favor, respondea estas preguntas para ayudarnos a hacer un seguimiento:</string>
-      </property>
-     </widget>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="btn_cancelar">
+        <property name="text">
+         <string>Cancelar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_enviar">
+        <property name="text">
+         <string>Enviar Respuestas</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>45</width>
+          <height>21</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>775</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

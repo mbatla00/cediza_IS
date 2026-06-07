@@ -9,6 +9,8 @@ GET_BY_PACIENTE = """SELECT e.* FROM enfermedades e
                      WHERE pe.paciente = ?"""
 CREATE = "INSERT INTO enfermedades (nombre) VALUES (?)"
 DELETE = "DELETE FROM enfermedades WHERE id = ?"
+ADD_TO_PACIENTE = "INSERT INTO pacienteenfermedad (paciente, enfermedad_id) VALUES (?, ?)"
+REMOVE_FROM_PACIENTE = "DELETE FROM pacienteenfermedad WHERE paciente = ? AND enfermedad_id = ?"
 
 
 
@@ -97,6 +99,40 @@ class EnfermedadDAO:
             return True
         except Exception as e:
             print(f"Error en EnfermedadDAO.delete: {e}")
+            conn.rollback()
+            return False
+        finally:
+            cursor.close()
+
+    @staticmethod
+    def add_to_paciente(paciente: str, enfermedad_id: int) -> bool:
+        conn = Database().get_connection()
+        if conn is None:
+            return False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(ADD_TO_PACIENTE, (paciente, enfermedad_id))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error en EnfermedadDAO.add_to_paciente: {e}")
+            conn.rollback()
+            return False
+        finally:
+            cursor.close()
+
+    @staticmethod
+    def remove_from_paciente(paciente: str, enfermedad_id: int) -> bool:
+        conn = Database().get_connection()
+        if conn is None:
+            return False
+        cursor = conn.cursor()
+        try:
+            cursor.execute(REMOVE_FROM_PACIENTE, (paciente, enfermedad_id))
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error en EnfermedadDAO.remove_from_paciente: {e}")
             conn.rollback()
             return False
         finally:

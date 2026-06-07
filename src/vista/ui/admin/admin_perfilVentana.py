@@ -36,9 +36,7 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
         datos_dict = self.controlador.obtener_usuario_dict(self.nombre_usuario_actual)
         
         if datos_dict:
-            # Guardamos el objeto real escondido para cuando haya que actualizar
-            self._admin_vo = self.controlador.obtener_usuario(self.nombre_usuario_actual)
-            # Rellenamos la vista con el diccionario
+            # Rellenamos la vista con el diccionario, sin guardar el VO
             self.cargar_datos_perfil(datos_dict)
         else:
             QMessageBox.warning(self, "Error", "No se pudieron cargar los datos de la cuenta.")
@@ -47,7 +45,7 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
         # Obtenemos el nombre para usarlo tanto en la caja de texto como en el título
         nombre_real = usuario.get("nombre", "")
         
-        # ACTULIZAMOS EL TÍTULO DE BIENVENIDA AQUÍ
+        # ACTUALIZAMOS EL TÍTULO DE BIENVENIDA AQUÍ
         self.lbl_titulo.setText(f"Bienvenido de nuevo, {nombre_real}")
         
         self.txt_nombre.setText(nombre_real)
@@ -81,11 +79,10 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
         }
 
     def procesar_guardado(self):
-        if not hasattr(self, '_admin_vo') or not self._admin_vo:
-            return
-            
         datos_formulario = self.obtener_datos_formulario()
-        exito, msg = self.controlador.actualizar_usuario(self._admin_vo, datos_formulario)
+        
+        # Enviamos al controlador solo el nombre de usuario (str) y los datos
+        exito, msg = self.controlador.actualizar_usuario(self.nombre_usuario_actual, datos_formulario)
         
         if exito:
             QMessageBox.information(self, "Éxito", "Perfil actualizado correctamente.")

@@ -6,383 +6,494 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>786</width>
-    <height>976</height>
+    <width>816</width>
+    <height>1137</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* 1. Fondo de la ventana (Gris clarito web) */
-QDialog {
-    background-color: #f4f6f8;
+   <string notr="true">/* =========================================
+   1. FONDO GENERAL Y SCROLL (OPCIÓN NUCLEAR)
+========================================= */
+QDialog, QScrollArea {
+    background-color: #ffffff; 
+    border: none;
 }
 
-/* NUEVO: Color oscuro para todas las etiquetas de texto del formulario (Nombre, DNI, etc.) */
+/* Esto fuerza a que cualquier widget dentro del scroll sea blanco puro */
+QScrollArea &gt; QWidget &gt; QWidget, 
+QWidget#scrollAreaWidgetContents {
+    background-color: #ffffff;
+}
+
 QLabel {
-    color: #2c3e50;
+    color: #334155; 
+    font-size: 13px;
+    font-weight: 500; 
+    background-color: transparent; /* Evita que las letras tengan parches grises */
 }
 
-/* 2. El efecto &quot;Tarjeta Blanca&quot; para los QGroupBox */
+/* =========================================
+   2. TARJETAS BLANCAS (QGroupBox)
+========================================= */
 QGroupBox {
     background-color: #ffffff;
-    border: 1px solid #dee2e6;
+    border: 1px solid #cbd5e1; /* Borde gris sutil */
     border-radius: 8px;
-    margin-top: 25px; /* Deja espacio para que el título respire */
-    padding: 20px;
+    margin-top: 10px; 
+    padding-top: 40px; /* Espacio interno superior para que quepa el título */
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
 }
 
-/* 3. Títulos de las tarjetas (Ej: &quot;Datos Personales&quot;) */
 QGroupBox::title {
-    subcontrol-origin: margin;
-    left: 15px;
-    padding: 0 5px;
-    color: #0d6efd; /* Azul principal */
-    font-size: 16px;
+    subcontrol-origin: padding; /* Mete el texto dentro del borde para que no se corte */
+    subcontrol-position: top left;
+    left: 20px;
+    top: 12px;
+    color: #0f172a; 
+    font-size: 15px;
     font-weight: bold;
+    background-color: transparent; 
 }
 
-/* 4. Cajas de texto, fechas y combos (Estilo Bootstrap) */
+/* =========================================
+   3. CAMPOS DE ENTRADA (Estilo Premium)
+========================================= */
 QLineEdit, QDateEdit, QComboBox {
-    border: 1px solid #adb5bd;
+    border: 1px solid #cbd5e1; 
     border-radius: 6px;
-    padding: 8px 12px;
-    background-color: #f8f9fa;
-    font-size: 14px;
-    color: #2c3e50;
-    selection-background-color: #0d6efd;
-    selection-color: #ffffff;
+    padding: 6px 12px;
+    background-color: #ffffff;
+    font-size: 13px;
+    color: #1e293b;
+    min-height: 25px; /* EVITA QUE EL TEXTO SE CORTE VERTICALMENTE */
 }
+
 QLineEdit:focus, QDateEdit:focus, QComboBox:focus {
-    border: 2px solid #0d6efd;
+    border: 1px solid #3b82f6; 
     background-color: #ffffff;
 }
 
-/* 5. Botones Fijos de abajo */
+QComboBox::drop-down, QDateEdit::drop-down {
+    border: none;
+    background: transparent;
+    width: 20px;
+}
+
+/* =========================================
+   4. TABLAS Y LISTAS (TODO BLANCO PURO)
+========================================= */
+QListWidget, QTableWidget, QListView, QTableView {
+    background-color: #ffffff !important;
+    alternate-background-color: #ffffff !important; /* Evita que las filas pares se pongan grises */
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #334155;
+    min-height: 120px; 
+}
+
+/* El hueco vacío donde no hay datos todavía */
+QAbstractScrollArea::viewport, 
+QListWidget::viewport, 
+QTableWidget::viewport {
+    background-color: #ffffff !important;
+}
+
+/* Las celdas individuales (para que no hereden grises del sistema) */
+QTableWidget::item {
+    background-color: #ffffff !important;
+}
+
+/* LAS CABECERAS (Donde pone Nombre, Parentesco, Teléfono) */
+QHeaderView::section {
+    background-color: #ffffff !important; /* BLANCO PURO */
+    color: #0f172a;
+    font-weight: bold;
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid #cbd5e1; /* Línea abajo para separar títulos de datos */
+    border-right: 1px solid #e2e8f0;
+}
+
+/* El cuadradito de la esquina superior izquierda de la tabla */
+QTableCornerButton::section {
+    background-color: #ffffff !important;
+    border: none;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+/* =========================================
+   5. BOTONES DE ACCIÓN PRINCIPALES (Abajo)
+========================================= */
 QPushButton#btn_guardar {
     background-color: #0d6efd;
-    color: white;
+    color: #ffffff;
+    border: none;
     border-radius: 6px;
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-weight: bold;
     font-size: 14px;
 }
-QPushButton#btn_guardar:hover { background-color: #0b5ed7; }
+QPushButton#btn_guardar:hover {
+    background-color: #0b5ed7;
+}
+QPushButton#btn_guardar:pressed {
+    background-color: #0a58ca;
+}
 
 QPushButton#btn_cancelar {
-    background-color: #6c757d;
-    color: white;
+    background-color: #64748b;
+    color: #ffffff;
+    border: none;
     border-radius: 6px;
-    padding: 10px 20px;
+    padding: 10px 24px;
     font-weight: bold;
     font-size: 14px;
 }
-QPushButton#btn_cancelar:hover { background-color: #5a6268; }
-
-/* 6. Botones secundarios de añadir (+) */
-QPushButton#btn_anadir_contacto, QPushButton#btn_anadir_enfermedad {
-    background-color: #e9ecef;
-    color: #0d6efd;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    padding: 8px 15px;
-    font-weight: bold;
+QPushButton#btn_cancelar:hover {
+    background-color: #475569;
 }
-QPushButton#btn_anadir_contacto:hover, QPushButton#btn_anadir_enfermedad:hover {
-    background-color: #dee2e6;
+QPushButton#btn_cancelar:pressed {
+    background-color: #334155;
+}
+
+/* =========================================
+   6. BOTONES SECUNDARIOS (+ Añadir) EN AZUL
+========================================= */
+QPushButton#btn_anadir_contacto, 
+QPushButton#btn_anadir_enfermedad {
+    background-color: #0d6efd; 
+    color: #ffffff;            
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+QPushButton#btn_anadir_contacto:hover, 
+QPushButton#btn_anadir_enfermedad:hover {
+    background-color: #0b5ed7; 
+}
+
+QPushButton#btn_anadir_contacto:pressed, 
+QPushButton#btn_anadir_enfermedad:pressed {
+    background-color: #0a58ca;
 }</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_5">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Datos Personales</string>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Nombre completo</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Nombre de usuario (opcional)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="texto_NombreCompleto">
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>Ejemplo: Juan Pérez Gómez</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLineEdit" name="text_Usuario">
-        <property name="placeholderText">
-         <string>Ejemplo: jperez99</string>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>DNI</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_6">
-        <property name="text">
-         <string>Fecha de nacimiento</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="2">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Numero de teléfono</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QLineEdit" name="text_DNI">
-        <property name="maxLength">
-         <number>9</number>
-        </property>
-        <property name="placeholderText">
-         <string>1234567D</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QDateEdit" name="date_Nacimiento">
-        <property name="calendarPopup">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3" colspan="2">
-       <widget class="QLineEdit" name="text_Telefono">
-        <property name="placeholderText">
-         <string>123456789</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Correo Electronico</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Contraseña</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Tipo de paciente</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QLineEdit" name="text_email">
-        <property name="placeholderText">
-         <string>Ejemplo: correo@gmail.com</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2" colspan="2">
-       <widget class="QLineEdit" name="text_password">
-        <property name="echoMode">
-         <enum>QLineEdit::EchoMode::Password</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <widget class="QComboBox" name="tipo">
-        <item>
-         <property name="text">
-          <string>Publico</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Privado</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>798</width>
+        <height>1119</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Datos Personales</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="2">
+             <widget class="QLineEdit" name="text_Usuario">
+              <property name="placeholderText">
+               <string>Ejemplo: jperez99</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>DNI</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLineEdit" name="texto_NombreCompleto">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="placeholderText">
+               <string>Ejemplo: Juan Pérez Gómez</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Contraseña</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="4">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Cuenta bancaria</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1" colspan="2">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Nombre de usuario (opcional)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3" colspan="2">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Numero de teléfono</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3" colspan="2">
+             <widget class="QLineEdit" name="text_Telefono">
+              <property name="placeholderText">
+               <string>123456789</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="2">
+             <widget class="QLineEdit" name="text_email">
+              <property name="placeholderText">
+               <string>Ejemplo: correo@gmail.com</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="2" colspan="2">
+             <widget class="QLineEdit" name="text_password">
+              <property name="echoMode">
+               <enum>QLineEdit::EchoMode::Password</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Fecha de nacimiento</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QDateEdit" name="date_Nacimiento">
+              <property name="calendarPopup">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="4">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Tipo de paciente</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Nombre completo</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Correo Electronico</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="4">
+             <widget class="QComboBox" name="tipo">
+              <item>
+               <property name="text">
+                <string>Publico</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Privado</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLineEdit" name="text_DNI">
+              <property name="maxLength">
+               <number>9</number>
+              </property>
+              <property name="placeholderText">
+               <string>1234567D</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="4">
+             <widget class="QLineEdit" name="text_Cuenta_Bancaria">
+              <property name="placeholderText">
+               <string>Solo si el paciente es privado</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Información Médica</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Enfermerdades</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="lista_enfermedades"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="btn_anadir_enfermedad">
+                <property name="text">
+                 <string>Añadir enfermedad</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="text_Enfermedad">
+                <property name="placeholderText">
+                 <string>Enfermedad</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>Contactos de Emergencia</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QTableWidget" name="Familiares">
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="horizontalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Nombre</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Parentesco</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Teléfono</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_anadir_contacto">
+              <property name="text">
+               <string>Añadir Contacto</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="btn_guardar">
+             <property name="text">
+              <string>Guardar Paciente</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_cancelar">
+             <property name="text">
+              <string>Cancelar</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>Datos de Facturación</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>Cuenta bancaria</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="text_Cuenta_Bancaria">
-        <property name="placeholderText">
-         <string>Solo si el paciente es privado</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Información Médica</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Enfermerdades</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QListWidget" name="lista_enfermedades"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLineEdit" name="text_Enfermedad">
-        <property name="placeholderText">
-         <string>Enfermedad</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QPushButton" name="btn_anadir_enfermedad">
-        <property name="text">
-         <string>Añadir enfermedad</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string>Contactos de Emergencia</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="QTableWidget" name="Familiares">
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="horizontalHeaderCascadingSectionResizes">
-         <bool>false</bool>
-        </attribute>
-        <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="verticalHeaderVisible">
-         <bool>true</bool>
-        </attribute>
-        <attribute name="verticalHeaderCascadingSectionResizes">
-         <bool>false</bool>
-        </attribute>
-        <row>
-         <property name="text">
-          <string>Nombre</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Parentesco</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Telefono</string>
-         </property>
-        </row>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="btn_anadir_contacto">
-        <property name="text">
-         <string>Añadir Contacto</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>166</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="5" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="btn_guardar">
-       <property name="text">
-        <string>Guardar Paciente</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_cancelar">
-       <property name="text">
-        <string>Cancelar</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
    </item>
   </layout>
  </widget>

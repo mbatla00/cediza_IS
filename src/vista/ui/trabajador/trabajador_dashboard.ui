@@ -89,12 +89,20 @@ QComboBox::drop-down {
     border-bottom-right-radius: 5px;
 }
 
-/* Menú interno desplegado */
+/* Menú interno desplegado (CORREGIDO) */
 QComboBox QAbstractItemView {
     background-color: #ffffff;
+    color: #212529; /* OBLIGAMOS a que el texto sea oscuro */
     border: 1px solid #ced4da;
     selection-background-color: #0d6efd;
     selection-color: #ffffff;
+    outline: none; /* Quita el borde punteado molesto de Windows/Linux */
+}
+
+/* Altura y espaciado de las opciones para que sea más fácil hacer clic */
+QComboBox QAbstractItemView::item {
+    min-height: 28px;
+    padding-left: 8px;
 }
 
 /* ================================================
@@ -169,6 +177,7 @@ QTableWidget#tabla_pacientes, QTableWidget {
     border-bottom-right-radius: 8px;
     gridline-color: #f1f3f9;         /* Líneas de cuadrícula muy sutiles */
     font-size: 13px;
+    color: #212529;                  /* Aseguramos que el texto de la tabla sea oscuro */
 }
 
 /* Títulos de las columnas (Nombre, Régimen, Acciones) */
@@ -320,7 +329,7 @@ QTableWidget::item:selected {
       </column>
       <column>
        <property name="text">
-        <string>Acciones</string>
+        <string>DNI</string>
        </property>
       </column>
      </widget>

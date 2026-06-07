@@ -376,6 +376,9 @@ QPushButton:hover {
            </column>
           </widget>
          </item>
+         <item row="1" column="0">
+          <layout class="QVBoxLayout" name="layout_grafico"/>
+         </item>
         </layout>
        </widget>
       </item>

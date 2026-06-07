@@ -5,11 +5,9 @@ class Comentario:
         self._id = id
         self._auxiliar = Auxiliar        # FK -> Trabajadores.nombreUsuario
         self._paciente = Paciente        # FK -> Pacientes.nombreUsuario
-        self._dia = None
+        self._dia = dia
         self._hora = hora
         self._nota = nota
-        if dia:
-            self.dia = dia
 
     @property
     def id(self):

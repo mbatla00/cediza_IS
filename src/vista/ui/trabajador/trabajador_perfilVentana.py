@@ -25,7 +25,7 @@ class TrabajadorPerfilVentana(QMainWindow, Ui_MainWindow):
     def _cargar_datos(self):
         datos = self._controller.obtener_trabajador_dict()
         if datos:
-            self._trabajador_vo = self._controller.obtener_trabajador_vo()  # ← necesita este método
+            # Eliminada la dependencia del VO, solo pasamos el diccionario
             self._rellenar_formulario(datos)
         else:
             QMessageBox.warning(self, "Error", "No se pudieron cargar los datos.")
@@ -62,10 +62,11 @@ class TrabajadorPerfilVentana(QMainWindow, Ui_MainWindow):
         return datos
 
     def _procesar_guardado(self):
-        if not hasattr(self, '_trabajador_vo') or not self._trabajador_vo:
-            return
         datos = self._obtener_datos_formulario()
-        exito, msg = self._controller.actualizar_trabajador(self._trabajador_vo, datos)
+        
+        # El controlador ya sabe a quién actualizar gracias a su estado interno
+        exito, msg = self._controller.actualizar_trabajador(datos)
+        
         if exito:
             QMessageBox.information(self, "Éxito", "Perfil actualizado correctamente.")
             self.close()

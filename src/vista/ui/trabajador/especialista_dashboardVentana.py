@@ -26,7 +26,6 @@ class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
             tabla.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             tabla.verticalHeader().setVisible(False)
             
-            # LÍNEAS CORREGIDAS: Uso seguro de QAbstractItemView
             from PySide6.QtWidgets import QAbstractItemView
             tabla.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             tabla.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -36,37 +35,44 @@ class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
         self.btn_volver.clicked.connect(self.close)
 
     def _cargar_datos(self):
-        pacientes = self._controller.listar_pacientes()
+        # AHORA consumimos el método que devuelve diccionarios
+        pacientes = self._controller.listar_pacientes_dict()
         self.cmb_paciente.clear()
         self.cmb_paciente.addItem("-- Seleccionar paciente --", None)
         for p in pacientes:
-            self.cmb_paciente.addItem(getattr(p, 'nombre', ''), getattr(p, 'nombreUsuario', ''))
+            self.cmb_paciente.addItem(p.get('nombre', ''), p.get('nombreUsuario', ''))
 
-        sesiones = self._controller.listar_sesiones_como_especialista()
+        # AHORA consumimos el método que devuelve diccionarios de sesiones
+        sesiones = self._controller.listar_sesiones_dict()
         self.tabla_proximas.setRowCount(0)
         self.tabla_pasadas.setRowCount(0)
+        
         from datetime import date
-        hoy = date.today()
+        hoy_str = str(date.today()) # Convertimos hoy a string (YYYY-MM-DD) para comparar
+        
         for s in (sesiones or []):
-            fecha = getattr(s, 'fecha', None)
-            tabla = self.tabla_proximas if fecha and fecha >= hoy else self.tabla_pasadas
+            fecha = s.get('fecha')
+            # Comparación lexicográfica directa entre strings de fechas (YYYY-MM-DD)
+            tabla = self.tabla_proximas if fecha and fecha >= hoy_str else self.tabla_pasadas
             self._agregar_sesion_a_tabla(tabla, s)
 
-    def _agregar_sesion_a_tabla(self, tabla, sesion):
+    def _agregar_sesion_a_tabla(self, tabla, sesion: dict):
         fila = tabla.rowCount()
         tabla.insertRow(fila)
-        tabla.setItem(fila, 0, QTableWidgetItem(str(getattr(sesion, 'fecha', ''))))
-        tabla.setItem(fila, 1, QTableWidgetItem(str(getattr(sesion, 'hora', ''))))
-        tabla.setItem(fila, 2, QTableWidgetItem(str(getattr(sesion, 'paciente', ''))))
-        tabla.setItem(fila, 3, QTableWidgetItem(str(getattr(sesion, 'comentarios', ''))))
+        
+        # Accedemos limpiamente a las claves del diccionario en lugar de usar getattr()
+        tabla.setItem(fila, 0, QTableWidgetItem(str(sesion.get('fecha', ''))))
+        tabla.setItem(fila, 1, QTableWidgetItem(str(sesion.get('hora', ''))))
+        tabla.setItem(fila, 2, QTableWidgetItem(str(sesion.get('paciente', ''))))
+        tabla.setItem(fila, 3, QTableWidgetItem(str(sesion.get('comentarios', ''))))
 
         btn_editar = QPushButton("✏️ Editar")
-        btn_editar.setProperty("sesion_id", getattr(sesion, 'idSesion', None))
+        btn_editar.setProperty("sesion_id", sesion.get('idSesion'))
         btn_editar.setProperty("sesion_data", {
-            "paciente": getattr(sesion, 'paciente', ''),
-            "fecha": str(getattr(sesion, 'fecha', '')),
-            "hora": str(getattr(sesion, 'hora', '')),
-            "comentarios": getattr(sesion, 'comentarios', '')
+            "paciente": sesion.get('paciente', ''),
+            "fecha": str(sesion.get('fecha', '')),
+            "hora": str(sesion.get('hora', '')),
+            "comentarios": sesion.get('comentarios', '')
         })
         btn_editar.clicked.connect(self._abrir_editar_sesion)
         tabla.setCellWidget(fila, 4, btn_editar)
