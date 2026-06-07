@@ -284,6 +284,7 @@ class UsuarioDAO:
             return []
         finally:
             cursor.close()
+    
     @staticmethod
     def activar(nombreUsuario):
         db = Conexion()
