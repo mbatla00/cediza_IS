@@ -12,6 +12,11 @@ ui_path = os.path.join(os.path.dirname(__file__), "paciente_detalle.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana detallada del expediente clínico del paciente.
+    Muestra información personal, un gráfico evolutivo, el historial unificado,
+    sesiones programadas y la gestión de contactos de emergencia.
+    """
     def __init__(self, controlador, nombre_usuario_paciente):
         super().__init__()
         self.setupUi(self)
@@ -24,6 +29,7 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
         self._cargar_datos()
 
     def _configurar_tabla(self):
+        # Ajustes de columnas: Fecha y Autor al contenido; Contenido se expande al máximo
         header = self.tabla_historial.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
@@ -159,6 +165,7 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
                 self.lista_contactos.addItem(
                     f"👤 {c.get('nombre', '')} - 📞 {c.get('telefono', '')}"
                 )
+        # Si el paciente no tiene familiares asociados en la BD, muestra un aviso visual
         else:
             self.lbl_status_contactos.show()
             self.lista_contactos.hide()
@@ -192,7 +199,7 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
             return
         
         self._controller.agregar_familiar(self._nombre_paciente, nombre, parentesco, telefono)
-        
+        # Limpieza de los campos de entrada tras el guardado exitoso
         self.txt_contacto_nombre.clear()
         self.txt_contacto_parentesco.clear()
         self.txt_contacto_telefono.clear()

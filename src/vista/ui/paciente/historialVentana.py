@@ -7,6 +7,10 @@ ui_path = os.path.join(os.path.dirname(__file__), "historial.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana que renderiza el historial cronológico de respuestas a cuestionarios del paciente.
+    Genera componentes visuales de manera dinámica en un layout vertical extensible.
+    """
     def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
@@ -17,6 +21,7 @@ class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
 
     def _cargar_datos(self):
         historial = self._controller.obtener_historial_agrupado_por_fecha()
+        # Transferimos los diccionarios al motor de renderizado de la interfaz
         preguntas = self._controller.obtener_preguntas_dict()
         self._mostrar_historial(historial, preguntas)
 
@@ -44,6 +49,7 @@ class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
             fecha_str = fecha.strftime('%d/%m/%Y') if fecha else "Sin fecha"
 
             lbl_fecha = QLabel(fecha_str)
+            # Creamos la cabecera del día
             lbl_fecha.setStyleSheet("""
                 font-size: 14px;
                 font-weight: bold;
@@ -54,7 +60,6 @@ class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
             layout_dia.addWidget(lbl_fecha)
 
             for respuesta in respuestas:
-                # Corregido: 'respuesta' ahora es tratada como un diccionario básico
                 id_preg = respuesta.get('idPregunta')
                 texto_pregunta = preguntas_dict.get(id_preg, "Pregunta no disponible")
                 texto_respuesta = respuesta.get('contenido', '')
@@ -82,6 +87,6 @@ class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
     def _limpiar_layout_historial(self):
         layout = self.scrollAreaWidgetContents.layout()
         while layout.count():
-            child = layout.takeAt(0)
+            child = layout.takeAt(0)   # Extrae el primer elemento de la lista del layout
             if child.widget():
-                child.widget().deleteLater()
+                child.widget().deleteLater()   # Destrucción segura del componente gráfico

@@ -32,9 +32,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.btn_guardar.clicked.connect(self._procesar_guardado)
         self.btn_cancelar.clicked.connect(self.close)
 
-    # ══════════════════════════════════════════════════════════════════════
     # BUSCADOR
-    # ══════════════════════════════════════════════════════════════════════
 
     def _llenar_buscador_usuarios(self):
         self.cmb_buscador_usuario.clear()
@@ -56,9 +54,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
             self._habilitar_campos_comunes(False)
             self._ocultar_todos_los_roles()
 
-    # ══════════════════════════════════════════════════════════════════════
     # VISIBILIDAD
-    # ══════════════════════════════════════════════════════════════════════
 
     def _habilitar_campos_comunes(self, habilitado: bool):
         for nombre in ('txt_nombre', 'txt_dni', 'txt_email',
@@ -93,9 +89,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.txt_horario_especialista.setVisible(es_especialista)
         self.txt_horario_especialista.setEnabled(es_especialista)
 
-    # ══════════════════════════════════════════════════════════════════════
     # CARGA DE DATOS
-    # ══════════════════════════════════════════════════════════════════════
 
     def _cargar_usuario(self, datos: dict):
         self.txt_nombre.setText(datos.get('nombre', ''))
@@ -151,9 +145,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
 
         self._mostrar_subcampos_trabajador(tipo_valor)
 
-    # ══════════════════════════════════════════════════════════════════════
     # ACCIONES DE PACIENTE
-    # ══════════════════════════════════════════════════════════════════════
 
     def _agregar_enfermedad(self):
         texto = self.txt_otra_enfermedad.text().strip()
@@ -169,9 +161,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
             self.tableWidget.setItem(row, 1, QTableWidgetItem(contacto.get('parentesco', '')))
             self.tableWidget.setItem(row, 2, QTableWidgetItem(contacto.get('telefono', '')))
 
-    # ══════════════════════════════════════════════════════════════════════
     # LIMPIAR
-    # ══════════════════════════════════════════════════════════════════════
 
     def _limpiar_formulario(self):
         for campo in ('txt_nombre', 'txt_dni', 'txt_email', 'txt_telefono',
@@ -182,9 +172,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.tableWidget.setRowCount(0)
         self.rol_actual = ""
 
-    # ══════════════════════════════════════════════════════════════════════
     # GUARDAR
-    # ══════════════════════════════════════════════════════════════════════
 
     def _obtener_datos_formulario(self) -> dict:
         payload = {

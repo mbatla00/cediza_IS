@@ -7,12 +7,17 @@ ui_path = os.path.join(os.path.dirname(__file__), "especialista_dashboard.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana del panel de control (Dashboard) para el perfil Especialista.
+    Administra la visualización de sesiones programadas, historial y la creación
+    de nuevas citas de intervención con pacientes.
+    """
     def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
         self._controller = controlador
         self.showMaximized()
-
+        # Configuración por defecto de la interfaz: Fechas y horas del momento actual
         self.date_fecha.setDate(QDate.currentDate())
         self.time_hora.setTime(QTime.currentTime())
         self._configurar_tablas()
@@ -21,12 +26,13 @@ class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
 
     def _configurar_tablas(self):
         columnas = ["Fecha", "Hora", "Paciente", "Comentarios", "Acciones"]
+        # Aplicamos la configuración en lote para ambas tablas
         for tabla in [self.tabla_proximas, self.tabla_pasadas]:
             tabla.setColumnCount(len(columnas))
             tabla.setHorizontalHeaderLabels(columnas)
             tabla.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             tabla.verticalHeader().setVisible(False)
-            
+            # Reglas de selección: Seleccionar filas completas y bloquear edición directa por teclado
             from PySide6.QtWidgets import QAbstractItemView
             tabla.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             tabla.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -36,14 +42,15 @@ class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
         self.btn_volver.clicked.connect(self.close)
 
     def _cargar_datos(self):
-        # AHORA consumimos el método que devuelve diccionarios
+        # 1. CARGA DEL COMBOBOX DE PACIENTES
+
         pacientes = self._controller.listar_pacientes_dict()
         self.cmb_paciente.clear()
         self.cmb_paciente.addItem("-- Seleccionar paciente --", None)
         for p in pacientes:
             self.cmb_paciente.addItem(p.get('nombre', ''), p.get('nombreUsuario', ''))
 
-        # AHORA consumimos el método que devuelve diccionarios de sesiones
+        # 2. CARGA Y CLASIFICACIÓN DE SESIONES (Historial vs. Próximas)
         sesiones = self._controller.listar_sesiones_dict()
         self.tabla_proximas.setRowCount(0)
         self.tabla_pasadas.setRowCount(0)

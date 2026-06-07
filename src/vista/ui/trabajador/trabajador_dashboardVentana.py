@@ -7,6 +7,12 @@ ui_path = os.path.join(os.path.dirname(__file__), "trabajador_dashboard.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana del Panel de Control General del Trabajador.
+    Actúa como el hub principal de la aplicación para el personal, permitiendo
+    ver la lista global de pacientes, filtrar accesos según el tipo de empleado
+    (Especialista/Auxiliar) y redirigir a los flujos de notas, evaluaciones y perfiles.
+    """
     def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
@@ -34,6 +40,7 @@ class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
         # Se normaliza a minúsculas para evitar fallos de mayúsculas/minúsculas desde la BD
         tipo = self._controller.obtener_tipo_trabajador()
         self.especialista.setVisible(tipo.lower() == 'especialista' if tipo else False)
+        # Si no es especialista, se oculta por completo el contenedor/botón de acceso a su panel
         if tipo and tipo.lower() == 'especialista':
             self.btn_especialista.clicked.connect(self._abrir_dashboard_especialista)
 
@@ -45,6 +52,7 @@ class TrabajadorDashboardVentana(QMainWindow, Ui_MainWindow):
         self.cmb_nota_paciente.clear()
 
         for i, p in enumerate(pacientes or []):
+            # Extracción segura mediante .get() para evitar excepciones de clave faltante (KeyError)    
             self.tabla_pacientes.insertRow(i)
 
             # Reemplazamos getattr por el método seguro .get() de los diccionarios

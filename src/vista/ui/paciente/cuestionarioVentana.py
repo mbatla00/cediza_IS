@@ -2,7 +2,6 @@ import os
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 from PySide6.QtUiTools import loadUiType
 
-# Ruta al archivo .ui
 ui_path = os.path.join(os.path.dirname(__file__), "cuestionario.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
@@ -13,8 +12,8 @@ class PacienteCuestionarioVentana(QMainWindow, Ui_MainWindow):
         self._controller = controlador
         self.showMaximized()
         
-        # 1. Configurar las opciones del ComboBox (Pregunta 2)
-        # Usamos cmb_p2_horas (que es como seguramente se llama en tu UI)
+        # 1. Configurar las opciones del ComboBox
+        # Usamos cmb_p2_horas 
         if hasattr(self, 'cmb_p2_horas'):
             self.cmb_p2_horas.clear()
             self.cmb_p2_horas.addItems([
@@ -72,7 +71,7 @@ class PacienteCuestionarioVentana(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Validación", "Por favor, indica qué has desayunado.")
             return
 
-        # ¡CORREGIDO! Generamos la lista estructurada INCLUYENDO EL ID DE CADA PREGUNTA
+        # Generamos la lista estructurada 
         # Se envían ambas claves 'contenido' y 'respuesta' por máxima compatibilidad con el backend
         respuestas = [
             {

@@ -8,6 +8,11 @@ ui_path = os.path.join(os.path.dirname(__file__), "admin_perfil.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana encargada de mostrar y editar el perfil de un usuario Administrador.
+    Permite cambiar datos personales, validar restricciones temporales y gestionar
+    contraseñas de manera segura sin sobreescribirlas accidentalmente.
+    """
     def __init__(self, controlador, nombre_usuario_actual):
         super().__init__()
         self.setupUi(self)
@@ -75,7 +80,7 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
             "telefono": self.txt_telefono.text().strip(),
             "email": self.txt_email.text().strip(),
             "fechaNacimiento": fecha_str,
-            "password": self.txt_password.text().strip()
+            "password": self.txt_password.text().strip() # El DAO decidirá si actualizarla según si está vacía
         }
 
     def procesar_guardado(self):
@@ -89,7 +94,7 @@ class AdminPerfilVentana(QMainWindow, Ui_MainWindow):
             
             if fecha_nacimiento > fecha_actual:
                 QMessageBox.warning(self, "Error de validación", "La fecha de nacimiento no puede ser una fecha futura.")
-                return # 🛑 Detiene la ejecución aquí y no guarda nada
+                return 
         
         # Enviamos al controlador solo el nombre de usuario (str) y los datos
         exito, msg = self.controlador.actualizar_usuario(self.nombre_usuario_actual, datos_formulario)

@@ -25,7 +25,7 @@ class TrabajadorPerfilVentana(QMainWindow, Ui_MainWindow):
     def _cargar_datos(self):
         datos = self._controller.obtener_trabajador_dict()
         if datos:
-            # Eliminada la dependencia del VO, solo pasamos el diccionario
+            
             self._rellenar_formulario(datos)
         else:
             QMessageBox.warning(self, "Error", "No se pudieron cargar los datos.")

@@ -28,7 +28,7 @@ class PacienteSesionesVentana(QMainWindow, Ui_MainWindow):
             tabla.setRowCount(0)
 
     def _cargar_datos(self):
-        # Corregido: Llamamos a la versión que retorna diccionarios básicos
+        # Llamamos a la versión que retorna diccionarios básicos
         sesiones = self._controller.listar_sesiones_dict()
         
         hoy = date.today()
@@ -74,7 +74,7 @@ class PacienteSesionesVentana(QMainWindow, Ui_MainWindow):
             especialista = s.get('especialista', '-')
             comentarios = s.get('comentarios', '-')
 
-            # Opcional: Cambiar formato visual de YYYY-MM-DD a DD/MM/YYYY para el usuario
+            # Cambiar formato visual de YYYY-MM-DD a DD/MM/YYYY para el usuario
             try:
                 fecha_obj = datetime.strptime(fecha_val, '%Y-%m-%d')
                 fecha_val = fecha_obj.strftime('%d/%m/%Y')

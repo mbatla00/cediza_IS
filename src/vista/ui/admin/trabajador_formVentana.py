@@ -31,10 +31,10 @@ class NuevoTrabajadorVentana(QDialog, Ui_Dialog):
 
     def obtener_datos_formulario(self) -> dict:
         return {
-            "nombre": self.txt_nombre_completo.text().strip(),   # ← Corregido
-            "usuario": self.txt_nombre_usuario.text().strip(),   # ← Corregido
+            "nombre": self.txt_nombre_completo.text().strip(),   
+            "usuario": self.txt_nombre_usuario.text().strip(),   
             "dni": self.txt_dni.text().strip(),
-            "telefono": "",                                      # ← Ajustado, ya no pide txt_telefono
+            "telefono": "",                                      
             "email": self.txt_email.text().strip(),
             "password": self.txt_password.text().strip(),
             "tipo": self.cb_tipo.currentText().strip(),

@@ -8,6 +8,11 @@ ui_file = os.path.join(os.path.dirname(__file__), "crear_admin.ui")
 ui_formulario, _ = loadUiType(ui_file)
 
 class CrearAdminVentana(QDialog, ui_formulario):
+    """
+    Ventana modal (QDialog) destinada exclusivamente al registro de nuevos Administradores.
+    Implementa validaciones automáticas por máscara (Regex) y gestiona el ciclo de vida
+    del diálogo mediante llamadas nativas de Qt (accept/reject).
+    """
     def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
@@ -44,6 +49,7 @@ class CrearAdminVentana(QDialog, ui_formulario):
         self.txt_password.clear()
 
     def procesar_guardado(self):
+        # Validación visual estricta: Impide llamadas al controlador si faltan datos obligatorios
         datos = self.obtener_datos_formulario()
 
         if not datos["nombre_completo"] or not datos["nombre_usuario"] or not datos["dni"]:
