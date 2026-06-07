@@ -4,6 +4,9 @@ from src.modelo.factories import UsuarioFactory
 import unicodedata
 import re
 
+"""
+Tabla para los usuarios de la app
+"""
 
 GET_BY_USER = """
                 SELECT u.*, p.Tipo as TipoPaciente, t.Tipo as TipoTrabajador

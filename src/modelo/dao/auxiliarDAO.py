@@ -2,6 +2,11 @@ from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Auxiliar
 from mysql.connector import Error
 
+"""
+Tabla de auxiliares:
+tipo de trabajador con un horario 
+"""
+
 GET_BY_USER = "SELECT * FROM Auxiliares WHERE nombreUsuario = ?"
 GET_ALL = "SELECT * FROM Auxiliares"
 CREATE = "INSERT INTO Auxiliares (nombreUsuario, Horario) VALUES (?, ?)"

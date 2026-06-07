@@ -2,6 +2,11 @@ from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Cuestionario
 from mysql.connector import Error
 
+"""
+Tabla de cuestionarios:
+Cuestionario con preguntas selecionadas para los pacientes
+"""
+
 GET_ALL = "SELECT * FROM Cuestionarios"
 GET_BY_ID = "SELECT * FROM Cuestionarios WHERE idCuestionario = ?"
 CREATE = """INSERT INTO Cuestionarios (titulo, tipo, fechaAsignacion)

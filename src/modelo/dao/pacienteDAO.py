@@ -3,6 +3,12 @@ Database = Conexion
 from src.modelo.vo import Paciente
 from mysql.connector import Error
 
+"""
+tabla de pacientes:
+tipo de usuario con menos privilegios
+(usuarios del centro de dia)
+"""
+
 GET_ALL = """
                 SELECT p.*, u.Nombre, u.DNI, u.email, u.activo 
                 FROM Pacientes p

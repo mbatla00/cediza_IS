@@ -3,6 +3,11 @@ Database = Conexion
 from src.modelo.vo import Factura
 from mysql.connector import Error
 
+"""
+tabla de facturas:
+Facturas establecidas por un administrador para un paciente en una fecha determinada
+"""
+
 GET_BY_CODIGO = "SELECT * FROM Factura WHERE codigoFactura = ?"
 GET_BY_PACIENTE = """SELECT * FROM Factura
                    WHERE Paciente = ? ORDER BY fechaEmision DESC"""

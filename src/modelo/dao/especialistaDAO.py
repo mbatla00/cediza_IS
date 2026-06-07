@@ -3,6 +3,11 @@ Database = Conexion
 from src.modelo.vo import Especialista
 from mysql.connector import Error
 
+"""
+Tabla de especialistas:
+Tipo de trabajadores con una especialidad y mas permisos
+"""
+
 GET_BY_USER = "SELECT * FROM Especialistas WHERE nombreUsuario = ?"
 GET_ALL = "SELECT * FROM Especialistas"
 CREATE = """INSERT INTO Especialistas (nombreUsuario, Especialidad, Horario)

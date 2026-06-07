@@ -3,6 +3,11 @@ Database = Conexion
 from src.modelo.vo import Trabajador, Auxiliar, Coordinador, Especialista
 from mysql.connector import Error
 
+"""
+Tabla para los trabajadores
+subtipo de usuarios
+"""
+
 GET_ALL = "SELECT * FROM Trabajadores"
 GET_BY_USER = "SELECT * FROM Trabajadores WHERE nombreUsuario = ?"
 CREATE = "INSERT INTO Trabajadores (nombreUsuario, Tipo) VALUES (?, ?)"

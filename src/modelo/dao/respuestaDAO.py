@@ -3,6 +3,10 @@ Database = Conexion
 from src.modelo.vo import Respuesta
 from mysql.connector import Error
 
+"""
+Tabla para la relacion entre preguntas y pacientes
+"""
+
 GET_BY_PACIENTE = "SELECT * FROM Respuestas WHERE idPaciente = ? ORDER BY fechaHora DESC"
 GET_BY_PREGUNTA = "SELECT * FROM Respuestas WHERE idPregunta = ? ORDER BY fechaHora DESC"
 CREATE = """INSERT INTO Respuestas (idPregunta, idPaciente, fechaHora, contenido)

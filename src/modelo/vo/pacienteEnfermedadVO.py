@@ -1,4 +1,5 @@
 class PacienteEnfermedad:
+    #relacion N:M entre pacientes y enfermedades
     def __init__(self, paciente=None, enfermedad_id=None):
         self._paciente = paciente
         self._enfermedad_id = enfermedad_id

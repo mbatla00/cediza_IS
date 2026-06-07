@@ -2,7 +2,7 @@
 
 ## Esquema de CEDIZA
 
-La base de datos tiene **17 tablas** interrelacionadas.
+La base de datos tiene **20 tablas** interrelacionadas.
 
 ---
 

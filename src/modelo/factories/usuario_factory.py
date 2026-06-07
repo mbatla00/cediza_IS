@@ -24,9 +24,6 @@ class UsuarioFactory:
         if activo is not None:
             activo = 1 if activo in (1, True, '1', 'true', 'True') else 0
 
-        # ============================================================
-        # 🌟 ¡BLOQUE CORREGIDO! 🌟
-        # ============================================================
         if tipo == 'paciente':
             return PacienteFactory.crear(datos)
         

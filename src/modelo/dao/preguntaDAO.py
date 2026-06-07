@@ -3,6 +3,10 @@ Database = Conexion
 from src.modelo.vo import Pregunta
 from mysql.connector import Error
 
+"""
+Tabla de preguntas para los cuestionarios
+"""
+
 GET_BY_CUESTIONARIO = "SELECT * FROM Preguntas WHERE idCuestionario = ?"
 GET_BY_ID = "SELECT * FROM Preguntas WHERE idPregunta = ?"
 CREATE = """INSERT INTO Preguntas (idCuestionario, enunciado, tipoRespuesta)
