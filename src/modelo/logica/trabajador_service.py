@@ -32,13 +32,30 @@ class TrabajadorService:
             return False, f"Ya existe un usuario con DNI {datos['dni']}", None
 
         try:
-            nuevo_usuario = Trabajador(
+            tipo = datos.get('tipo_trabajador') or datos.get('tipo')
+
+            common = dict(
                 nombreUsuario=datos['nombre_usuario'],
                 Nombre=datos['nombre_completo'],
                 DNI=datos['dni'],
                 password=datos.get('password', datos['dni']),
-                Tipo=datos.get('tipo')
+                email=datos.get('email'),
+                fechaNacimiento=datos.get('fecha_nacimiento'),
+                telefono=datos.get('telefono'),
             )
+
+            if tipo == 'auxiliar':
+                nuevo_usuario = Auxiliar(**common, Horario=datos.get('horario', 'Mañana'))
+            elif tipo == 'coordinador':
+                nuevo_usuario = Coordinador(**common, infoInteres=datos.get('info_interes'))
+            elif tipo == 'especialista':
+                nuevo_usuario = Especialista(
+                    **common,
+                    Especialidad=datos.get('especialidad', ''),
+                    Horario=datos.get('horario', '')
+                )
+            else:
+                return False, f"Tipo de trabajador no reconocido: {tipo}", None
 
             if not UsuarioDAO.create(nuevo_usuario):
                 return False, "Error al crear la cuenta de usuario", None
@@ -46,41 +63,12 @@ class TrabajadorService:
             if not TrabajadorDAO.create(nuevo_usuario):
                 return False, "Error al registrar el trabajador", None
 
-            tipo = datos.get('tipo')
-
-            if tipo == 'auxiliar':
-                auxiliar = Auxiliar(
-                    nombreUsuario=datos['nombre_usuario'],
-                    Nombre=datos['nombre_completo'],
-                    DNI=datos['dni'],
-                    password=datos.get('password', datos['dni']),
-                    Horario=datos.get('horario', 'Mañana')
-                )
-                if not AuxiliarDAO.create(auxiliar):
-                    return False, "Error al registrar el auxiliar", None
-
-            elif tipo == 'coordinador':
-                coordinador = Coordinador(
-                    nombreUsuario=datos['nombre_usuario'],
-                    Nombre=datos['nombre_completo'],
-                    DNI=datos['dni'],
-                    password=datos.get('password', datos['dni']),
-                    infoInteres=datos.get('info_interes')
-                )
-                if not CoordinadorDAO.create(coordinador):
-                    return False, "Error al registrar el coordinador", None
-
-            elif tipo == 'especialista':
-                especialista = Especialista(
-                    nombreUsuario=datos['nombre_usuario'],
-                    Nombre=datos['nombre_completo'],
-                    DNI=datos['dni'],
-                    password=datos.get('password', datos['dni']),
-                    Especialidad=datos.get('especialidad', ''),
-                    Horario=datos.get('horario', '')
-                )
-                if not EspecialistaDAO.create(especialista):
-                    return False, "Error al registrar el especialista", None
+            if tipo == 'auxiliar' and not AuxiliarDAO.create(nuevo_usuario):
+                return False, "Error al registrar el auxiliar", None
+            elif tipo == 'coordinador' and not CoordinadorDAO.create(nuevo_usuario):
+                return False, "Error al registrar el coordinador", None
+            elif tipo == 'especialista' and not EspecialistaDAO.create(nuevo_usuario):
+                return False, "Error al registrar el especialista", None
 
             return True, f"Trabajador {datos['nombre_completo']} creado correctamente", nuevo_usuario
 
@@ -93,19 +81,50 @@ class TrabajadorService:
             return False, "DNI no válido"
 
         try:
-            # Se crea un nuevo VO con los datos actualizados en lugar de mutar el existente
-            trabajador_actualizado = Trabajador(
+            tipo = getattr(trabajador, 'tipo', None)
+
+            nuevo_nombre   = datos.get('nombre', trabajador.nombre)
+            nuevo_dni      = datos.get('dni', trabajador.dni)
+            nuevo_email    = datos.get('email', trabajador.email)
+            nueva_fecha    = datos.get('fechaNacimiento', trabajador.fechaNacimiento)
+            nuevo_telefono = datos.get('telefono', getattr(trabajador, 'telefono', None))
+            nuevo_password = datos.get('password') or trabajador.password
+
+            common = dict(
                 nombreUsuario=trabajador.nombreUsuario,
-                Nombre=datos.get('nombre', trabajador.nombre),
-                DNI=datos.get('dni', trabajador.dni),
-                password=datos.get('password', trabajador.password) if datos.get('password') else trabajador.password,
-                Tipo=getattr(trabajador, 'tipo', None)
+                Nombre=nuevo_nombre,
+                DNI=nuevo_dni,
+                password=nuevo_password,
+                email=nuevo_email,
+                fechaNacimiento=nueva_fecha,
+                telefono=nuevo_telefono,
             )
-            # Actualizar email si viene en datos (atributo heredado de Usuario)
-            if 'email' in datos:
-                trabajador_actualizado._email = datos['email']
-            if 'fechaNacimiento' in datos:
-                trabajador_actualizado._fechaNacimiento = datos['fechaNacimiento']
+
+            if tipo == 'auxiliar':
+                trabajador_actualizado = Auxiliar(
+                    **common,
+                    Horario=getattr(trabajador, 'horario', None)
+                )
+            elif tipo == 'coordinador':
+                trabajador_actualizado = Coordinador(
+                    **common,
+                    infoInteres=getattr(trabajador, 'infoInteres', None)
+                )
+            elif tipo == 'especialista':
+                trabajador_actualizado = Especialista(
+                    **common,
+                    Especialidad=getattr(trabajador, 'especialidad', None),
+                    Horario=getattr(trabajador, 'horario', None)
+                )
+            else:
+                # fallback: actualizar solo la parte de Usuario
+                trabajador_actualizado = trabajador
+                trabajador_actualizado._nombre = nuevo_nombre
+                trabajador_actualizado._dni = nuevo_dni
+                trabajador_actualizado._email = nuevo_email
+                trabajador_actualizado._fechaNacimiento = nueva_fecha
+                trabajador_actualizado._telefono = nuevo_telefono
+                trabajador_actualizado._password = nuevo_password
 
             exito = UsuarioDAO.update(trabajador_actualizado)
             if exito:

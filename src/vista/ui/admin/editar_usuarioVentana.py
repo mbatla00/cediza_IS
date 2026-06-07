@@ -16,25 +16,19 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.controlador = controlador
         self.showMaximized()
 
-        self.rol_actual    = ""
+        self.rol_actual = ""
         self.usuario_editado = None
 
-        # Los GroupBox ya arrancan ocultos desde el .ui,
-        # así que solo necesitamos deshabilitar los campos comunes
         self._habilitar_campos_comunes(False)
 
-        # ── Buscador ──────────────────────────────────────────────────────
         self._llenar_buscador_usuarios()
         self.cmb_buscador_usuario.currentIndexChanged.connect(self._al_seleccionar_usuario)
 
-        # ── Botones de paciente ───────────────────────────────────────────
         self.btn_anadir_enfermedad.clicked.connect(self._agregar_enfermedad)
         self.btn_anadir_contacto.clicked.connect(self._agregar_fila_contacto)
 
-        # ── Subcampos de trabajador ───────────────────────────────────────
         self.cmb_tipo_trabajador.currentTextChanged.connect(self._mostrar_subcampos_trabajador)
 
-        # ── Botones principales ───────────────────────────────────────────
         self.btn_guardar.clicked.connect(self._procesar_guardado)
         self.btn_cancelar.clicked.connect(self.close)
 
@@ -45,11 +39,9 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
     def _llenar_buscador_usuarios(self):
         self.cmb_buscador_usuario.clear()
         self.cmb_buscador_usuario.addItem("--- Seleccione un usuario ---", None)
-        for u in self.controlador.listar_todos_usuarios():
-            nombre_real  = getattr(u, 'nombre', 'Sin nombre')
-            tipo_usuario = getattr(u, 'tipo', u.__class__.__name__)
-            texto        = f"{nombre_real} ({str(tipo_usuario).capitalize()})"
-            self.cmb_buscador_usuario.addItem(texto, getattr(u, 'nombreUsuario', ''))
+        for u in self.controlador.listar_todos_usuarios_dict():
+            texto = f"{u['nombre']} ({u['tipo'].capitalize()})"
+            self.cmb_buscador_usuario.addItem(texto, u['nombreUsuario'])
 
     def _al_seleccionar_usuario(self, index):
         nombre_usuario = self.cmb_buscador_usuario.itemData(index)
@@ -106,7 +98,6 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
     # ══════════════════════════════════════════════════════════════════════
 
     def _cargar_usuario(self, datos: dict):
-        # Campos comunes
         self.txt_nombre.setText(datos.get('nombre', ''))
         self.txt_dni.setText(datos.get('dni', ''))
         self.txt_email.setText(datos.get('email', ''))
@@ -114,11 +105,10 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.txt_password.setText(datos.get('password', ''))
         self.text_Usuario.setText(datos.get('nombreUsuario', ''))
 
-        fecha_str = datos.get('fecha_nacimiento', '')
+        fecha_str = datos.get('fechaNacimiento', '')
         if fecha_str:
-            self.date_nacimiento.setDate(QDate.fromString(fecha_str, 'yyyy-MM-dd'))
+            self.date_nacimiento.setDate(QDate.fromString(str(fecha_str), 'yyyy-MM-dd'))
 
-        # Determinar rol y cargar sección correspondiente
         tipo_valor = datos.get('tipo', '').lower()
 
         if tipo_valor in ROLES_TRABAJADOR:
@@ -198,17 +188,17 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
 
     def _obtener_datos_formulario(self) -> dict:
         payload = {
-            'nombre':            self.txt_nombre.text().strip(),
-            'dni':               self.txt_dni.text().strip(),
-            'email':             self.txt_email.text().strip(),
-            'telefono':          self.txt_telefono.text().strip(),
-            'password':          self.txt_password.text().strip(),
-            'fecha_nacimiento':  self.date_nacimiento.date().toString('yyyy-MM-dd'),
+            'nombre':           self.txt_nombre.text().strip(),
+            'dni':              self.txt_dni.text().strip(),
+            'email':            self.txt_email.text().strip(),
+            'telefono':         self.txt_telefono.text().strip(),
+            'password':         self.txt_password.text().strip(),
+            'fecha_nacimiento': self.date_nacimiento.date().toString('yyyy-MM-dd'),
         }
 
         if self.rol_actual == 'paciente':
             payload['tipo_paciente'] = self.cmb_tipo_paciente.currentText()
-            payload['enfermedades']  = [
+            payload['enfermedades'] = [
                 self.lista_enfermedades.item(i).text()
                 for i in range(self.lista_enfermedades.count())
             ]
@@ -230,8 +220,8 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
             if tipo_t == 'auxiliar':
                 payload['horario'] = self.cmb_horario_auxiliar.currentText()
             elif tipo_t == 'especialista':
-                payload['especialidad']         = self.txt_especialidad.text().strip()
-                payload['horario_especialista']  = self.txt_horario_especialista.text().strip()
+                payload['especialidad']        = self.txt_especialidad.text().strip()
+                payload['horario_especialista'] = self.txt_horario_especialista.text().strip()
 
         return payload
 

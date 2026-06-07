@@ -132,7 +132,3 @@ class PacienteDAO:
             return False
         finally:
             cursor.close()
-
-
-
-

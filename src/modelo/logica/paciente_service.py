@@ -7,7 +7,6 @@ from .usuario_service import UsuarioService
 
 
 class PacienteService:
-    """Servicio para operaciones CRUD de pacientes"""
 
     @staticmethod
     def listar_todos() -> list:
@@ -38,9 +37,10 @@ class PacienteService:
         if UsuarioDAO.get_by_dni(datos['dni']):
             return False, f"Ya existe un usuario con DNI {datos['dni']}", None
 
+        # Acepta tanto 'fechaNacimiento' como 'fecha_nacimiento'
+        fecha = datos.get('fechaNacimiento') or datos.get('fecha_nacimiento')
+
         try:
-            # Se usa directamente PacPub o PacPri (subclases concretas)
-            # para evitar instanciar Paciente que es clase abstracta
             if datos.get('tipo') == 'publico':
                 nuevo_pac = PacPub(
                     nombreUsuario=nombre_usuario,
@@ -48,7 +48,9 @@ class PacienteService:
                     DNI=datos['dni'],
                     password=datos.get('password', datos['dni']),
                     Dias_ingresado=0,
-                    email=datos.get('email')
+                    email=datos.get('email'),
+                    fechaNacimiento=fecha,
+                    telefono=datos.get('telefono'),
                 )
                 exito = (
                     UsuarioDAO.create(nuevo_pac) and
@@ -64,7 +66,9 @@ class PacienteService:
                     DNI=datos['dni'],
                     password=datos.get('password', datos['dni']),
                     cuenta=datos['cuenta'],
-                    email=datos.get('email')
+                    email=datos.get('email'),
+                    fechaNacimiento=fecha,
+                    telefono=datos.get('telefono'),
                 )
                 exito = (
                     UsuarioDAO.create(nuevo_pac) and
@@ -74,9 +78,6 @@ class PacienteService:
 
             if not exito:
                 return False, "Error al guardar datos del paciente", None
-
-            if datos.get('telefono'):
-                UsuarioDAO.update_telefono(nombre_usuario, datos['telefono'])
 
             return True, "Paciente creado correctamente", nuevo_pac
 
@@ -92,21 +93,25 @@ class PacienteService:
             return False, "DNI no válido"
 
         try:
-            # Mutación directa del objeto concreto (PacPub o PacPri)
-            # Necesario porque Paciente es clase abstracta y no se puede reinstanciar
             if 'nombre' in datos:
                 paciente._nombre = datos['nombre']
             if 'email' in datos:
                 paciente._email = datos['email']
             if 'dni' in datos:
                 paciente._dni = datos['dni']
-            if 'fecha_nacimiento' in datos:
-                paciente._fechaNacimiento = datos['fecha_nacimiento']
+            if 'password' in datos and datos['password']:
+                paciente._password = datos['password']
+
+            # Acepta tanto 'fechaNacimiento' como 'fecha_nacimiento'
+            fecha = datos.get('fechaNacimiento') or datos.get('fecha_nacimiento')
+            if fecha:
+                paciente._fechaNacimiento = fecha
+
+            telefono = datos.get('telefono')
+            if telefono:
+                paciente._telefono = telefono
 
             exito = UsuarioDAO.update(paciente)
-
-            if datos.get('telefono'):
-                UsuarioDAO.update_telefono(paciente.nombreUsuario, datos['telefono'])
 
             if exito:
                 return True, "Paciente actualizado correctamente"

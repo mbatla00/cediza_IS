@@ -14,10 +14,10 @@ GET_BY_USER = """
             """
 GET_BY_EMAIL = "SELECT * FROM Usuarios WHERE email = ?"
 GET_BY_DNI = "SELECT * FROM Usuarios WHERE DNI = ?"
-CREATE = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?)"""
+CREATE = """INSERT INTO Usuarios (nombreUsuario, Nombre, email, fechaNacimiento, DNI, Rol, password, telefono)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
 UPDATE = """UPDATE Usuarios
-            SET Nombre = ?, email = ?, DNI = ?, password = ?
+            SET Nombre = ?, email = ?, DNI = ?, password = ?, fechaNacimiento = ?, telefono = ?
             WHERE nombreUsuario = ?"""
 DELETE = "UPDATE Usuarios SET activo = 0 WHERE nombreUsuario = ?"
 GET_ALL = """
@@ -68,15 +68,11 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                GET_BY_EMAIL,
-                (email,)
-            )
+            cursor.execute(GET_BY_EMAIL, (email,))
             row = Database.row_to_dict(cursor, cursor.fetchone())
             if row:
                 usuario_obj = UsuarioFactory.crear(row)
                 return usuario_obj
-                
             return None
         except Exception as e:
             print(f"Error en get_by_email: {e}")
@@ -93,15 +89,11 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                GET_BY_DNI,
-                (dni,)
-            )
+            cursor.execute(GET_BY_DNI, (dni,))
             row = Database.row_to_dict(cursor, cursor.fetchone())
             if row:
                 usuario_obj = UsuarioFactory.crear(row)
                 return usuario_obj
-                
             return None
         except Exception as e:
             print(f"Error en get_by_dni: {e}")
@@ -140,16 +132,15 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            email = getattr(usuario, 'email', None)
-
             cursor.execute(CREATE, (
                 usuario.nombreUsuario,
                 usuario.nombre,
-                email,
+                getattr(usuario, 'email', None),
                 usuario.fechaNacimiento,
                 usuario.dni,
                 usuario.rol,
-                usuario.password
+                usuario.password,
+                getattr(usuario, 'telefono', None)
             ))
             conn.commit()
             return True
@@ -174,6 +165,8 @@ class UsuarioDAO:
                 usuario.email,
                 usuario.dni,
                 usuario.password,
+                usuario.fechaNacimiento,
+                getattr(usuario, 'telefono', None),
                 usuario.nombreUsuario
             ))
             conn.commit()
@@ -194,10 +187,7 @@ class UsuarioDAO:
 
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                DELETE,
-                (nombreUsuario,)
-            )
+            cursor.execute(DELETE, (nombreUsuario,))
             conn.commit()
             return True
         except Exception as e:
@@ -209,7 +199,6 @@ class UsuarioDAO:
 
     @staticmethod
     def get_all():
-        """Devuelve una lista de todos los objetos Usuario válidos en el sistema."""
         db = Conexion()
         conn = db.get_connection()
         if conn is None:
@@ -240,16 +229,12 @@ class UsuarioDAO:
                 if 'fechanacimiento' in row: 
                     row['fechaNacimiento'] = row['fechanacimiento']
 
-                val_activo = row.get('activo')
-                if val_activo is None:
-                    val_activo = row.get('Activo')
-                
+                val_activo = row.get('activo') or row.get('Activo')
                 if val_activo is True or val_activo == 1 or str(val_activo).lower() in ('1', 'true'):
                     estado_corregido = 1
                 else:
                     estado_corregido = 0
                 
-                # El activo se añade a row ANTES de crear el objeto
                 row['activo'] = estado_corregido
                 row['Activo'] = estado_corregido
 
@@ -261,7 +246,13 @@ class UsuarioDAO:
                     row['Tipo'] = tipo_val
                     row['tipo'] = tipo_val
                 elif rol == 'trabajador':
-                    tipo_val = row.get('TipoTrabajador') or row.get('tipotrabajador') or ''
+                    tipo_val = (
+                        row.get('TipoTrabajador') or 
+                        row.get('tipotrabajador') or
+                        row.get('TipoPaciente') or
+                        row.get('tipopaciente') or 
+                        ''
+                    )
                     row['Tipo'] = tipo_val
                     row['tipo'] = tipo_val
                 else:
@@ -269,7 +260,6 @@ class UsuarioDAO:
                     row['tipo'] = ''
 
                 try:
-                    # Crear el objeto CON el activo ya incluido en row
                     usuario_objeto = UsuarioFactory.crear(row)
                     if usuario_objeto:
                         usuarios.append(usuario_objeto)
@@ -284,6 +274,7 @@ class UsuarioDAO:
             return []
         finally:
             cursor.close()
+
     @staticmethod
     def activar(nombreUsuario):
         db = Conexion()

@@ -9,32 +9,26 @@ import re
 
 
 class UsuarioService:
-    """Servicio para operaciones CRUD de usuarios"""
 
     @staticmethod
     def listar_activos() -> list:
-        """Retorna todos los usuarios activos"""
         todos = UsuarioDAO.get_all()
         return [u for u in todos if getattr(u, 'activo', True)]
 
     @staticmethod
     def listar_todos() -> list:
-        """Retorna todos los usuarios (incluyendo inactivos)"""
         return UsuarioDAO.get_all()
 
     @staticmethod
     def obtener_por_nombre(nombre_usuario: str):
-        """Retorna un usuario por su nombre de usuario"""
         return UsuarioDAO.get_by_nombreUsuario(nombre_usuario)
 
     @staticmethod
     def obtener_por_dni(dni: str):
-        """Retorna un usuario por su DNI"""
         return UsuarioDAO.get_by_dni(dni)
 
     @staticmethod
     def validar_dni(dni: str) -> bool:
-        """Valida un DNI español"""
         if not re.match(r'^\d{8}[A-Za-z]$', dni):
             return False
         letras = "TRWAGMYFPDXBNJZSQVHLCKE"
@@ -44,25 +38,40 @@ class UsuarioService:
 
     @staticmethod
     def validar_telefono(telefono: str) -> bool:
-        """Valida un teléfono español de 9 dígitos"""
         if not telefono:
             return True
         return bool(re.match(r'^\d{9}$', telefono))
 
     @staticmethod
     def actualizar(usuario, nuevos_datos: dict) -> tuple[bool, str]:
-        """Actualiza los datos de un usuario"""
         if 'dni' in nuevos_datos and not UsuarioService.validar_dni(nuevos_datos['dni']):
             return False, "DNI no válido"
 
         try:
-            from src.modelo.vo import Usuario
+            # Acepta tanto 'fechaNacimiento' como 'fecha_nacimiento' (según quién llame)
+            nueva_fecha = (
+                nuevos_datos.get('fechaNacimiento') or
+                nuevos_datos.get('fecha_nacimiento') or
+                usuario.fechaNacimiento
+            )
+
+            nuevo_telefono = (
+                nuevos_datos.get('telefono') or
+                getattr(usuario, 'telefono', None)
+            )
+
+            nuevo_password = (
+                nuevos_datos.get('password') or usuario.password
+            )
+
             usuario_actualizado = type(usuario)(
                 nombreUsuario=usuario.nombreUsuario,
                 Nombre=nuevos_datos.get('nombre', usuario.nombre),
                 DNI=nuevos_datos.get('dni', usuario.dni),
-                password=nuevos_datos.get('password', usuario.password) if nuevos_datos.get('password') else usuario.password,
-                email=nuevos_datos.get('email', usuario.email)
+                password=nuevo_password,
+                email=nuevos_datos.get('email', usuario.email),
+                fechaNacimiento=nueva_fecha,
+                telefono=nuevo_telefono,
             )
 
             exito = UsuarioDAO.update(usuario_actualizado)
@@ -74,7 +83,6 @@ class UsuarioService:
 
     @staticmethod
     def desactivar(nombre_usuario: str) -> tuple[bool, str]:
-        """Desactiva un usuario (baja lógica)"""
         try:
             exito = UsuarioDAO.delete(nombre_usuario)
             if exito:
@@ -85,7 +93,6 @@ class UsuarioService:
 
     @staticmethod
     def activar(nombre_usuario: str) -> tuple[bool, str]:
-        """Re-activa un usuario — delega al DAO, sin SQL directo"""
         try:
             exito = UsuarioDAO.activar(nombre_usuario)
             if exito:
@@ -96,7 +103,6 @@ class UsuarioService:
 
     @staticmethod
     def crear_administrador(datos: dict) -> tuple[bool, str]:
-        """Crea un nuevo administrador"""
         from src.modelo.vo import Admin
         from src.modelo.dao import AdministradorDAO
 
@@ -120,17 +126,15 @@ class UsuarioService:
                 nombreUsuario=datos['nombre_usuario'],
                 Nombre=datos['nombre_completo'],
                 DNI=datos['dni'],
-                password=datos.get('password', datos['dni'])
+                password=datos.get('password', datos['dni']),
+                email=datos.get('email'),
+                fechaNacimiento=datos.get('fecha_nacimiento'),
+                telefono=datos.get('telefono'),
             )
 
             if not UsuarioDAO.create(nuevo_admin):
                 return False, "Error al crear la cuenta de administrador"
 
-            # El teléfono se guarda a través del DAO, sin SQL directo en el servicio
-            if datos.get('telefono'):
-                UsuarioDAO.update_telefono(datos['nombre_usuario'], datos['telefono'])
-
-            # Se pasa el VO Admin directamente, sin clase TempAdmin intermedia
             if not AdministradorDAO.create(nuevo_admin):
                 return False, "Error al crear registro de administrador"
 
