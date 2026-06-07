@@ -8,12 +8,18 @@ ui_path = os.path.join(os.path.dirname(__file__), "editar_sesion.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class TrabajadorEditarSesionVentana(QMainWindow, Ui_MainWindow):
+    """
+    Ventana encargada de la edición de las sesiones de los pacientes.
+    Permite al trabajador modificar la fecha, hora y comentarios introducidos.
+    """
     def __init__(self, controlador, sesion_id):
         super().__init__()
         self.setupUi(self)
         self._controller = controlador
         self._sesion_id = sesion_id
+        self.showMaximized()
 
+        # Configuración de restricciones e inicialización de eventos (Listeners)
         self.txt_paciente.setReadOnly(True)
         self.btn_cancelar.clicked.connect(self.close)
         self.btn_guardar.clicked.connect(self._procesar_guardado)
@@ -31,12 +37,17 @@ class TrabajadorEditarSesionVentana(QMainWindow, Ui_MainWindow):
 
         hora_val = sesion.get("hora")
         if isinstance(hora_val, time):
+            # Si el backend devuelve un objeto de tipo time nativo de Python
             self.time_sesion.setTime(QTime(hora_val.hour, hora_val.minute))
         elif isinstance(hora_val, str) and hora_val:
             h = datetime.strptime(hora_val[:5], "%H:%M").time()
             self.time_sesion.setTime(QTime(h.hour, h.minute))
 
     def _procesar_guardado(self):
+        """
+        Captura los datos modificados por el usuario, los empaqueta y los envía
+        al controlador para proceder con la actualización en la base de datos.
+        """
         datos = {
             "fecha": self.date_sesion.date().toString("yyyy-MM-dd"),
             "hora": self.time_sesion.time().toString("HH:mm"),

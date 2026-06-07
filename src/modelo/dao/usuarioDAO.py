@@ -159,16 +159,25 @@ class UsuarioDAO:
         conn = db.get_connection()
         if conn is None:
             return False
+        
 
         cursor = conn.cursor()
         try:
+            tel = getattr(usuario, 'telefono', None)
+            
+            # Si viene como string vacío o solo espacios, lo convertimos a None (NULL en MySQL)
+            if tel == "" or (isinstance(tel, str) and tel.strip() == ""):
+                telefono_final = None
+            else:
+                telefono_final = tel
+
             cursor.execute(UPDATE, (
                 usuario.nombre,
                 usuario.email,
                 usuario.dni,
                 usuario.password,
                 usuario.fechaNacimiento,
-                getattr(usuario, 'telefono', None),
+                telefono_final,
                 usuario.nombreUsuario
             ))
             conn.commit()

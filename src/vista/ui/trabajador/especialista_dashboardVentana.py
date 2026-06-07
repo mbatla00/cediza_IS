@@ -11,6 +11,7 @@ class EspecialistaDashboardVentana(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self._controller = controlador
+        self.showMaximized()
 
         self.date_fecha.setDate(QDate.currentDate())
         self.time_hora.setTime(QTime.currentTime())
