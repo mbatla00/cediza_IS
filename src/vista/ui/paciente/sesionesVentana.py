@@ -15,6 +15,7 @@ class PacienteSesionesVentana(QMainWindow, Ui_MainWindow):
         self.btn_volver.clicked.connect(self.close)
         self._configurar_tablas()
         self._cargar_datos()
+        self.showMaximized()
 
     def _configurar_tablas(self):
         for tabla in [self.tabla_proximas, self.tabla_pasadas]:

@@ -13,6 +13,7 @@ class PacienteHistorialVentana(QMainWindow, Ui_MainWindow):
         self._controller = controlador
         self.btn_volver.clicked.connect(self.close)
         self._cargar_datos()
+        self.showMaximized()
 
     def _cargar_datos(self):
         historial = self._controller.obtener_historial_agrupado_por_fecha()

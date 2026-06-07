@@ -14,6 +14,7 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.controlador = controlador
+        self.showMaximized()
 
         self.rol_actual    = ""
         self.usuario_editado = None

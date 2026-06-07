@@ -13,6 +13,8 @@ class DashboardAdminVentana(QMainWindow, Ui_MainWindow):
         self._auth_controller = auth_controller
         self._usuario_actual = usuario_actual
         self._conectar_botones()
+        # Fuerza a la ventana a abrirse maximizada desde el inicio
+        self.showMaximized()
 
     def _conectar_botones(self):
         self.btn_salir.clicked.connect(self._cerrar_sesion)
