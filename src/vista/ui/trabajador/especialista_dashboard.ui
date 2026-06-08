@@ -13,8 +13,271 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* ================================================
+   FONDO GENERAL DE LA APLICACIÓN
+   ================================================ */
+QMainWindow {
+    background-color: #f8f9fa; /* Gris claro de fondo de Bootstrap */
+}
+
+/* ================================================
+   CABECERA (TÍTULO Y SUBTÍTULO)
+   ================================================ */
+QLabel#label {
+    color: #212529;
+    font-size: 26px;
+    font-weight: bold;
+    font-family: &quot;Segoe UI&quot;, Arial, sans-serif;
+}
+
+QLabel#lbl_subtitulo {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* BOTÓN VOLVER (¡Ahora Azul Bootstrap btn-primary!) */
+QPushButton#btn_volver {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+QPushButton#btn_volver:hover {
+    background-color: #0b5ed7; /* Azul más oscuro al pasar el ratón */
+}
+
+QPushButton#btn_volver:pressed {
+    background-color: #0a58ca; /* Al hacer clic */
+}
+
+/* ================================================
+   TARJETAS CONTENEDORAS (QGroupBox)
+   ================================================ */
+QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-top: 24px;
+    font-weight: bold;
+    font-size: 14px;
+    padding-top: 15px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 6px 12px;
+    left: 15px;
+    top: -5px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    color: #ffffff; /* Texto blanco en la barra de la tarjeta */
+}
+
+/* Colores de cabecera idénticos a los &quot;card-header&quot; del HTML */
+QGroupBox#gb_crear_sesion::title { 
+    background-color: #0d6efd; /* bg-primary (Azul) */
+}
+QGroupBox#gb_proximas::title { 
+    background-color: #198754; /* bg-success (Verde) */
+}
+QGroupBox#gb_pasadas::title { 
+    background-color: #6c757d; /* bg-secondary (Gris) */
+}
+
+/* ================================================
+   ELEMENTOS INTERNOS DEL FORMULARIO
+   ================================================ */
+QLabel {
+    color: #212529;
+    font-size: 13px;
+    font-weight: 600;
+}
+QComboBox, QDateEdit, QTimeEdit, QTextEdit {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 6px;
+    background-color: #ffffff;
+    color: #212529;
+}
+QComboBox:focus, QDateEdit:focus, QTimeEdit:focus, QTextEdit:focus {
+    border: 1px solid #86b7fe;
+}
+
+/* BOTÓN CREAR SESIÓN (btn-primary) */
+QPushButton#btn_crear_sesion {
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_crear_sesion:hover {
+    background-color: #0b5ed7;
+}
+
+/* ================================================
+   TABLAS DE DATOS REVERSIVAS (QTableWidget)
+   ================================================ */
+QTableWidget {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    gridline-color: #f1f3f9;
+}
+QHeaderView::section {
+    background-color: #f8f9fa; /* table-light de Bootstrap */
+    color: #212529;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-bottom: 2px solid #dee2e6;
+}
+QTableWidget::item {
+    padding: 8px;
+    color: #212529;
+}
+QTableWidget::item:selected {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0" colspan="3">
+     <widget class="QWidget" name="widget_contenido" native="true">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QWidget" name="widget_tablas" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QGroupBox" name="gb_proximas">
+            <property name="title">
+             <string>Próximas Sesiones de Terapia</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QTableWidget" name="tabla_proximas">
+               <column>
+                <property name="text">
+                 <string>Acciones</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="gb_pasadas">
+            <property name="title">
+             <string>Historial de Sesiones Pasadas</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QTableWidget" name="tabla_pasadas"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="gb_crear_sesion">
+         <property name="maximumSize">
+          <size>
+           <width>450</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Crear nueva sesión</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Paciente *</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Fecha *</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QComboBox" name="cmb_paciente"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDateEdit" name="date_fecha">
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Hora *</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Comentarios</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QTimeEdit" name="time_hora"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QTextEdit" name="txt_comentarios">
+            <property name="maximumSize">
+             <size>
+              <width>500</width>
+              <height>60</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="btn_crear_sesion">
+            <property name="text">
+             <string>Crear sesión</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="0" column="0" colspan="3">
      <widget class="QWidget" name="widget_2" native="true">
       <layout class="QGridLayout" name="gridLayout_4">
@@ -22,7 +285,8 @@
         <widget class="QLabel" name="label">
          <property name="font">
           <font>
-           <pointsize>16</pointsize>
+           <family>Segoe UI</family>
+           <pointsize>-1</pointsize>
            <bold>true</bold>
           </font>
          </property>
@@ -45,9 +309,9 @@
         </spacer>
        </item>
        <item row="0" column="2">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="btn_volver">
          <property name="text">
-          <string>PushButton</string>
+          <string>Volver al panel general</string>
          </property>
         </widget>
        </item>
@@ -60,142 +324,14 @@
           </size>
          </property>
          <property name="text">
-          <string>Bienvenido</string>
+          <string>Bienvenido/a. Gestiona tus sesiones y pacientes.</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QWidget" name="widget_contenido" native="true">
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>GroupBox</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="1" column="0">
-           <widget class="QComboBox" name="cmb_paciente"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QTimeEdit" name="time_hora"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Hora</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDateEdit" name="date_fecha">
-            <property name="calendarPopup">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Paciente</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Fecha</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Comentarios</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QTextEdit" name="textEdit">
-            <property name="maximumSize">
-             <size>
-              <width>500</width>
-              <height>60</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QPushButton" name="btn_crear_sesion">
-            <property name="text">
-             <string>Crear sesion</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QWidget" name="widget_tablas" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QGroupBox" name="tabla_proximas">
-            <property name="title">
-             <string>GroupBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="tabla_pasadas">
-            <property name="title">
-             <string>GroupBox</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>813</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

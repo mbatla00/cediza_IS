@@ -1,7 +1,14 @@
+from datetime import date
+import jpype
 from src.modelo.conexion.Conexion import Conexion
 Database = Conexion
 from src.modelo.vo import EvaluacionProfesional
 from mysql.connector import Error
+
+"""
+Tabla de evaliaciones profesionales:
+Evaluación que pueden hacer los trabajadores sobre los pacientes con preguntas predeterminadas
+"""
 
 GET_BY_ID = "SELECT * FROM EvaluacionProfesional WHERE idEvaluacion = ?"
 GET_BY_PACIENTE = """SELECT * FROM EvaluacionProfesional

@@ -3,6 +3,10 @@ Database = Conexion
 from src.modelo.vo import PacPri
 from mysql.connector import Error
 
+"""
+Tabla de pacientes privados
+"""
+
 GET_BY_USER = "SELECT * FROM Pac_pri WHERE nombreUsuario = ?"
 CREATE = """INSERT INTO Pac_pri (nombreUsuario, IVA, cuenta, horas)
                      VALUES (?, ?, ?, ?)"""

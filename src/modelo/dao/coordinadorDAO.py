@@ -2,6 +2,11 @@ from src.modelo.conexion.Conexion import Conexion
 from src.modelo.vo import Coordinador
 from mysql.connector import Error
 
+"""
+Tabla de coordinadores:
+tipo de trabajador con puestos superiores
+"""
+
 GET_BY_USER = "SELECT * FROM coordinadores WHERE nombreUsuario = ?"
 CREATE = "INSERT INTO coordinadores (nombreUsuario, infoInteres) VALUES (?, ?)"
 UPDATE_INFO = "UPDATE coordinadores SET infoInteres = ? WHERE nombreUsuario = ?"

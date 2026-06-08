@@ -2,89 +2,103 @@ import os
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 from PySide6.QtUiTools import loadUiType
 
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "cuestionario.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "cuestionario.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class PacienteCuestionarioVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
+        self._controller = controlador
+        self.showMaximized()
         
-        # 1. Configurar las opciones fijas del ComboBox (Pregunta 2)
-        self.cmb_p2_horas.clear()
-        self.cmb_p2_horas.addItems([
-            "Selecciona una opción",
-            "Menos de 5 horas",
-            "De 5 a 6 horas",
-            "De 6 a 7 horas",
-            "De 7 a 9 horas",
-            "Más de 9 horas"
-        ])
+        # 1. Configurar las opciones del ComboBox
+        # Usamos cmb_p2_horas 
+        if hasattr(self, 'cmb_p2_horas'):
+            self.cmb_p2_horas.clear()
+            self.cmb_p2_horas.addItems([
+                "Selecciona una opción",
+                "Menos de 5 horas",
+                "De 5 a 6 horas",
+                "De 6 a 7 horas",
+                "De 7 a 9 horas",
+                "Más de 9 horas"
+            ])
+        elif hasattr(self, 'cmb_p2'):
+            self.cmb_p2.clear()
+            self.cmb_p2.addItems([
+                "Selecciona una opción",
+                "Menos de 5 horas",
+                "De 5 a 6 horas",
+                "De 6 a 7 horas",
+                "De 7 a 9 horas",
+                "Más de 9 horas"
+            ])
         
-        # 2. Estado inicial del campo condicional (Oculto por defecto)
-        self.widget_p3_detalle.setVisible(False)
+        # 2. Estado inicial del campo condicional (Oculto)
+        if hasattr(self, 'txt_p3_detalle'):
+            self.txt_p3_detalle.setVisible(False)
         
-        # 3. Conectar el evento del Radio Button 
-        # El evento 'toggled' se dispara tanto al marcar como al desmarcar
-        self.rad_p3_si.toggled.connect(self.toggle_campo_que_hiciste)
+        # 3. Conectar el RadioButton de la pregunta 3
+        if hasattr(self, 'rad_p3_si'):
+            self.rad_p3_si.toggled.connect(self.toggle_campo_que_hiciste)
+        
+        # 4. Conectar botones de acción
+        if hasattr(self, 'btn_enviar'):
+            self.btn_enviar.clicked.connect(self._validar_y_enviar)
+        if hasattr(self, 'btn_cancelar'):
+            self.btn_cancelar.clicked.connect(self.close)
 
     def toggle_campo_que_hiciste(self, checked: bool):
-        """
-        Replica exactamente la función de JavaScript.
-        Muestra u oculta el campo de texto según la elección del paciente.
-        """
-        # Si 'checked' es True, significa que el usuario ha marcado el "Sí"
-        self.widget_p3_detalle.setVisible(checked)
-        if not checked:
-            self.txt_p3_detalle.clear() # Limpiar el texto si cambia a "No"
+        """Muestra u oculta el campo de detalle según la selección."""
+        if hasattr(self, 'txt_p3_detalle'):
+            self.txt_p3_detalle.setVisible(checked)
 
-    def validar_y_obtener_respuestas(self) -> dict | None:
-        """
-        Verifica que el usuario haya respondido todo lo obligatorio (required)
-        y extrae las respuestas simulando el envío del formulario.
-        """
-        # Validar Pregunta 1 (Radio Buttons)
-        estado_hoy = ""
-        if self.rad_p1_bien.isChecked(): estado_hoy = "Bien"
-        elif self.rad_p1_regular.isChecked(): estado_hoy = "Regular"
-        elif self.rad_p1_mal.isChecked(): estado_hoy = "Mal"
-        
-        if not estado_hoy:
-            QMessageBox.warning(self, "Validación", "Por favor, responde cómo te encuentras hoy.")
-            return None
+    def _validar_y_enviar(self):
+        # Determinar qué combobox existe en el UI
+        combo_horas = self.cmb_p2_horas if hasattr(self, 'cmb_p2_horas') else self.cmb_p2
 
-        # Validar Pregunta 2 (ComboBox)
-        if self.cmb_p2_horas.currentIndex() == 0: # "Selecciona una opción"
+        if combo_horas.currentIndex() == 0:
             QMessageBox.warning(self, "Validación", "Por favor, selecciona las horas de sueño.")
-            return None
-        horas_sueno = self.cmb_p2_horas.currentText()
+            return
 
-        # Validar Pregunta 3 (Condicional)
-        recuerda_ayer = ""
-        que_hizo_ayer = "-"
         if self.rad_p3_si.isChecked():
-            recuerda_ayer = "Si"
-            que_hizo_ayer = self.txt_p3_detalle.toPlainText().strip()
-            if not que_hizo_ayer:
-                QMessageBox.warning(self, "Validación", "Por favor, detalla qué hiciste ayer por la tarde.")
-                return None
-        elif self.rad_p3_no.isChecked():
-            recuerda_ayer = "No"
+            if not self.txt_p3_detalle.toPlainText().strip():
+                QMessageBox.warning(self, "Validación", "Por favor, detalla qué hiciste.")
+                return
+
+        if not self.txt_p4_desayuno.toPlainText().strip():
+            QMessageBox.warning(self, "Validación", "Por favor, indica qué has desayunado.")
+            return
+
+        # Generamos la lista estructurada 
+        # Se envían ambas claves 'contenido' y 'respuesta' por máxima compatibilidad con el backend
+        respuestas = [
+            {
+                "idPregunta": 1, 
+                "contenido": combo_horas.currentText(),
+                "respuesta": combo_horas.currentText()
+            },
+            {
+                "idPregunta": 2, 
+                "contenido": "Sí" if self.rad_p3_si.isChecked() else "No",
+                "respuesta": "Sí" if self.rad_p3_si.isChecked() else "No"
+            },
+            {
+                "idPregunta": 3, 
+                "contenido": self.txt_p3_detalle.toPlainText().strip() if self.rad_p3_si.isChecked() else "No aplica",
+                "respuesta": self.txt_p3_detalle.toPlainText().strip() if self.rad_p3_si.isChecked() else "No aplica"
+            },
+            {
+                "idPregunta": 4, 
+                "contenido": self.txt_p4_desayuno.toPlainText().strip(),
+                "respuesta": self.txt_p4_desayuno.toPlainText().strip()
+            }
+        ]
+        
+        exito, msg = self._controller.guardar_respuestas(respuestas)
+        if exito:
+            QMessageBox.information(self, "Éxito", "Cuestionario enviado correctamente.")
+            self.close()
         else:
-            QMessageBox.warning(self, "Validación", "Por favor, responde si recuerdas qué hiciste ayer.")
-            return None
-
-        # Validar Pregunta 4 (Text Area)
-        desayuno = self.txt_p4_desayuno.toPlainText().strip()
-        if not desayuno:
-            QMessageBox.warning(self, "Validación", "Por favor, responde qué has desayunado hoy.")
-            return None
-
-        # Si todo está correcto, devolvemos el diccionario estructurado
-        return {
-            "respuesta_1": estado_hoy,
-            "respuesta_2": horas_sueno,
-            "respuesta_3_si_no": recuerda_ayer,
-            "respuesta_3": que_hizo_ayer,
-            "respuesta_4": desayuno
-        }
+            QMessageBox.warning(self, "Error", msg)

@@ -3,6 +3,10 @@ Database = Conexion
 from src.modelo.vo import PacPub
 from mysql.connector import Error
 
+"""
+Tabla de pacientes publicos
+"""
+
 GET_BY_USER = "SELECT * FROM Pac_pub WHERE nombreUsuario = ?"
 CREATE = "INSERT INTO Pac_pub (nombreUsuario, Dias_ingresado) VALUES (?, ?)"
 UPDATE_DIAS = "UPDATE Pac_pub SET Dias_ingresado = ? WHERE nombreUsuario = ?"

@@ -23,7 +23,12 @@
     background-color: #f4f6f8;
 }
 
-/* El bloque azul superior sube a 17px */
+/* Color oscuro general para todos los textos de la ventana */
+QLabel {
+    color: #2c3e50;
+}
+
+/* El bloque azul superior conserva su texto blanco */
 QLabel#lbl_paciente {
     background-color: #0d6efd;
     color: white;
@@ -33,7 +38,7 @@ QLabel#lbl_paciente {
     border-radius: 6px;
 }
 
-/* Los títulos de las preguntas (Estado Emocional, Movilidad, Apetito) suben a 14px */
+/* Los títulos de las preguntas (Estado Emocional, Movilidad, Apetito) */
 QGroupBox {
     background-color: white;
     border: 1px solid #e0e0e0;
@@ -51,20 +56,23 @@ QGroupBox::title {
     top: 5px;
 }
 
-/* Los botones circulares con las opciones suben a 13px */
+/* Los botones circulares con las opciones ahora tienen el texto oscuro visible */
 QRadioButton {
     padding: 5px;
     font-weight: normal;
     font-size: 13px; 
+    color: #2c3e50;
 }
 
-/* El cuadro de texto para escribir las observaciones sube a 13px */
+/* El cuadro de texto para escribir las observaciones con texto oscuro y selección limpia */
 QPlainTextEdit {
     border: 1px solid #ced4da;
     border-radius: 4px;
     padding: 8px;
     background-color: #ffffff;
+    color: #2c3e50;
     selection-background-color: #0d6efd;
+    selection-color: #ffffff;
     font-size: 13px;
 }
 
@@ -72,7 +80,7 @@ QPlainTextEdit:focus {
     border: 1px solid #0d6efd;
 }
 
-/* El texto de aviso &quot;Los campos marcados con * son obligatorios&quot; sube a 13px */
+/* El texto de aviso &quot;Los campos marcados con * son obligatorios&quot; conserva su color gris */
 QLabel#lbl_aviso {
     color: #6c757d;
     font-style: italic;
@@ -80,7 +88,7 @@ QLabel#lbl_aviso {
     font-size: 13px; 
 }
 
-/* Los botones de &quot;Cancelar / Volver&quot; y &quot;Guardar Evaluación&quot; suben a 14px */
+/* Los botones de &quot;Cancelar / Volver&quot; y &quot;Guardar Evaluación&quot; */
 QPushButton {
     background-color: #0d6efd;
     color: white;

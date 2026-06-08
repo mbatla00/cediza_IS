@@ -1,14 +1,19 @@
 from .usuarioVO import Usuario
 
 class Admin(Usuario):
-    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None, activo=None):
+    # Tipo de usuario con todos los permisos
+    def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, password=None,
+                 email=None, fechaNacimiento=None, telefono=None, activo=None):
         super().__init__(
             nombreUsuario=nombreUsuario,
             Nombre=Nombre,
             DNI=DNI,
             Rol='admin',
             password=password,
-            activo=activo  # ← Pasa activo al padre
+            email=email,
+            fechaNacimiento=fechaNacimiento,
+            telefono=telefono,
+            activo=activo
         )
 
     def __repr__(self):

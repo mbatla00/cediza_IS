@@ -1,32 +1,65 @@
 import os
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtUiTools import loadUiType
 
-# 1. Carga el archivo .ui al estilo oficial de PySide6
-ui_file = os.path.join(os.path.dirname(__file__), "ui", "crear_admin.ui")
+ui_file = os.path.join(os.path.dirname(__file__), "crear_admin.ui")
 ui_formulario, _ = loadUiType(ui_file)
 
 class CrearAdminVentana(QDialog, ui_formulario):
-    def __init__(self):
+    """
+    Ventana modal (QDialog) destinada exclusivamente al registro de nuevos Administradores.
+    Implementa validaciones automáticas por máscara (Regex) y gestiona el ciclo de vida
+    del diálogo mediante llamadas nativas de Qt (accept/reject).
+    """
+    def __init__(self, controlador):
         super().__init__()
-        
-        # 2. Inicializa y dibuja la interfaz en 'self'
         self.setupUi(self)
-        
-        # 3. Restricciones visuales (Validadores en la Vista)
+        self.controlador = controlador
+
+        self.btn_crear.clicked.connect(self.procesar_guardado)
+        self.btn_cancelar.clicked.connect(self.reject)
+
         self.configurar_restricciones()
 
     def configurar_restricciones(self):
-        """Aplica filtros para que el usuario no escriba datos basura"""
-        
-        # El teléfono solo puede tener números (9 dígitos)
         regex_tel = QRegularExpression(r"^\d{0,9}$")
-        validador_tel = QRegularExpressionValidator(regex_tel, self)
-        self.txt_telefono.setValidator(validador_tel)
-        
-        # El DNI obliga a meter 8 números y una letra (fuerza mayúsculas en el controlador)
+        self.txt_telefono.setValidator(QRegularExpressionValidator(regex_tel, self))
+
         regex_dni = QRegularExpression(r"^\d{0,8}[a-zA-Z]?$")
-        validador_dni = QRegularExpressionValidator(regex_dni, self)
-        self.txt_dni.setValidator(validador_dni)
+        self.txt_dni.setValidator(QRegularExpressionValidator(regex_dni, self))
+
+    def obtener_datos_formulario(self) -> dict:
+        return {
+            "nombre_completo": self.txt_nombre_completo.text().strip(),
+            "nombre_usuario":  self.txt_nombre_usuario.text().strip(),
+            "dni":             self.txt_dni.text().strip(),
+            "telefono":        self.txt_telefono.text().strip(),
+            "email":           self.txt_email.text().strip(),
+            "password":        self.txt_password.text().strip()
+        }
+
+    def limpiar_formulario(self):
+        self.txt_nombre_completo.clear()
+        self.txt_nombre_usuario.clear()
+        self.txt_dni.clear()
+        self.txt_telefono.clear()
+        self.txt_email.clear()
+        self.txt_password.clear()
+
+    def procesar_guardado(self):
+        # Validación visual estricta: Impide llamadas al controlador si faltan datos obligatorios
+        datos = self.obtener_datos_formulario()
+
+        if not datos["nombre_completo"] or not datos["nombre_usuario"] or not datos["dni"]:
+            QMessageBox.warning(self, "Campos vacíos", "Por favor, rellena los campos obligatorios.")
+            return
+
+        exito, msg, _ = self.controlador.agregar_administrador(datos)
+
+        if exito:
+            QMessageBox.information(self, "Éxito", f"Administrador '{datos['nombre_completo']}' registrado correctamente.")
+            self.accept()
+        else:
+            QMessageBox.warning(self, "Error al crear", f"No se pudo registrar: {msg}")

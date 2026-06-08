@@ -17,7 +17,7 @@ class UsuarioFactory:
             elif datos.get('nombreUsuario'):
                 tipo_raw = 'admin'
 
-        tipo = tipo_raw.lower() if tipo_raw else ''
+        tipo = tipo_raw.lower().strip() if tipo_raw else ''
 
         # Obtener activo de los datos
         activo = datos.get('activo') or datos.get('Activo')
@@ -26,8 +26,11 @@ class UsuarioFactory:
 
         if tipo == 'paciente':
             return PacienteFactory.crear(datos)
-        elif tipo == 'trabajador':
+        
+        # Ahora aceptamos tanto 'trabajador' genérico, como los roles específicos 'auxiliar' y 'especialista'
+        elif tipo in ('trabajador', 'auxiliar', 'especialista'):
             return TrabajadorFactory.crear(datos)
+            
         elif tipo == 'admin':
             datos_filtrados = {
                 'nombreUsuario': datos.get('nombreUsuario'),
@@ -37,6 +40,6 @@ class UsuarioFactory:
                 'activo': activo  # ← Esto pasa activo en el CONSTRUCTOR
             }
             datos_filtrados = {k: v for k, v in datos_filtrados.items() if v is not None}
-            return Admin(**datos_filtrados)  # ← Admin recibe activo en __init__
+            return Admin(**datos_filtrados)
         else:
             raise ValueError(f"Rol desconocido: '{tipo}'")

@@ -2,6 +2,10 @@ from src.modelo.conexion.Conexion import Conexion
 Database = Conexion
 from src.modelo.vo.pacienteEnfermedadVO import PacienteEnfermedad
 
+"""
+Tabla de la relación ntre pacientes y enfermedades
+"""
+
 GET_BY_PACIENTE = "SELECT * FROM pacienteenfermedad WHERE paciente = ?"
 GET_BY_ENFERMEDAD = "SELECT * FROM pacienteenfermedad WHERE enfermedad_id = ?"
 CREATE = "INSERT INTO pacienteenfermedad (paciente, enfermedad_id) VALUES (?, ?)"

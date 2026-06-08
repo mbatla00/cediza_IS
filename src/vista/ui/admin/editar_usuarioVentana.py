@@ -1,182 +1,228 @@
 import os
-from datetime import datetime
-from PySide6.QtWidgets import QMainWindow, QCheckBox, QWidget, QHBoxLayout, QLineEdit, QPushButton, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QMessageBox, QListWidgetItem, QTableWidgetItem
 from PySide6.QtUiTools import loadUiType
 from PySide6.QtCore import QDate
 
-ui_path = os.path.join(os.path.dirname(__file__), "ui", "editar_usuario.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "editar_usuario.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
+ROLES_TRABAJADOR = {'auxiliar', 'especialista', 'coordinador'}
+
+
 class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, controlador):
         super().__init__()
         self.setupUi(self)
-        
-        # Almacenes para elementos dinámicos
-        self.checkboxes_enfermedades = {}
+        self.controlador = controlador
+        self.showMaximized()
+
         self.rol_actual = ""
-        
-        # Conectar eventos dinámicos estilo JS
-        self.btn_anadir_enfermedad.clicked.connect(self.agregar_enfermedad_dinamica)
-        self.btn_anadir_contacto.clicked.connect(lambda: self.crear_fila_contacto("", "", ""))
-        self.cmb_tipo_trabajador.currentTextChanged.connect(self.mostrar_subcampos_trabajador)
+        self.usuario_editado = None
 
-    def cargar_usuario(self, usuario: dict, todas_enfermedades: list, paciente_enfermedades: list, contactos: list):
+        self._habilitar_campos_comunes(False)
 
-        self.rol_actual = usuario.get("rol", "admin")
-        
-        # 1. Rellenar datos comunes
-        self.txt_nombre.setText(usuario.get("nombre", ""))
-        self.txt_email.setText(usuario.get("email", ""))
-        self.txt_dni.setText(usuario.get("dni", ""))
-        self.txt_telefono.setText(usuario.get("telefono", ""))
-        self.txt_password.clear()
-        
-        if usuario.get("fechaNacimiento"):
-            f = datetime.strptime(usuario["fechaNacimiento"], "%Y-%m-%d").date()
-            self.date_nacimiento.setDate(QDate(f.year, f.month, f.day))
-        
-        # 2. Gestionar visibilidad de contenedores según Rol
-        self.widget_rol_paciente.setVisible(self.rol_actual == "paciente")
-        self.widget_rol_trabajador.setVisible(self.rol_actual == "trabajador")
-        self.widget_rol_admin.setVisible(self.rol_actual == "admin")
-        
-        # 3. Inicializar secciones específicas
-        if self.rol_actual == "paciente":
-            self.cmb_tipo_paciente.setCurrentText(usuario.get("tipo", "publico").capitalize())
-            self.inicializar_enfermedades(todas_enfermedades, paciente_enfermedades)
-            self.inicializar_contactos(contactos)
-            
-        elif self.rol_actual == "trabajador":
-            tipo_t = usuario.get("tipo_trabajador", "auxiliar")
-            self.cmb_tipo_trabajador.setCurrentText(tipo_t.capitalize())
-            
-            # Rellenar subcampos
-            self.cmb_horario_auxiliar.setCurrentText(usuario.get("horario", ""))
-            self.txt_especialidad.setText(usuario.get("especialidad", ""))
-            self.txt_horario_especialista.setText(usuario.get("horario", ""))
-            self.mostrar_subcampos_trabajador(self.cmb_tipo_trabajador.currentText())
+        self._llenar_buscador_usuarios()
+        self.cmb_buscador_usuario.currentIndexChanged.connect(self._al_seleccionar_usuario)
 
-    # --- SECCIÓN PACIENTE: ENFERMEDADES ---
-    def inicializar_enfermedades(self, todas: list, seleccionadas: list):
-        # Limpiar layout previo si existiera
-        for cb in self.checkboxes_enfermedades.values():
-            cb.deleteLater()
-        self.checkboxes_enfermedades.clear()
-        
-        # Inyectar las enfermedades del catálogo base
-        for enf in todas:
-            cb = QCheckBox(enf["nombre"])
-            if enf["id"] in seleccionadas:
-                cb.setChecked(True)
-            self.layout_enfermedades.addWidget(cb)
-            self.checkboxes_enfermedades[str(enf["id"])] = cb
+        self.btn_anadir_enfermedad.clicked.connect(self._agregar_enfermedad)
+        self.btn_anadir_contacto.clicked.connect(self._agregar_fila_contacto)
 
-    def agregar_enfermedad_dinamica(self):
-        """ Equivalente a agregarEnfermedad() en JS """
-        nombre = self.txt_otra_enfermedad.text().strip()
-        if not nombre: return
-        
-        cb = QCheckBox(nombre)
-        cb.setChecked(True)
-        self.layout_enfermedades.addWidget(cb)
-        
-        # Guardamos la clave con un prefijo "nueva_" idéntico al HTML
-        self.checkboxes_enfermedades[f"nueva_{nombre}"] = cb
-        self.txt_otra_enfermedad.clear()
+        self.cmb_tipo_trabajador.currentTextChanged.connect(self._mostrar_subcampos_trabajador)
 
-    # --- SECCIÓN PACIENTE: CONTACTOS DE EMERGENCIA ---
-    def inicializar_contactos(self, contactos: list):
-        # Limpiar contenedor de contactos viejo
-        while self.widget_contactos_container.layout().count():
-            item = self.widget_contactos_container.layout().takeAt(0)
-            if item.widget(): item.widget().deleteLater()
-            
-        if contactos:
-            for c in contactos:
-                self.crear_fila_contacto(c["nombre"], c["relacion"], c["telefono"])
+        self.btn_guardar.clicked.connect(self._procesar_guardado)
+        self.btn_cancelar.clicked.connect(self.close)
+
+    # BUSCADOR
+
+    def _llenar_buscador_usuarios(self):
+        self.cmb_buscador_usuario.clear()
+        self.cmb_buscador_usuario.addItem("--- Seleccione un usuario ---", None)
+        for u in self.controlador.listar_todos_usuarios_dict():
+            texto = f"{u['nombre']} ({u['tipo'].capitalize()})"
+            self.cmb_buscador_usuario.addItem(texto, u['nombreUsuario'])
+
+    def _al_seleccionar_usuario(self, index):
+        nombre_usuario = self.cmb_buscador_usuario.itemData(index)
+        if nombre_usuario:
+            self.usuario_editado = nombre_usuario
+            datos = self.controlador.obtener_usuario_dict(nombre_usuario)
+            if datos:
+                self._cargar_usuario(datos)
         else:
-            self.crear_fila_contacto("", "", "") # Fila vacía por defecto
+            self.usuario_editado = None
+            self._limpiar_formulario()
+            self._habilitar_campos_comunes(False)
+            self._ocultar_todos_los_roles()
 
-    def crear_fila_contacto(self, nombre: str, relacion: str, telefono: str):
-        """ Crea una fila con inputs y botón eliminar al vuelo """
-        fila = QWidget()
-        layout_fila = QHBoxLayout(fila)
-        layout_fila.setContentsMargins(0, 0, 0, 0)
-        
-        txt_n = QLineEdit(nombre); txt_n.setPlaceholderText("Nombre")
-        txt_r = QLineEdit(relacion); txt_r.setPlaceholderText("Parentesco")
-        txt_t = QLineEdit(telefono); txt_t.setPlaceholderText("Teléfono")
-        
-        btn_del = QPushButton("🗑️")
-        btn_del.setStyleSheet("background-color: red; color: white;")
-        # Al pulsar, destruimos el contenedor de la fila completa
-        btn_del.clicked.connect(fila.deleteLater)
-        
-        layout_fila.addWidget(txt_n, 4)
-        layout_fila.addWidget(txt_r, 4)
-        layout_fila.addWidget(txt_t, 3)
-        layout_fila.addWidget(btn_del, 1)
-        
-        # Guardamos referencias en el objeto para leerlas luego
-        fila.txt_nombre = txt_n
-        fila.txt_relacion = txt_r
-        fila.txt_telefono = txt_t
-        
-        self.widget_contactos_container.layout().addWidget(fila)
+    # VISIBILIDAD
 
-    # --- SECCIÓN TRABAJADOR ---
-    def mostrar_subcampos_trabajador(self, tipo: str):
-        """ Equivalente a mostrarCamposTrabajador() en JS """
+    def _habilitar_campos_comunes(self, habilitado: bool):
+        for nombre in ('txt_nombre', 'txt_dni', 'txt_email',
+                       'txt_telefono', 'txt_password', 'date_nacimiento'):
+            getattr(self, nombre).setEnabled(habilitado)
+        self.btn_guardar.setEnabled(habilitado)
+
+    def _ocultar_todos_los_roles(self):
+        self.box_rol_paciente.setVisible(False)
+        self.box_rol_trabajador.setVisible(False)
+        self.box_rol_admin.setVisible(False)
+
+    def _mostrar_seccion_rol(self, rol: str):
+        self._ocultar_todos_los_roles()
+        if rol == 'paciente':
+            self.box_rol_paciente.setVisible(True)
+        elif rol == 'trabajador':
+            self.box_rol_trabajador.setVisible(True)
+        elif rol == 'admin':
+            self.box_rol_admin.setVisible(True)
+
+    def _mostrar_subcampos_trabajador(self, tipo: str):
         tipo = tipo.lower()
-        self.widget_campos_auxiliar.setVisible(tipo == "auxiliar")
-        self.widget_campos_especialista.setVisible(tipo == "especialista")
+        es_auxiliar     = tipo == 'auxiliar'
+        es_especialista = tipo == 'especialista'
 
-    # --- EXTRACCIÓN DE PAYLOAD ---
-    def obtener_datos_formulario(self) -> dict:
-        """ Recolecta todo simulando el parseo del REQUEST POST del servidor """
-        qdate = self.date_nacimiento.date()
-        fecha_str = f"{qdate.year()}-{qdate.month():02d}-{qdate.day():02d}"
-        
+        self.cmb_horario_auxiliar.setVisible(es_auxiliar)
+        self.cmb_horario_auxiliar.setEnabled(es_auxiliar)
+
+        self.txt_especialidad.setVisible(es_especialista)
+        self.txt_especialidad.setEnabled(es_especialista)
+        self.txt_horario_especialista.setVisible(es_especialista)
+        self.txt_horario_especialista.setEnabled(es_especialista)
+
+    # CARGA DE DATOS
+
+    def _cargar_usuario(self, datos: dict):
+        self.txt_nombre.setText(datos.get('nombre', ''))
+        self.txt_dni.setText(datos.get('dni', ''))
+        self.txt_email.setText(datos.get('email', ''))
+        self.txt_telefono.setText(datos.get('telefono', ''))
+        self.txt_password.setText(datos.get('password', ''))
+        self.text_Usuario.setText(datos.get('nombreUsuario', ''))
+
+        fecha_str = datos.get('fechaNacimiento', '')
+        if fecha_str:
+            self.date_nacimiento.setDate(QDate.fromString(str(fecha_str), 'yyyy-MM-dd'))
+
+        tipo_valor = datos.get('tipo', '').lower()
+
+        if tipo_valor in ROLES_TRABAJADOR:
+            self.rol_actual = 'trabajador'
+            self._cargar_datos_trabajador(datos, tipo_valor)
+        elif tipo_valor == 'admin':
+            self.rol_actual = 'admin'
+        else:
+            self.rol_actual = 'paciente'
+            self._cargar_datos_paciente(datos)
+
+        self._habilitar_campos_comunes(True)
+        self._mostrar_seccion_rol(self.rol_actual)
+
+    def _cargar_datos_paciente(self, datos: dict):
+        idx = self.cmb_tipo_paciente.findText(datos.get('tipo_paciente', 'Público').capitalize())
+        if idx >= 0:
+            self.cmb_tipo_paciente.setCurrentIndex(idx)
+
+        self.lista_enfermedades.clear()
+        for enf in datos.get('enfermedades', []):
+            self.lista_enfermedades.addItem(QListWidgetItem(str(enf)))
+
+        self.tableWidget.setRowCount(0)
+        for c in datos.get('contactos', []):
+            self._agregar_fila_contacto(c)
+
+    def _cargar_datos_trabajador(self, datos: dict, tipo_valor: str):
+        idx = self.cmb_tipo_trabajador.findText(tipo_valor.capitalize())
+        if idx >= 0:
+            self.cmb_tipo_trabajador.setCurrentIndex(idx)
+
+        if tipo_valor == 'auxiliar':
+            idx_h = self.cmb_horario_auxiliar.findText(datos.get('horario', ''))
+            if idx_h >= 0:
+                self.cmb_horario_auxiliar.setCurrentIndex(idx_h)
+        elif tipo_valor == 'especialista':
+            self.txt_especialidad.setText(datos.get('especialidad', ''))
+            self.txt_horario_especialista.setText(datos.get('horario', ''))
+
+        self._mostrar_subcampos_trabajador(tipo_valor)
+
+    # ACCIONES DE PACIENTE
+
+    def _agregar_enfermedad(self):
+        texto = self.txt_otra_enfermedad.text().strip()
+        if texto:
+            self.lista_enfermedades.addItem(QListWidgetItem(texto))
+            self.txt_otra_enfermedad.clear()
+
+    def _agregar_fila_contacto(self, contacto=None):
+        row = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(row)
+        if isinstance(contacto, dict):
+            self.tableWidget.setItem(row, 0, QTableWidgetItem(contacto.get('nombre', '')))
+            self.tableWidget.setItem(row, 1, QTableWidgetItem(contacto.get('parentesco', '')))
+            self.tableWidget.setItem(row, 2, QTableWidgetItem(contacto.get('telefono', '')))
+
+    # LIMPIAR
+
+    def _limpiar_formulario(self):
+        for campo in ('txt_nombre', 'txt_dni', 'txt_email', 'txt_telefono',
+                      'txt_password', 'txt_especialidad', 'txt_horario_especialista',
+                      'txt_otra_enfermedad', 'text_Usuario'):
+            getattr(self, campo).clear()
+        self.lista_enfermedades.clear()
+        self.tableWidget.setRowCount(0)
+        self.rol_actual = ""
+
+    # GUARDAR
+
+    def _obtener_datos_formulario(self) -> dict:
         payload = {
-            "nombre": self.txt_nombre.text().strip(),
-            "email": self.txt_email.text().strip(),
-            "dni": self.txt_dni.text().strip(),
-            "fecha_nacimiento": fecha_str,
-            "telefono": self.txt_telefono.text().strip(),
-            "rol": self.rol_actual
+            'nombre':           self.txt_nombre.text().strip(),
+            'dni':              self.txt_dni.text().strip(),
+            'email':            self.txt_email.text().strip(),
+            'telefono':         self.txt_telefono.text().strip(),
+            'password':         self.txt_password.text().strip(),
+            'fecha_nacimiento': self.date_nacimiento.date().toString('yyyy-MM-dd'),
         }
-        
-        if self.txt_password.text().strip():
-            payload["password"] = self.txt_password.text().strip()
-            
-        # Parsea según el rol activo
-        if self.rol_actual == "paciente":
-            payload["tipo"] = self.cmb_tipo_paciente.currentText().lower()
-            
-            # Extraer IDs de enfermedades marcadas
-            payload["enfermedades"] = [id_enf for id_enf, cb in self.checkboxes_enfermedades.items() if cb.isChecked()]
-            
-            # Extraer contactos dinámicos recorriendo el Layout
+
+        if self.rol_actual == 'paciente':
+            payload['tipo_paciente'] = self.cmb_tipo_paciente.currentText()
+            payload['enfermedades'] = [
+                self.lista_enfermedades.item(i).text()
+                for i in range(self.lista_enfermedades.count())
+            ]
             contactos = []
-            container_layout = self.widget_contactos_container.layout()
-            for i in range(container_layout.count()):
-                fila = container_layout.itemAt(i).widget()
-                if fila and hasattr(fila, "txt_nombre"):
-                    contactos.append({
-                        "nombre": fila.txt_nombre.text().strip(),
-                        "relacion": fila.txt_relacion.text().strip(),
-                        "telefono": fila.txt_telefono.text().strip()
-                    })
-            payload["contactos"] = contactos
-            
-        elif self.rol_actual == "trabajador":
+            for row in range(self.tableWidget.rowCount()):
+                def celda(col, r=row):
+                    item = self.tableWidget.item(r, col)
+                    return item.text().strip() if item else ''
+                contactos.append({
+                    'nombre':     celda(0),
+                    'parentesco': celda(1),
+                    'telefono':   celda(2),
+                })
+            payload['contactos'] = contactos
+
+        elif self.rol_actual == 'trabajador':
             tipo_t = self.cmb_tipo_trabajador.currentText().lower()
-            payload["tipo_trabajador"] = tipo_t
-            if tipo_t == "auxiliar":
-                payload["horario"] = self.cmb_horario_auxiliar.currentText()
-            elif tipo_t == "especialista":
-                payload["especialidad"] = self.txt_especialidad.text().strip()
-                payload["horario_especialista"] = self.txt_horario_especialista.text().strip()
-                
+            payload['tipo_trabajador'] = tipo_t
+            if tipo_t == 'auxiliar':
+                payload['horario'] = self.cmb_horario_auxiliar.currentText()
+            elif tipo_t == 'especialista':
+                payload['especialidad']        = self.txt_especialidad.text().strip()
+                payload['horario_especialista'] = self.txt_horario_especialista.text().strip()
+
         return payload
+
+    def _procesar_guardado(self):
+        if not self.usuario_editado:
+            QMessageBox.warning(self, "Aviso", "No hay ningún usuario seleccionado para editar.")
+            return
+
+        payload = self._obtener_datos_formulario()
+        exito, msg = self.controlador.actualizar_usuario(self.usuario_editado, payload)
+
+        if exito:
+            QMessageBox.information(self, "Éxito", msg)
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", msg)

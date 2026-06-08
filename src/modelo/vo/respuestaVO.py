@@ -6,10 +6,8 @@ class Respuesta:
         self._idRespuesta = idRespuesta
         self._idPregunta = idPregunta
         self._idPaciente = idPaciente
-        self._fechaHora = None
+        self._fechaHora = fechaHora
         self._contenido = contenido
-        if fechaHora:
-            self.fechaHora = fechaHora
 
     @property
     def idRespuesta(self):

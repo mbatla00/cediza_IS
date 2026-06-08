@@ -3,6 +3,11 @@ Database = Conexion
 from src.modelo.vo import Informe
 from mysql.connector import Error
 
+"""
+Tabla de informes:
+informe realizado por un trabajador sobre un paciente en un periodo establecido
+"""
+
 GET_BY_REF = "SELECT * FROM Informe WHERE referencia = ?"
 GET_BY_PACIENTE = """SELECT * FROM Informe
                    WHERE Paciente = ? ORDER BY fechaGeneracion DESC"""

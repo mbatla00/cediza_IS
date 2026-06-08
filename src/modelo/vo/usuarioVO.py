@@ -1,25 +1,27 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 class Usuario(ABC):
     #clase abstracta para todos los usuarios del sistema
 
     def __init__(self, nombreUsuario=None, Nombre=None, DNI=None, Rol=None, 
-    password=None, email=None, fechaNacimiento=None, activo=None):
+    password=None, email=None, fechaNacimiento=None, activo=None, telefono=None):
+
 
         self._nombreUsuario = nombreUsuario
         self._nombre = Nombre
         self._dni = DNI
-        self._rol = Rol 
+        self._rol = Rol
         self._password = password
         self._email = email
         self._fechaNacimiento = fechaNacimiento
+        self._telefono = telefono
         self._activo = activo if activo is not None else 1
+        self._telefono
 
-    
     @property
     def nombreUsuario(self):
         return self._nombreUsuario
-    
+
     @property
     def nombre(self):
         return self._nombre
@@ -30,14 +32,14 @@ class Usuario(ABC):
 
     @property
     def rol(self):
-        return self._rol 
+        return self._rol
 
     @property
     def password(self):
         return self._password
 
     @property
-    def email(self): 
+    def email(self):
         return self._email
 
     @property
@@ -45,8 +47,17 @@ class Usuario(ABC):
         return self._fechaNacimiento
 
     @property
+    def telefono(self):
+        return self._telefono
+
+    @property
     def activo(self):
         return self._activo
+
+
+    @property
+    def telefono(self):
+        return self._telefono
     
     def to_dict(self):
         return {
@@ -56,8 +67,9 @@ class Usuario(ABC):
             'rol': self.rol,
             'email': self.email,
             'fechaNacimiento': self.fechaNacimiento,
-            'activo': self.activo
+            'activo': self.activo,
+            'telefono': self.telefono
         }
-    
+
     def __repr__(self):
         return f"<Usuario nombreUsuario={self.nombreUsuario} rol={self.rol}>"

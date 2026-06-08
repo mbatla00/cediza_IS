@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>762</width>
-    <height>569</height>
+    <height>740</height>
    </rect>
   </property>
   <property name="font">
@@ -18,20 +18,200 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* =========================================
+   1. FONDO GENERAL
+========================================= */
+QMainWindow, QWidget#centralwidget {
+    background-color: #f4f6f8;
+}
+
+/* =========================================
+   2. TÍTULO PRINCIPAL
+========================================= */
+QLabel#lbl_titulo_principal {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #084298;
+    font-size: 26px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   3. TARJETAS (QFrame externo)
+========================================= */
+QFrame#card_proximas, QFrame#card_pasadas {
+    background-color: #ffffff;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0px;
+}
+
+/* =========================================
+   4. CABECERAS DE LAS TARJETAS
+========================================= */
+QFrame#header_proximas {
+    background-color: #0d6efd;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border: none;
+    padding: 0px;
+    min-height: 45px;
+}
+
+QFrame#header_pasadas {
+    background-color: #6c757d;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border: none;
+    padding: 0px;
+    min-height: 45px;
+}
+
+/* =========================================
+   5. LABELS DE CABECERA
+========================================= */
+QLabel#lbl_proximas, QLabel#lbl_pasadas {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+}
+
+/* =========================================
+   6. TABLAS
+========================================= */
+QTableWidget {
+    background-color: #f8faff;
+    border: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    gridline-color: #dce3f0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #212529;
+    alternate-background-color: #eef2fb;
+}
+
+QHeaderView {
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+QHeaderView::section {
+    background-color: #e2e8f8;
+    color: #2c3e6b;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-bottom: 2px solid #b0bfdf;
+    min-height: 35px;
+}
+
+QTableWidget::item {
+    padding: 10px;
+    border-bottom: 1px solid #dce3f0;
+    color: #212529;
+}
+
+QTableWidget::item:selected {
+    background-color: #c8d8f8;
+    color: #084298;
+}
+
+/* =========================================
+   7. BOTÓN VOLVER
+========================================= */
+QPushButton#btn_volver {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 8px 18px;
+    background-color: #6c757d;
+    color: #ffffff;
+    border: none;
+}
+
+QPushButton#btn_volver:hover {
+    background-color: #5a6268;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" colspan="3">
-     <widget class="QGroupBox" name="groupBox">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <widget class="QLabel" name="lbl_titulo_principal">
       <property name="font">
        <font>
-        <bold>false</bold>
+        <family>Segoe UI</family>
+        <pointsize>-1</pointsize>
+        <bold>true</bold>
        </font>
       </property>
-      <property name="title">
-       <string>Proximas Sesiones</string>
+      <property name="text">
+       <string>Mis sesiones</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="card_proximas">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QFrame" name="header_proximas">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="lbl_proximas">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Próximas sesiones</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QTableWidget" name="tabla_proximas">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -73,56 +253,41 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <pointsize>19</pointsize>
-        <bold>true</bold>
-       </font>
+    <item>
+     <widget class="QFrame" name="card_pasadas">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
       </property>
-      <property name="text">
-       <string>Mis sesiones</string>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="btn_volver">
-      <property name="font">
-       <font>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Volver</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Orientation::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="0" colspan="3">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="font">
-       <font>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>Sesiones Pasadas</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QFrame" name="header_pasadas">
+         <property name="frameShape">
+          <enum>QFrame::Shape::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Raised</enum>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="lbl_pasadas">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Sesiones pasadas</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QTableWidget" name="tabla_pasadas">
          <property name="editTriggers">
           <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
@@ -160,17 +325,51 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>124</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_volver">
+        <property name="font">
+         <font>
+          <family>Segoe UI</family>
+          <pointsize>-1</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Volver</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>762</width>
-     <height>22</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

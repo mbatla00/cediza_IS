@@ -1,7 +1,12 @@
 from src.modelo.conexion.Conexion import Conexion
 Database = Conexion
 from src.modelo.vo import Sesion
-from mysql.connector import Error
+from jaydebeapi import DatabaseError as Error
+from datetime import datetime
+
+"""
+Tabla para la relación entre especialistas y pacientes
+"""
 
 GET_BY_ID = "SELECT * FROM Sesion WHERE idSesion = ?"
 GET_BY_PACIENTE = "SELECT * FROM Sesion WHERE Paciente = ? ORDER BY Fecha ASC"

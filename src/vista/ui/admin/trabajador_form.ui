@@ -6,210 +6,286 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>502</width>
-    <height>276</height>
+    <width>614</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-      </font>
-     </property>
-     <property name="text">
+  <property name="styleSheet">
+   <string notr="true">/* 1. Fondo de la ventana (Gris clarito web) */
+QDialog {
+    background-color: #f4f6f8;
+}
+
+/* NUEVO: Color oscuro para todas las etiquetas de texto del formulario (Nombre, Usuario, etc.) */
+QLabel {
+    color: #2c3e50;
+}
+
+/* 2. El efecto &quot;Tarjeta Blanca&quot; para el QGroupBox */
+QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-top: 25px;
+    padding: 20px;
+}
+
+/* 3. Título de la tarjeta (&quot;Registro de Trabajador&quot;) */
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 15px;
+    padding: 0 5px;
+    color: #0d6efd; /* Azul principal */
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 4. Cajas de texto y combos básicos */
+QLineEdit, QComboBox {
+    border: 1px solid #adb5bd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    font-size: 14px;
+    color: #2c3e50;
+    selection-background-color: #0d6efd;
+    selection-color: #ffffff;
+}
+QLineEdit:focus, QComboBox:focus {
+    border: 2px solid #0d6efd;
+    background-color: #ffffff;
+}
+
+/* 🌟 SOLUCIÓN AL DESPLEGABLE OSCURO 🌟 */
+/* Fuerza a que la lista flotante interna sea blanca y el texto oscuro */
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    background: #ffffff;
+    color: #2c3e50;
+    border: 1px solid #dee2e6;
+    selection-background-color: #0d6efd; /* Color azul al pasar el ratón */
+    selection-color: #ffffff;
+}
+
+/* 5. Botón principal: Guardar / Confirmar (Azul) */
+QPushButton#btn_guardar {
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_guardar:hover { background-color: #0b5ed7; }
+
+/* 6. Botón secundario: Cancelar (Gris) */
+QPushButton#btn_cancelar {
+    background-color: #6c757d;
+    color: white;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_cancelar:hover { background-color: #5a6268; }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
       <string>Registro de trabajador</string>
      </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Nombre completo</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Nombre de usuario (opcional)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="txt_nombre_completo">
+        <property name="placeholderText">
+         <string>Ejemplo: Ana García López</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="txt_nombre_usuario">
+        <property name="placeholderText">
+         <string>Ejemplo: anagarcia</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>DNI</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Email</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLineEdit" name="txt_dni">
+        <property name="maxLength">
+         <number>9</number>
+        </property>
+        <property name="placeholderText">
+         <string>EJemplo:1234567N</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="txt_email">
+        <property name="placeholderText">
+         <string>Ejemplo: correo@gmail.com</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Tipo</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Horiario</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QComboBox" name="cb_tipo">
+        <item>
+         <property name="text">
+          <string>Auxiliar</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Coordinador</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Especialista</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="txt_horario">
+        <item>
+         <property name="text">
+          <string>(Sin asignar)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Mañana</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Tarde</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="lineWidth">
+         <number>8</number>
+        </property>
+        <property name="text">
+         <string>Contraseña</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="lbl_especialidad">
+        <property name="text">
+         <string>Especialidad</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLineEdit" name="txt_password">
+        <property name="echoMode">
+         <enum>QLineEdit::EchoMode::Password</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="txt_especialidad"/>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="txt_email">
-     <property name="placeholderText">
-      <string>Ejemplo: correo@gmail.com</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="lineWidth">
-      <number>8</number>
-     </property>
-     <property name="text">
-      <string>Contraseña</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Nombre completo</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLineEdit" name="txt_nombre_completo">
-     <property name="placeholderText">
-      <string>Ejemplo: Ana García López</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Email</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
+   <item>
+    <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Save</set>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>111</height>
+      </size>
      </property>
-    </widget>
+    </spacer>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>DNI</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLineEdit" name="txt_password"/>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLineEdit" name="txt_dni">
-     <property name="maxLength">
-      <number>9</number>
-     </property>
-     <property name="placeholderText">
-      <string>EJemplo:1234567N</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QComboBox" name="horario">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <property name="text">
-       <string>(sin asignar)</string>
-      </property>
+      <widget class="QPushButton" name="btn_guardar">
+       <property name="text">
+        <string>Confirmar Alta</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>Mañana</string>
-      </property>
+      <widget class="QPushButton" name="btn_cancelar">
+       <property name="text">
+        <string>Cancelar</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>Tarde</string>
-      </property>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="txt_nombre_usuario">
-     <property name="placeholderText">
-      <string>Ejemplo: anagarcia</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Nombre de usuario (opcional)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1">
-    <widget class="QLineEdit" name="txt_especialidad"/>
-   </item>
-   <item row="6" column="0">
-    <widget class="QComboBox" name="tipo">
-     <item>
-      <property name="text">
-       <string>Auxiliar</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Coordinador</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Especialista</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="text">
-      <string>Tipo</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>Horiario</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QLabel" name="lbl_especialidad">
-     <property name="text">
-      <string>Especialidad</string>
-     </property>
-    </widget>
+    </layout>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -2,80 +2,55 @@ import os
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 from PySide6.QtUiTools import loadUiType
 
-# Cargamos el archivo .ui de la evaluación
-UI_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui")
-ui_path = os.path.join(UI_DIR, "evaluar_paciente.ui")
+ui_path = os.path.join(os.path.dirname(__file__), "evaluar_paciente.ui")
 Ui_MainWindow, _ = loadUiType(ui_path)
 
 class EvaluarPacienteVentana(QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    """
+    Ventana del formulario de evaluación clínica periódica del paciente.
+    Permite al profesional puntuar el estado emocional, movilidad y apetito,
+    además de añadir observaciones adicionales en texto libre.
+    """
+    def __init__(self, controlador, nombre_paciente):
         super().__init__()
         self.setupUi(self)
+        self._controller = controlador
+        self._nombre_paciente = nombre_paciente
 
-    def establecer_paciente_actual(self, nombre_paciente: str):
-        """
-        El controlador llama a este método al abrir la ventana para mostrar 
-        a quién estamos evaluando.
-        """
         self.lbl_paciente.setText(f"Evaluación Clínica para: {nombre_paciente}")
+        self.btn_volver.clicked.connect(self.close)
+        self.btn_guardar.clicked.connect(self._procesar_guardado)
+        self.showMaximized()
 
-    def obtener_datos_evaluacion(self) -> dict:
-        """
-        Lee qué Radio Buttons están marcados y extrae la puntuación (1 al 5).
-        Retorna un diccionario válido para el Modelo de Dominio, o None si faltan datos.
-        """
-        emocional = None
-        movilidad = None
-        apetito = None
-
-        # 1. Comprobar Estado Emocional
+    def _obtener_datos_evaluacion(self):
+        emocional = movilidad = apetito = None
         for i in range(1, 6):
-            radio = getattr(self, f"rad_emocional_{i}")
-            if radio.isChecked():
-                emocional = i
-                break
-
-        # 2. Comprobar Movilidad
-        for i in range(1, 6):
-            radio = getattr(self, f"rad_movilidad_{i}")
-            if radio.isChecked():
-                movilidad = i
-                break
-
-        # 3. Comprobar Apetito
-        for i in range(1, 6):
-            radio = getattr(self, f"rad_apetito_{i}")
-            if radio.isChecked():
-                apetito = i
-                break
-
-        # Validación: Si falta alguno, avisamos al trabajador y cortamos el guardado
-        if emocional is None or movilidad is None or apetito is None:
-            QMessageBox.warning(
-                self, 
-                "Datos Incompletos", 
-                "Por favor, puntúa todas las categorías obligatorias (Emocional, Movilidad y Apetito)."
-            )
+            if getattr(self, f"rad_emocional_{i}").isChecked(): emocional = i
+            if getattr(self, f"rad_movilidad_{i}").isChecked(): movilidad = i
+            if getattr(self, f"rad_apetito_{i}").isChecked(): apetito = i
+        
+        # VALIDACIÓN: Garantiza que el profesional haya puntuado obligatoriamente las 3 categorías
+        if None in (emocional, movilidad, apetito):
+            QMessageBox.warning(self, "Datos Incompletos", "Puntúa todas las categorías.")
             return None
 
-        # Si todo está bien, devolvemos el diccionario listo para la base de datos
         return {
+            "paciente": self._nombre_paciente,
             "estadoEmocional": emocional,
             "movilidad": movilidad,
             "apetito": apetito,
             "observaciones": self.txt_observaciones.toPlainText().strip()
         }
 
-    def limpiar_formulario(self):
-        """
-        Desmarca todos los botones y limpia el texto para el siguiente paciente.
-        """
-        self.txt_observaciones.clear()
-        
-        # Desmarcamos de forma segura desactivando temporalmente la exclusividad
-        for i in range(1, 6):
-            for categoria in ["emocional", "movilidad", "apetito"]:
-                radio = getattr(self, f"rad_{categoria}_{i}")
-                radio.setAutoExclusive(False)
-                radio.setChecked(False)
-                radio.setAutoExclusive(True)
+    def _procesar_guardado(self):
+        # Extrae los datos previamente validados
+        datos = self._obtener_datos_evaluacion()
+        if datos is None:
+            return
+        exito, msg = self._controller.guardar_evaluacion(datos)
+        # Respuesta visual al usuario según el resultado del backend
+        if exito:
+            QMessageBox.information(self, "Éxito", "Evaluación guardada correctamente.")
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", msg)

@@ -3,6 +3,11 @@ Database = Conexion
 from src.modelo.vo import Familiar
 from mysql.connector import Error
 
+"""
+Tabla de familiares:
+guarda a familiares de los pacientes con sus numeros de telefono para casos de emergencia
+"""
+
 GET_BY_PACIENTE = "SELECT * FROM Familiares WHERE Paciente = ?"
 CREATE = """INSERT INTO Familiares (Nombre, Paciente, Relacion, Telefono)
                      VALUES (?, ?, ?, ?)"""

@@ -14,7 +14,16 @@ class TrabajadorFactory:
         if activo is not None:
             activo = 1 if activo in (1, True, '1', 'true', 'True') else 0
 
-        tipo_raw = datos.get('Tipo') or datos.get('tipo') or datos.get('tipoTrabajador') or datos.get('TipoTrabajador')
+        # --- CORRECCIÓN AÑADIDA AQUÍ ---
+        tipo_raw = (
+            datos.get('Tipo') or 
+            datos.get('tipo') or 
+            datos.get('tipoTrabajador') or 
+            datos.get('TipoTrabajador') or
+            datos.get('TipoPaciente') or   # ← Fallback por el bug del JOIN
+            datos.get('tipopaciente')      # ← Fallback por el bug del JOIN en minúsculas
+        )
+        # -------------------------------
         
         if not tipo_raw:
             if 'Especialidad' in datos or 'especialidad' in datos:

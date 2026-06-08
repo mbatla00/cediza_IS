@@ -1,4 +1,5 @@
 class Enfermedad:
+    #enfermedades comunes entre los pacientes
     def __init__(self, id=None, nombre=None):
         self._id = id
         self._nombre = nombre
