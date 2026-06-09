@@ -53,7 +53,7 @@ class TrabajadorDAO:
         cursor = conn.cursor()
         try:
             cursor.execute("""
-                SELECT t.*, u.Nombre, u.DNI, u.email, u.fechaNacimiento, u.telefono, u.activo
+                SELECT t.*, u.Nombre, u.DNI, u.email, u.fechaNacimiento, u.telefono, u.activo, u.password
                 FROM Trabajadores t
                 JOIN Usuarios u ON t.nombreUsuario = u.nombreUsuario
                 WHERE u.activo = 1
@@ -87,7 +87,7 @@ class TrabajadorDAO:
         cursor = conn.cursor()
         try:
             cursor.execute("""
-                SELECT t.*, u.Nombre, u.DNI, u.email, u.fechaNacimiento, u.telefono, u.activo
+                SELECT t.*, u.Nombre, u.DNI, u.email, u.fechaNacimiento, u.telefono, u.activo, u.password
                 FROM Trabajadores t
                 JOIN Usuarios u ON t.nombreUsuario = u.nombreUsuario
                 WHERE t.nombreUsuario = ?

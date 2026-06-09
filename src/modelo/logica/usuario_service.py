@@ -141,3 +141,15 @@ class UsuarioService:
             return True, f"Administrador {datos['nombre_completo']} creado correctamente"
         except Exception as e:
             return False, f"Error crítico: {str(e)}"
+        
+        
+    @staticmethod
+    def cambiar_estado(nombre_usuario: str, activar_usuario: bool) -> tuple[bool, str]:
+        if activar_usuario:
+            exito = UsuarioDAO.activar(nombre_usuario)
+            msg = f"El usuario '{nombre_usuario}' ha sido ACTIVADO (dado de alta)."
+        else:
+            exito = UsuarioDAO.delete(nombre_usuario)
+            msg = f"El usuario '{nombre_usuario}' ha sido DESACTIVADO (dado de baja)."
+        
+        return exito, msg

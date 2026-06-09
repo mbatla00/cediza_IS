@@ -1,10 +1,10 @@
 class Familiar:
     """VO para los familiares de un paciente"""
     
-    def __init__(self,id=None, Nombre=None, Paciente=None, Relacion='hij@', Telefono=None):
-        self._id = id
+    def __init__(self, idFamiliar=None, Nombre=None, Paciente=None, Relacion='hij@', Telefono=None):
+        self._id = idFamiliar
         self._nombre = Nombre
-        self._paciente = Paciente      #FK -> Pacientes.nombreUsuario
+        self._paciente = Paciente
         self._relacion = Relacion
         self._telefono = Telefono
     

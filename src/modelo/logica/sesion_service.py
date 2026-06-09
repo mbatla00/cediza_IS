@@ -41,8 +41,8 @@ class SesionService:
         if sesion.especialista != especialista:
             return False, "No puedes editar sesiones de otro especialista"
 
-        # Se crea un nuevo VO con los datos actualizados en lugar de mutar el existente
         sesion_actualizada = Sesion(
+            idSesion=id_sesion,
             Paciente=sesion.paciente,
             Especialista=sesion.especialista,
             comentarios=datos.get('comentarios', sesion.comentarios),
@@ -50,7 +50,7 @@ class SesionService:
             Hora=datos.get('hora', sesion.hora)
         )
 
-        if SesionDAO.update(id_sesion, sesion_actualizada):
+        if SesionDAO.update(sesion_actualizada):
             return True, "Sesión actualizada correctamente"
         return False, "Error al actualizar sesión"
 

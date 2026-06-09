@@ -14,6 +14,7 @@ class LoginVentana(QMainWindow, Ui_MainWindow):
         self.entradaContrasena.setEchoMode(QLineEdit.EchoMode.Password)
         self.entradaContrasena.returnPressed.connect(self.btn_login.click)
         self.btn_login.clicked.connect(self._on_login)
+        self.entradaUsuario.setFocus()
 
     def _on_login(self):
         usuario = self.entradaUsuario.text().strip()

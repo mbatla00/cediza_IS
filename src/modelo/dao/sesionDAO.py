@@ -44,7 +44,7 @@ class SesionDAO:
                     fecha_val = datetime.strptime(fecha_val, '%Y-%m-%d').date()
                 
                 # Convertir hora
-                hora_val = row_dict.get('hora')
+                hora_val = row_dict.get('Hora')
                 if hora_val and isinstance(hora_val, str):
                     try:
                         hora_val = datetime.strptime(hora_val, '%H:%M:%S').time()
@@ -93,7 +93,7 @@ class SesionDAO:
                     fecha_val = datetime.strptime(fecha_val, '%Y-%m-%d').date()
                 
                 # Convertir hora de string a time
-                hora_val = row_dict.get('hora')
+                hora_val = row_dict.get('Hora')
                 if hora_val and isinstance(hora_val, str):
                     try:
                         hora_val = datetime.strptime(hora_val, '%H:%M:%S').time()
@@ -142,7 +142,7 @@ class SesionDAO:
                     fecha_val = datetime.strptime(fecha_val, '%Y-%m-%d').date()
                 
                 # Convertir hora de string a time
-                hora_val = row_dict.get('hora')
+                hora_val = row_dict.get('Hora')
                 if hora_val and isinstance(hora_val, str):
                     try:
                         hora_val = datetime.strptime(hora_val, '%H:%M:%S').time()

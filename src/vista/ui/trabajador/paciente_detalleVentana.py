@@ -69,6 +69,7 @@ class PacienteDetalleVentana(QMainWindow, Ui_MainWindow):
             self.txt_telefono.setText(paciente.get('telefono', ''))
             self.txt_asistencia.setText(paciente.get('tipo', ''))
             self.txt_diagnostico.setText(paciente.get('diagnostico', ''))
+            self.label_5.setText(f"Ficha Clínica: {paciente.get('nombre', '')}")
 
         historial = list(comentarios or []) + list(evaluaciones or [])
         self._rellenar_historial(historial)

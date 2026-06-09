@@ -11,6 +11,8 @@ class CrearPacienteVentana(QDialog, Ui_Dialog):
         self.setupUi(self)
         self.controlador = controlador
         
+        self.showMaximized()
+        
         self.btn_anadir_enfermedad.clicked.connect(self.anadir_enfermedad)
         self.btn_anadir_contacto.clicked.connect(self.anadir_contacto)
         
