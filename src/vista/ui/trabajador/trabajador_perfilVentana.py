@@ -31,11 +31,11 @@ class TrabajadorPerfilVentana(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Error", "No se pudieron cargar los datos.")
 
     def _rellenar_formulario(self, usuario: dict):
-        self.txt_nombre.setText(usuario.get("nombre", ""))
-        self.txt_usuario.setText(usuario.get("nombreUsuario", ""))
-        self.txt_dni.setText(usuario.get("dni", ""))
-        self.txt_telefono.setText(usuario.get("telefono", ""))
-        self.txt_email.setText(usuario.get("email", ""))
+        self.txt_nombre.setText(str(usuario.get("nombre") or ""))
+        self.txt_usuario.setText(str(usuario.get("nombreUsuario") or ""))
+        self.txt_dni.setText(str(usuario.get("dni") or ""))
+        self.txt_telefono.setText(str(usuario.get("telefono") or ""))
+        self.txt_email.setText(str(usuario.get("email") or ""))
         self.txt_password.clear()
 
         fecha_bd = usuario.get("fechaNacimiento")

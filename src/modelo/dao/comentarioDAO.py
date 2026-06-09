@@ -7,11 +7,10 @@ Tabla de comentarios:
 Comentarios libres de trabajadores a pacientes
 """
 
-GET_BY_PACIENTE = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Paciente = ? ORDER BY dia DESC, hora DESC"
-GET_BY_TRABAJADOR = "SELECT id, Auxiliar, Paciente, dia, hora, nota FROM comentarios WHERE Auxiliar = ? ORDER BY dia DESC, hora DESC"
-CREATE = """INSERT INTO comentarios (Auxiliar, Paciente, dia, hora, nota)
-                     VALUES (?, ?, ?, ?, ?)"""
-DELETE = "DELETE FROM comentarios WHERE idComentrio = ?"
+GET_BY_PACIENTE = "SELECT idComentario AS id, Auxiliar, Paciente, dia, nota FROM comentarios WHERE Paciente = ? ORDER BY dia DESC"
+GET_BY_TRABAJADOR = "SELECT idComentario AS id, Auxiliar, Paciente, dia, nota FROM comentarios WHERE Auxiliar = ? ORDER BY dia DESC"
+CREATE = """INSERT INTO comentarios (Auxiliar, Paciente, dia, nota) VALUES (?, ?, ?, ?)"""
+DELETE = "DELETE FROM comentarios WHERE idComentario = ?"
 
 class ComentarioDAO:
 
@@ -21,15 +20,10 @@ class ComentarioDAO:
         conn = db.get_connection()
         if conn is None:
             return []
-
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                GET_BY_PACIENTE,
-                (nombreUsuario_paciente,)
-            )
+            cursor.execute(GET_BY_PACIENTE, (nombreUsuario_paciente,))
             rows = cursor.fetchall()
-            
             comentarios = []
             for row in rows:
                 row_dict = {
@@ -37,8 +31,7 @@ class ComentarioDAO:
                     'Auxiliar': row[1],
                     'Paciente': row[2],
                     'dia': row[3],
-                    'hora': row[4],
-                    'nota': row[5]
+                    'nota': row[4]
                 }
                 comentarios.append(Comentario(**row_dict))
             return comentarios
@@ -54,15 +47,10 @@ class ComentarioDAO:
         conn = db.get_connection()
         if conn is None:
             return []
-
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                GET_BY_TRABAJADOR,
-                (nombreUsuario_trabajador,)
-            )
+            cursor.execute(GET_BY_TRABAJADOR, (nombreUsuario_trabajador,))
             rows = cursor.fetchall()
-            
             comentarios = []
             for row in rows:
                 row_dict = {
@@ -70,8 +58,7 @@ class ComentarioDAO:
                     'Auxiliar': row[1],
                     'Paciente': row[2],
                     'dia': row[3],
-                    'hora': row[4],
-                    'nota': row[5]
+                    'nota': row[4]
                 }
                 comentarios.append(Comentario(**row_dict))
             return comentarios
@@ -87,17 +74,13 @@ class ComentarioDAO:
         conn = db.get_connection()
         if conn is None:
             return False
-
         cursor = conn.cursor()
         try:
             dia_str = str(comentario.dia) if comentario.dia else None
-            hora_str = str(comentario.hora) if comentario.hora else None
-            
             cursor.execute(CREATE, (
                 comentario.auxiliar,
                 comentario.paciente,
                 dia_str,
-                hora_str,
                 comentario.nota
             ))
             conn.commit()
@@ -115,13 +98,9 @@ class ComentarioDAO:
         conn = db.get_connection()
         if conn is None:
             return False
-
         cursor = conn.cursor()
         try:
-            cursor.execute(
-                DELETE,
-                (idComentrio)
-            )
+            cursor.execute(DELETE, (idComentrio,))
             conn.commit()
             return True
         except Error as e:
