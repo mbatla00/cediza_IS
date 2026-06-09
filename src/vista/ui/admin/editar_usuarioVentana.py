@@ -31,13 +31,15 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
 
         self.btn_guardar.clicked.connect(self._procesar_guardado)
         self.btn_cancelar.clicked.connect(self.close)
+        
+        self.btn_baja.clicked.connect(self._procesar_cambio_estado)
 
     # BUSCADOR
 
     def _llenar_buscador_usuarios(self):
         self.cmb_buscador_usuario.clear()
-        self.cmb_buscador_usuario.addItem("--- Seleccione un usuario ---", None)
-        for u in self.controlador.listar_todos_usuarios_dict():
+        self.cmb_buscador_usuario.addItem("--- Seleccione un usuario ---", None) 
+        for u in self.controlador.listar_usuarios_activos_dict():
             texto = f"{u['nombre']} ({u['tipo'].capitalize()})"
             self.cmb_buscador_usuario.addItem(texto, u['nombreUsuario'])
 
@@ -48,11 +50,17 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
             datos = self.controlador.obtener_usuario_dict(nombre_usuario)
             if datos:
                 self._cargar_usuario(datos)
+            
+            if self.controlador.esta_activo(nombre_usuario):
+                self.btn_baja.setText("Dar de Baja")
+            else:
+                self.btn_baja.setText("Activar Usuario")
         else:
             self.usuario_editado = None
             self._limpiar_formulario()
             self._habilitar_campos_comunes(False)
             self._ocultar_todos_los_roles()
+            self.btn_baja.setText("Cambiar Estado") # Texto por defecto
 
     # VISIBILIDAD
 
@@ -172,7 +180,6 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
         self.tableWidget.setRowCount(0)
         self.rol_actual = ""
 
-    # GUARDAR
 
     def _obtener_datos_formulario(self) -> dict:
         payload = {
@@ -226,3 +233,34 @@ class AdminEditarUsuarioVentana(QMainWindow, Ui_MainWindow):
             self.close()
         else:
             QMessageBox.warning(self, "Error", msg)
+
+    # === NUEVA FUNCIÓN: PROCESAR BAJA/ALTA LÓGICA ===
+    def _procesar_cambio_estado(self):
+        if not self.usuario_editado:
+            QMessageBox.warning(self, "Aviso", "Por favor, seleccione un usuario en el buscador primero.")
+            return
+
+        es_activo_actualmente = self.controlador.esta_activo(self.usuario_editado)
+        nuevo_estado = not es_activo_actualmente
+        accion_txt = "ACTIVAR" if nuevo_estado else "DESACTIVAR (Dar de baja lógica)"
+        
+        respuesta = QMessageBox.question(
+            self,
+            "Confirmar Cambio de Estado",
+            f"¿Está seguro de que desea {accion_txt} al usuario '{self.usuario_editado}'?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if respuesta == QMessageBox.Yes:
+            exito, msg = self.controlador.cambiar_estado_usuario(self.usuario_editado, nuevo_estado)
+
+            if exito:
+                QMessageBox.information(self, "Éxito", msg)
+                # Refrescar la vista y el combo
+                self.usuario_editado = None
+                self._llenar_buscador_usuarios()
+                self._habilitar_campos_comunes(False)
+                self._ocultar_todos_los_roles()
+            else:
+                QMessageBox.critical(self, "Error", f"No se pudo cambiar el estado: {msg}")

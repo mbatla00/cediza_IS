@@ -180,6 +180,20 @@ QPushButton#btn_cancelar {
 }
 QPushButton#btn_cancelar:hover { background-color: #5a6268; }
 
+/* 🌟 NUEVO: Botón para dar de Baja / Activar Usuario 🌟 */
+QPushButton#btn_baja {
+    background-color: #f39c12; /* Color naranja/ámbar de advertencia */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-weight: bold;
+    font-size: 14px;
+}
+QPushButton#btn_baja:hover { 
+    background-color: #d68910; /* Un tono más oscuro al pasar el ratón */
+}
+
 /* =========================================
    6. BOTONES SECUNDARIOS (+ Añadir)
 ========================================= */
@@ -601,6 +615,13 @@ QPushButton#btn_anadir_enfermedad:hover {
              <widget class="QPushButton" name="btn_cancelar">
               <property name="text">
                <string>Cancelar</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_baja">
+              <property name="text">
+               <string>Dar de Baja</string>
               </property>
              </widget>
             </item>

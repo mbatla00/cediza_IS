@@ -52,6 +52,29 @@ class AdminController:
                 "tipo": tipo
             })
         return resultado
+    
+    def listar_usuarios_activos_dict(self) -> list[dict]:
+        """Devuelve únicamente los usuarios activos en formato diccionario para la vista."""
+        usuarios = self._usuario_service.listar_activos()
+        resultado = []
+        for u in (usuarios or []):
+            rol = getattr(u, 'rol', '').lower()
+            tipo = getattr(u, 'tipo', '').lower() or rol
+            nombre_usuario = getattr(u, 'nombreUsuario', '')
+
+            if rol == 'trabajador':
+                trabajador = self._trabajador_service.obtener_por_nombre(nombre_usuario)
+                tipo = getattr(trabajador, 'tipo', 'trabajador').lower() if trabajador else 'trabajador'
+            elif rol == 'paciente':
+                paciente = self._paciente_service.obtener_por_nombre(nombre_usuario)
+                tipo = getattr(paciente, 'tipo', tipo) if paciente else tipo
+
+            resultado.append({
+                'nombre': getattr(u, 'nombre', ''),
+                'nombreUsuario': nombre_usuario,
+                'tipo': tipo
+            })
+        return resultado
 
     def obtener_usuario(self, nombre_usuario: str) -> Usuario | None:
         return self._usuario_service.obtener_por_nombre(nombre_usuario)
@@ -206,3 +229,15 @@ class AdminController:
             datos["contactos"] = []
 
         return datos
+    
+
+    def cambiar_estado_usuario(self, nombre_usuario: str, activar: bool) -> tuple[bool, str]:
+        """Llama al servicio para cambiar el estado lógico del usuario."""
+        return self._usuario_service.cambiar_estado(nombre_usuario, activar)
+
+    def esta_activo(self, nombre_usuario: str) -> bool:
+        """Devuelve True si el usuario está activo, False si está desactivado."""
+        usuario = self._usuario_service.obtener_por_nombre(nombre_usuario)
+        if usuario:
+            return getattr(usuario, 'activo', True) 
+        return False
